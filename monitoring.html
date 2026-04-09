@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VPS Monitoring - HyunkkCloud</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{--bg:#060a10;--bg-card:#0c1220;--fg:#e8ecf2;--muted:#5a6a80;--accent:#00e89d;--accent2:#00c4ff;--border:#152035;--green:#00e89d;--cyan:#00c4ff;--purple:#a78bfa;--amber:#fbbf24;--red:#f87171;--pink:#f472b6;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,232,157,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,232,157,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:orbFloat 12s ease-in-out infinite alternate;}
+    .orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(0,232,157,0.1),transparent 70%);top:-100px;left:-100px;}
+    .orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(0,196,255,0.08),transparent 70%);bottom:-80px;right:-80px;animation-delay:-4s;}
+    .orb-3{width:220px;height:220px;background:radial-gradient(circle,rgba(0,232,157,0.08),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-8s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-40px) scale(1.1);}66%{transform:translate(-20px,30px) scale(0.95);}100%{transform:translate(15px,-15px) scale(1.05);}}
+    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,232,157,0.05),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .3s ease-out,top .3s ease-out;}
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.8);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover{color:var(--accent);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s;}
+    .nav-link:hover::after{width:100%;}
+    .nav-link.active{color:var(--cyan);}
+    .nav-link.active::after{width:100%;background:var(--cyan);}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover{color:var(--accent);}
+    .blog-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;font-size:.8rem;font-weight:600;letter-spacing:.02em;}
+    .toc-link{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:.85rem;transition:all .3s;}
+    .toc-link:hover{color:var(--fg);background:rgba(255,255,255,0.03);}
+    .toc-link.active{color:var(--cyan);background:rgba(0,196,255,0.06);font-weight:600;}
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);display:flex;align-items:center;gap:10px;}
+    .section-tag::before{content:'';width:24px;height:1px;background:var(--cyan);}
+    .section-title{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;letter-spacing:-0.02em;margin-top:12px;}
+    .faq-item{border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .3s;}
+    .faq-item:hover{border-color:rgba(0,196,255,0.2);}
+    .faq-question{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer;font-weight:500;background:var(--bg-card);transition:background .3s;user-select:none;}
+    .faq-question:hover{background:rgba(0,196,255,0.03);}
+    .faq-question i{transition:transform .3s;color:var(--muted);font-size:.8rem;}
+    .faq-item.open .faq-question i{transform:rotate(180deg);}
+    .faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s;padding:0 20px;background:var(--bg-card);font-size:.9rem;color:var(--muted);line-height:1.7;}
+    .faq-item.open .faq-answer{max-height:200px;padding:0 20px 18px;}
+    .faq-answer strong{color:var(--fg);}
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent);}
+    .expand-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:.88rem;cursor:pointer;transition:all .3s;width:100%;}
+    .expand-btn:hover{border-color:rgba(0,196,255,0.2);color:var(--fg);}
+    .expand-btn i{transition:transform .3s;font-size:.8rem;}
+    .expand-btn.expanded i{transform:rotate(180deg);}
+    .history-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+    .history-table thead{background:rgba(0,0,0,.3);}
+    .history-table th{padding:12px 14px;text-align:left;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border);}
+    .history-table th:not(:first-child){text-align:center;}
+    .history-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.03);color:#8a96a8;}
+    .history-table td:not(:first-child){text-align:center;}
+    .history-table tbody tr:hover td{background:rgba(0,196,255,0.02);}
+    .history-table tbody tr:last-child td{border-bottom:none;}
+    .history-hidden{max-height:0;overflow:hidden;transition:max-height .5s ease;}
+    .history-visible{max-height:2000px;}
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.vis{opacity:1;transform:translateY(0);}
+    .status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .status-dot.online{background:var(--green);animation:pulse-dot 2s ease-in-out infinite;}
+    .status-dot.offline{background:var(--red);animation:none;}
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:768px){
+      .blog-layout{grid-template-columns:1fr!important;}
+      .toc{display:none!important;}
+      .stats-flex{flex-direction:column;align-items:stretch!important;gap:12px!important;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkkCloud</span>
+    </a>
+    <div class="hidden md:flex items-center gap-7">
+      <a href="store.html" class="nav-link">Store</a>
+      <a href="store-vps.html" class="nav-link"><i class="fas fa-server" style="margin-right:4px;font-size:.75rem;"></i> VPS</a>
+      <a href="monitoring.html" class="nav-link active"><i class="fas fa-chart-line" style="margin-right:4px;font-size:.75rem;"></i> Monitoring</a>
+      <a href="store-aplikasipremium.html" class="nav-link"><i class="fas fa-gem" style="margin-right:4px;font-size:.75rem;"></i> Premium</a>
+      <a href="domain.html" class="nav-link"><i class="fas fa-globe" style="margin-right:4px;font-size:.75rem;"></i> Domain</a>
+      <a href="support.html" class="nav-link">Support</a>
+      <a href="contact.html" style="border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:.82rem;padding:7px 16px;border-radius:10px;background:none;cursor:pointer;font-family:inherit;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='rgba(248,113,113,0.1)';this.style.borderColor='rgba(248,113,113,0.5)'" onmouseout="this.style.background='none';this.style.borderColor='rgba(248,113,113,0.3)'"><i class="fas fa-right-from-bracket" style="font-size:.75rem;"></i> Logout</a>
+    </div>
+    <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+      <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+      <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="store.html">Store</a>
+    <a href="store-vps.html">VPS</a>
+    <a href="monitoring.html" style="color:var(--cyan);">Monitoring</a>
+    <a href="store-aplikasipremium.html">Premium</a>
+    <a href="domain.html">Domain</a>
+    <a href="support.html">Support</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <!-- HERO -->
+  <section style="padding:140px 24px 30px;text-align:center;">
+    <div class="reveal">
+      <div class="blog-tag" style="border:1px solid rgba(0,196,255,0.25);background:rgba(0,196,255,0.05);color:var(--cyan);"><i class="fas fa-chart-line" style="font-size:.7rem;"></i> Live Monitoring</div>
+      <h1 style="font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;margin-top:24px;">
+        Monitoring <span style="background:linear-gradient(135deg,var(--cyan),#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Uptime VPS</span>
+      </h1>
+      <p style="color:var(--muted);margin-top:16px;max-width:480px;line-height:1.7;font-size:1.05rem;margin-left:auto;margin-right:auto;">
+        Pantau uptime server secara real-time. Data tersimpan lokal di browser.
+      </p>
+    </div>
+  </section>
+
+  <!-- LIVE STATUS BAR -->
+  <section style="max-width:1200px;margin:0 auto;padding:0 24px 48px;">
+    <div class="reveal stats-flex" style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);">
+        <span class="status-dot online" id="liveDot"></span>
+        <span style="font-size:.85rem;font-weight:600;color:var(--green);">Server <span id="onlineCount">3</span>/3 online</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);">
+        <span style="font-size:.85rem;font-weight:600;color:var(--fg);">Uptime</span>
+        <span id="uptimePct" class="font-mono" style="font-size:1.5rem;font-weight:700;color:var(--accent);">100%</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);">
+        <i class="fas fa-sync-alt" style="font-size:.75rem;color:var(--cyan);"></i>
+        <span style="font-size:.85rem;font-weight:600;color:var(--fg);">Update: <span id="lastUpdate" class="font-mono" style="font-size:.75rem;color:var(--cyan);">--:--:--</span></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 20px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);">
+        <i class="fas fa-clock" style="font-size:.75rem;color:var(--amber);"></i>
+        <span style="font-size:.85rem;font-weight:600;color:var(--fg);">Refresh: <span id="refreshTimer" class="font-mono" style="font-size:.75rem;color:var(--amber);">30s</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT: SIDEBAR + CARDS -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 48px;">
+    <div class="reveal blog-layout" style="display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start;">
+
+      <!-- Sidebar -->
+      <aside class="toc" style="position:sticky;top:100px;">
+        <div style="font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+          <i class="fas fa-chart-line" style="font-size:.75rem;"></i> Navigasi
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <a href="#liveSection" class="toc-link active" data-section="liveSection">Live Status</a>
+          <a href="#historySection" class="toc-link" data-section="historySection">Riwayat</a>
+          <a href="#faqSection" class="toc-link" data-section="faqSection">FAQ</a>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <article>
+        <p style="color:#8a96a8;line-height:1.85;margin-bottom:24px;">
+          Halaman ini memantau uptime server secara real-time. Data disimpan lokal di browser kamu — tidak perlu backend tambahan.
+        </p>
+
+        <!-- SERVER CARDS -->
+        <h2 id="liveSection" style="display:flex;align-items:center;gap:14px;font-size:1.3rem;font-weight:700;margin-bottom:20px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:rgba(0,196,255,0.1);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;flex-shrink:0;">01</span>
+          Status Server Real-Time
+        </h2>
+
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <!-- VPS 4GB -->
+          <div id="card-1" style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .3s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,196,255,0.1);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--cyan);">4GB</div>
+                <div>
+                  <div style="font-weight:600;font-size:.95rem;">VPS 4GB</div>
+                  <div style="padding:2px 8px;border-radius:4px;background:rgba(0,196,255,0.06);border:1px solid rgba(0,196,255,0.12);font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;color:var(--cyan);display:inline-block;margin-top:3px;">GENOA</div>
+                </div>
+              </div>
+              <div class="status-dot online" id="dot-1"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Uptime</div>
+                <div class="font-mono" style="font-size:1.3rem;font-weight:700;color:var(--accent);" id="uptime-1">100%</div>
+              </div>
+              <div>
+                <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Status</div>
+                <div class="font-mono" style="font-size:1.3rem;font-weight:700;color:var(--green);" id="status-1">Online</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VPS 8GB -->
+          <div id="card-2" style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .3s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,232,157,0.1);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:var(--accent);">8GB</div>
+                <div>
+                  <div style="font-weight:600;font-size:.95rem;">VPS 8GB</div>
+                  <div style="padding:2px 8px;border-radius:4px;background:rgba(0,232,157,0.06);border:1px solid rgba(0,232,157,0.12);font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;color:var(--accent);display:inline-block;margin-top:3px;">GENOA</div>
+                </div>
+              </div>
+              <div class="status-dot online" id="dot-2"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Uptime</div>
+                <div class="font-mono" style="font-size:1.3rem;font-weight:700;color:var(--accent);" id="uptime-2">100%</div>
+              </div>
+              <div>
+                <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Status</div>
+                <div class="font-mono" style="font-size:1.3rem;font-weight:700;color:var(--green);" id="status-2">Online</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VPS 16GB -->
+          <div id="card-3" style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .3s;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(167,139,250,0.1);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--purple);">16GB</div>
+                <div>
+                  <div style="font-weight:600;font-size:.95rem;">VPS 16GB</div>
+                  <div style="padding:2px 8px;border-radius:4px;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.12);font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;color:var(--purple);display:inline-block;margin-top:3px;">MILAN</div>
+                </div>
+              </div>
+              <div class="status-dot online" id="dot-3"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Uptime</div>
+                <div class="font-mono" style="font-size:1.3rem;font-weight:700;color:var(--accent);" id="uptime-3">100%</div>
+              </div>
+              <div>
+                <div style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Status</div>
+                <div class="font-mono" style="font-size:1.3rem;font-weight:700;color:var(--green);" id="status-3">Online</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HISTORY TABLE -->
+        <h2 id="historySection" style="display:flex;align-items:center;gap:14px;font-size:1.3rem;font-weight:700;margin-top:48px;margin-bottom:20px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:rgba(0,196,255,0.1);color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;flex-shrink:0;">02</span>
+          Riwayat Uptime
+        </h2>
+
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+          <div class="history-hidden" id="historyHidden">
+            <table class="history-table">
+              <thead>
+                <tr>
+                  <th>Server</th>
+                  <th>Tanggal</th>
+                  <th>Downtime</th>
+                  <th>Durasi</th>
+                  <th>Status</th>
+                  <th>Total Uptime</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600;color:var(--fg);">VPS 4GB</td>
+                  <td class="font-mono" style="font-size:.8rem;">2025-01-10</td>
+                  <td class="font-mono" style="font-size:.8rem;">14:23</td>
+                  <td class="font-mono" style="font-size:.8rem;">3 menit</td>
+                  <td><span style="color:var(--green);font-weight:600;">Pulih</span></td>
+                  <td class="font-mono" style="font-weight:700;color:var(--accent);">99.8%</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:var(--fg);">VPS 8GB</td>
+                  <td class="font-mono" style="font-size:.8rem;">2025-01-08</td>
+                  <td class="font-mono" style="font-size:.8rem;">02:15</td>
+                  <td class="font-mono" style="font-size:.8rem;">1 menit</td>
+                  <td><span style="color:var(--green);font-weight:600;">Pulih</span></td>
+                  <td class="font-mono" style="font-weight:700;color:var(--accent);">99.9%</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:var(--fg);">VPS 16GB</td>
+                  <td class="font-mono" style="font-size:.8rem;">2025-01-05</td>
+                  <td class="font-mono" style="font-size:.8rem;">09:40</td>
+                  <td class="font-mono" style="font-size:.8rem;">5 menit</td>
+                  <td><span style="color:var(--green);font-weight:600;">Pulih</span></td>
+                  <td class="font-mono" style="font-weight:700;color:var(--accent);">99.7%</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:var(--fg);">VPS 4GB</td>
+                  <td class="font-mono" style="font-size:.8rem;">2024-12-28</td>
+                  <td class="font-mono" style="font-size:.8rem;">22:10</td>
+                  <td class="font-mono" style="font-size:.8rem;">2 menit</td>
+                  <td><span style="color:var(--green);font-weight:600;">Pulih</span></td>
+                  <td class="font-mono" style="font-weight:700;color:var(--accent);">99.9%</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600;color:var(--fg);">VPS 8GB</td>
+                  <td class="font-mono" style="font-size:.8rem;">2024-12-20</td>
+                  <td class="font-mono" style="font-size:.8rem;">11:55</td>
+                  <td class="font-mono" style="font-size:.8rem;">7 menit</td>
+                  <td><span style="color:var(--green);font-weight:600;">Pulih</span></td>
+                  <td class="font-mono" style="font-weight:700;color:var(--accent);">99.6%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button class="expand-btn" id="expandHistBtn" onclick="toggleHistory()" style="border-radius:0 0 14px 14px;border:none;border-top:1px solid var(--border);">
+            <i class="fas fa-chevron-down" id="histIcon"></i>
+            <span id="histText">Lihat Riwayat Downtime</span>
+          </button>
+        </div>
+
+      </article>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faqSection" style="max-width:720px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal" style="text-align:center;margin-bottom:48px;">
+      <div class="section-tag" style="justify-content:center;">FAQ</div>
+      <h2 class="section-title">Pertanyaan Umum</h2>
+    </div>
+    <div class="reveal" style="display:flex;flex-direction:column;gap:12px;">
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Apa bedanya VPS dengan shared hosting?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">VPS memberikan resource yang <strong>dedicated</strong> (tidak dibagi pengguna lain), full root access untuk konfigurasi bebas, dan performa yang jauh lebih stabil dibanding shared hosting.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Kenapa pakai Hetzner?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Hetzner adalah penyedia infrastruktur cloud terpercaya dengan <strong>AMD EPYC</strong> processor tercepat di dunia. Kami pilih karena performa CPU single-core terbaik dan jaringan Singapore yang stabil.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Bedanya Genoa dan Milan?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><strong>Genoa</strong> = CPU lebih baru, clock lebih tinggi per core — cocok single-thread. <strong>Milan</strong> = lebih lawas tapi efisien multi-thread — cocok workload berat.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Itu Private Node bedanya apa?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Private Node adalah server dedicated untuk <strong>penggunaan intensif</strong>. Resource lebih stabil karena tidak ada tetangga, cocok performa maksimal. Tidak ada root access, dikelola tim kami.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Bisa bayar pakai apa saja?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Kami menerima <strong>QRIS, GoPay, OVO, Dana, ShopeePay</strong>, transfer bank (BCA, BRI, Mandiri, BNI), dan pulsa (dengan rate tertentu).</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Apakah bisa upgrade paket?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Ya! Hubungi support, sebutkan paket yang ingin dinaikkan. Proses <strong>tanpa downtime</strong>, selisih biaya dihitung prorata sesuai sisa masa aktif.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="max-width:900px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal" style="text-align:center;padding:56px 40px;border-radius:24px;border:1px solid var(--border);background:linear-gradient(170deg,rgba(0,196,255,0.04),var(--bg-card) 50%);position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,232,157,0.08),transparent 70%);border-radius:50%;pointer-events:none;"></div>
+      <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:12px;">Bingung Pilih Paket?</h2>
+      <p style="color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.7;font-size:.95rem;">
+        Hubungi kami dan tim kami akan membantu memilihkan paket yang paling sesuai kebutuhanmu.
+      </p>
+      <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20tanya%20paket" target="_blank" style="display:inline-flex;align-items:center;gap:10px;padding:16px 32px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#00c4a0);color:#060a10;font-weight:700;font-size:.95rem;text-decoration:none;transition:all .3s;" onmouseover="this.style.boxShadow='0 0 40px rgba(0,232,157,0.3)';this.style.transform='translateY(-3px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Konsultasi Gratis</a>
+    </div>
+  </section>
+
+</main>
+
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.92);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">HyunkkCloud</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:320px;">Layanan VPS dan cloud hosting performa tinggi dan support responsif.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:16px;font-size:.9rem;">Menu</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="store-vps.html" class="footer-link" style="color:var(--cyan);">VPS</a>
+        <a href="monitoring.html" class="footer-link" style="color:var(--amber);">Monitoring</a>
+        <a href="domain.html" class="footer-link">Domain</a>
+        <a href="support.html" class="footer-link">Support</a>
+        <a href="contact.html" class="footer-link">Contact</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:16px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:40px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:.8rem;color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.7rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* === PARTICLES === */
+  var canvas = document.getElementById('particles');
+  var ctx = canvas.getContext('2d');
+  var pArr = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  for (var i = 0; i < 60; i++) {
+    pArr.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.5 + 0.5,
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.5 + 0.1
+    });
+  }
+
+  function animP() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < pArr.length; i++) {
+      var p = pArr[i];
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.1, p.size), 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,232,157,' + p.opacity + ')';
+      ctx.fill();
+    }
+    for (var i = 0; i < pArr.length; i++) {
+      for (var j = i + 1; j < pArr.length; j++) {
+        var dx = pArr[i].x - pArr[j].x;
+        var dy = pArr[i].y - pArr[j].y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.moveTo(pArr[i].x, pArr[i].y);
+          ctx.lineTo(pArr[j].x, pArr[j].y);
+          ctx.strokeStyle = 'rgba(0,232,157,' + (0.035 * (1 - d / 120)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animP);
+  }
+  animP();
+
+  /* === MOUSE GLOW === */
+  var mg = document.getElementById('mouseGlow');
+  document.addEventListener('mousemove', function(e) {
+    mg.style.left = e.clientX + 'px';
+    mg.style.top = e.clientY + 'px';
+  });
+
+  /* === NAVBAR SCROLL === */
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  /* === MOBILE MENU === */
+  var menuBtn = document.getElementById('menuBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var mOpen = document.getElementById('menuIconOpen');
+  var mClose = document.getElementById('menuIconClose');
+
+  menuBtn.addEventListener('click', function() {
+    var isOpen = mobileMenu.classList.toggle('open');
+    mOpen.style.display = isOpen ? 'none' : 'inline';
+    mClose.style.display = isOpen ? 'inline' : 'none';
+  });
+
+  mobileMenu.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      mobileMenu.classList.remove('open');
+      mOpen.style.display = 'inline';
+      mClose.style.display = 'none';
+    });
+  });
+
+  /* === SMOOTH SCROLL === */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var href = this.getAttribute('href');
+      if (href === '#') return;
+      e.preventDefault();
+      var target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  /* === SCROLL REVEAL === */
+  var rObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(en) {
+      if (en.isIntersecting) en.target.classList.add('vis');
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(function(el) { rObs.observe(el); });
+
+  /* === TOC ACTIVE HIGHLIGHT === */
+  var tocLinks = document.querySelectorAll('.toc-link');
+  var tocSections = [];
+  tocLinks.forEach(function(link) {
+    var sec = document.querySelector(link.getAttribute('href'));
+    if (sec) tocSections.push({ el: sec, link: link });
+  });
+
+  window.addEventListener('scroll', function() {
+    var scrollY = window.scrollY + 140;
+    var activeIdx = 0;
+    for (var i = 0; i < tocSections.length; i++) {
+      if (tocSections[i].el.offsetTop <= scrollY) activeIdx = i;
+    }
+    tocLinks.forEach(function(l) { l.classList.remove('active'); });
+    if (tocSections[activeIdx]) tocSections[activeIdx].link.classList.add('active');
+  });
+
+  /* === FAQ TOGGLE === */
+  function toggleFaq(el) {
+    var item = el.parentElement;
+    var wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(f) { f.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  /* === EXPAND HISTORY TABLE === */
+  function toggleHistory() {
+    var h = document.getElementById('historyHidden');
+    var btn = document.getElementById('expandHistBtn');
+    var isVis = h.classList.contains('history-visible');
+    h.classList.toggle('history-visible');
+    btn.classList.toggle('expanded');
+    if (isVis) {
+      btn.innerHTML = '<i class="fas fa-chevron-down"></i> <span>Lihat Riwayat Downtime</span>';
+    } else {
+      btn.innerHTML = '<i class="fas fa-chevron-up"></i> <span>Tutup Riwayat</span>';
+    }
+  }
+
+  /* === LIVE UPDATE SIMULATION === */
+  var REFRESH_INTERVAL = 30; /* detik */
+  var countdown = REFRESH_INTERVAL;
+
+  /* Data simulasi server */
+  var servers = [
+    { id: 1, name: 'VPS 4GB', uptime: 100, online: true },
+    { id: 2, name: 'VPS 8GB', uptime: 100, online: true },
+    { id: 3, name: 'VPS 16GB', uptime: 100, online: true }
+  ];
+
+  function formatTime(date) {
+    var h = String(date.getHours()).padStart(2, '0');
+    var m = String(date.getMinutes()).padStart(2, '0');
+    var s = String(date.getSeconds()).padStart(2, '0');
+    return h + ':' + m + ':' + s;
+  }
+
+  function updateDisplay() {
+    var onlineCount = 0;
+    var totalUptime = 0;
+
+    servers.forEach(function(srv) {
+      /* Simulasi: 5% chance offline */
+      srv.online = Math.random() > 0.05;
+      if (srv.online) {
+        onlineCount++;
+        srv.uptime = Math.min(100, srv.uptime + (Math.random() * 0.1));
+      } else {
+        srv.uptime = Math.max(99.0, srv.uptime - (Math.random() * 0.5));
+      }
+      totalUptime += srv.uptime;
+
+      /* Update card */
+      var dot = document.getElementById('dot-' + srv.id);
+      var status = document.getElementById('status-' + srv.id);
+      var uptime = document.getElementById('uptime-' + srv.id);
+      var card = document.getElementById('card-' + srv.id);
+
+      if (dot) {
+        dot.className = 'status-dot ' + (srv.online ? 'online' : 'offline');
+      }
+      if (status) {
+        status.textContent = srv.online ? 'Online' : 'Offline';
+        status.style.color = srv.online ? 'var(--green)' : 'var(--red)';
+      }
+      if (uptime) {
+        uptime.textContent = srv.uptime.toFixed(1) + '%';
+        uptime.style.color = srv.uptime >= 99.5 ? 'var(--accent)' : 'var(--amber)';
+      }
+      if (card) {
+        card.style.borderColor = srv.online ? 'var(--border)' : 'rgba(248,113,113,0.3)';
+      }
+    });
+
+    /* Update summary bar */
+    var avgUptime = totalUptime / servers.length;
+    document.getElementById('onlineCount').textContent = onlineCount;
+    document.getElementById('uptimePct').textContent = avgUptime.toFixed(1) + '%';
+    document.getElementById('lastUpdate').textContent = formatTime(new Date());
+
+    /* Update live dot */
+    var liveDot = document.getElementById('liveDot');
+    liveDot.className = 'status-dot ' + (onlineCount === 3 ? 'online' : 'offline');
+
+    var onlineLabel = document.querySelector('#liveDot').parentElement.querySelector('span:last-child');
+    if (onlineLabel) {
+      onlineLabel.textContent = 'Server ' + onlineCount + '/3 online';
+      onlineLabel.style.color = onlineCount === 3 ? 'var(--green)' : (onlineCount > 0 ? 'var(--amber)' : 'var(--red)');
+    }
+  }
+
+  /* Hitung mundur refresh */
+  function tickCountdown() {
+    countdown--;
+    if (countdown <= 0) {
+      countdown = REFRESH_INTERVAL;
+      updateDisplay();
+    }
+    document.getElementById('refreshTimer').textContent = countdown + 's';
+  }
+
+  /* Initial update + interval */
+  updateDisplay();
+  setInterval(tickCountdown, 1000);
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+    authDomain: "loginpage-2e5aa.firebaseapp.com",
+    projectId: "loginpage-2e5aa",
+    appId: "1:676993662276:web:d8e12ca898fb4c0364eb11"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, function(user) {
+    if (!user) window.location.href = "login.html";
+  });
+</script>
+
+</body>
+</html>

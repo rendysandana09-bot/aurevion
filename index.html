@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HYUNK STORE - HOME</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg:#060a10; --bg-card:#0c1220; --fg:#e8ecf2; --muted:#5a6a80;
+      --accent:#00e89d; --accent2:#00c4ff; --border:#152035;
+      --green:#00e89d; --cyan:#00c4ff; --purple:#a78bfa;
+      --pink:#f472b6; --amber:#fbbf24; --red:#f87171;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,232,157,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,232,157,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orbFloat 14s ease-in-out infinite alternate;}
+    .orb-1{width:450px;height:450px;background:radial-gradient(circle,rgba(0,232,157,0.12),transparent 70%);top:-130px;right:-120px;}
+    .orb-2{width:380px;height:380px;background:radial-gradient(circle,rgba(0,196,255,0.09),transparent 70%);bottom:5%;left:-100px;animation-delay:-5s;}
+    .orb-3{width:250px;height:250px;background:radial-gradient(circle,rgba(167,139,250,0.07),transparent 70%);top:50%;left:40%;animation-delay:-9s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}50%{transform:translate(25px,-35px) scale(1.08);}100%{transform:translate(-15px,20px) scale(0.95);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(0,232,157,0.05),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .35s ease-out,top .35s ease-out;}
+
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.82);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover,.nav-link.active{color:var(--accent);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s;}
+    .nav-link:hover::after,.nav-link.active::after{width:100%;}
+    .btn-logout{border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:.82rem;padding:7px 16px;border-radius:10px;background:none;cursor:pointer;font-family:inherit;transition:all .3s;}
+    .btn-logout:hover{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.5);}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover,.mobile-menu a.active{color:var(--accent);}
+
+    /* HERO */
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(0,232,157,0.2);background:rgba(0,232,157,0.05);font-size:.8rem;color:var(--accent);}
+    .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s ease-in-out infinite;}
+    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}
+    .hero-title{font-size:clamp(2.4rem,6vw,4.5rem);font-weight:700;line-height:1.08;letter-spacing:-0.03em;}
+    .hero-title .accent-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero-btn{display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:14px;font-weight:600;font-size:.95rem;text-decoration:none;transition:all .3s;border:none;cursor:pointer;font-family:inherit;}
+    .hero-btn:active{transform:scale(.97)!important;}
+
+    /* TERMINAL */
+    .terminal{background:#080c14;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .terminal-header{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);}
+    .terminal-dot{width:10px;height:10px;border-radius:50%;}
+    .terminal-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.8;color:var(--muted);min-height:180px;max-height:220px;overflow-y:auto;}
+    .terminal-body .prompt{color:var(--accent);}
+    .terminal-body .cmd{color:#e8ecf2;}
+    .terminal-body .output{color:#5a6a80;}
+    .terminal-body .success{color:#00e89d;}
+    .terminal-cursor{display:inline-block;width:8px;height:16px;background:var(--accent);animation:blink-c 1s step-end infinite;vertical-align:text-bottom;margin-left:2px;}
+    @keyframes blink-c{0%,100%{opacity:1;}50%{opacity:0;}}
+
+    /* STATUS BAR */
+    .status-bar{display:flex;align-items:center;justify-content:center;gap:20px;padding:12px 24px;flex-wrap:wrap;}
+    .status-item{display:flex;align-items:center;gap:7px;font-size:.78rem;color:var(--muted);}
+    .status-dot-live{width:7px;height:7px;border-radius:50%;animation:pulse-dot 2s ease-in-out infinite;}
+
+    /* STATS */
+    .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+    .stat-item{background:var(--bg-card);padding:22px 14px;text-align:center;transition:background .3s;}
+    .stat-item:hover{background:rgba(0,232,157,0.03);}
+    .stat-number{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
+    .stat-label{font-size:.7rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.06em;}
+
+    /* STORE CARDS */
+    .store-card{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;overflow:hidden;transition:all .45s cubic-bezier(.4,0,.2,1);text-decoration:none;color:inherit;display:block;}
+    .store-card::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(160deg,transparent 30%,var(--card-accent,rgba(0,232,157,0.2)) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .45s;}
+    .store-card:hover::before{opacity:1;}
+    .store-card:hover{transform:translateY(-10px);box-shadow:0 24px 60px rgba(0,0,0,0.4),0 0 50px var(--card-glow,rgba(0,232,157,0.08));}
+    .card-accent-bar{height:3px;width:100%;background:var(--card-bar,linear-gradient(90deg,var(--green),var(--cyan)));transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.4,0,.2,1);}
+    .store-card:hover .card-accent-bar{transform:scaleX(1);}
+    .card-icon-wrap{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all .35s;}
+    .store-card:hover .card-icon-wrap{transform:scale(1.08);}
+    .card-arrow{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.88rem;transition:gap .3s;}
+    .store-card:hover .card-arrow{gap:14px;}
+    .card-badge{position:absolute;top:20px;right:20px;padding:4px 14px;border-radius:999px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;backdrop-filter:blur(8px);}
+    .card-price-hint{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between;align-items:center;}
+    .card-price-hint .label{font-size:.73rem;color:var(--muted);}
+    .card-price-hint .price{font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;}
+
+    /* GAMES GALLERY */
+    .game-card{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;transition:all .4s cubic-bezier(.4,0,.2,1);}
+    .game-card img{width:100%;height:100%;object-fit:cover;transition:transform .6s;}
+    .game-card:hover img{transform:scale(1.08);}
+    .game-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(6,10,16,0.85) 100%);pointer-events:none;transition:opacity .4s;}
+    .game-card:hover::after{opacity:.8;}
+    .game-card-info{position:absolute;bottom:0;left:0;right:0;padding:16px;z-index:2;transform:translateY(8px);opacity:0;transition:all .4s;}
+    .game-card:hover .game-card-info{transform:translateY(0);opacity:1;}
+    .game-card-info h4{font-size:.9rem;font-weight:600;}
+    .game-card-info span{font-size:.72rem;color:var(--muted);}
+
+    /* BLOG CARDS */
+    .blog-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .4s;text-decoration:none;color:inherit;display:block;}
+    .blog-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.08);}
+    .blog-card:hover .blog-img img{transform:scale(1.05);}
+    .blog-img{overflow:hidden;height:180px;}
+    .blog-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+    .blog-tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+    .blog-link{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;transition:gap .3s;}
+    .blog-card:hover .blog-link{gap:10px;}
+
+    /* SECTION TAG */
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);display:flex;align-items:center;gap:8px;}
+    .section-tag::before{content:'';width:20px;height:1px;background:var(--accent);}
+
+    /* CTA */
+    .cta-box{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border);background:var(--bg-card);}
+    .cta-box::before{content:'';position:absolute;inset:0;background:linear-gradient(170deg,rgba(0,232,157,0.04) 0%,transparent 50%,rgba(0,196,255,0.03) 100%);pointer-events:none;}
+
+    /* FOOTER */
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent);}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-card);border:1px solid rgba(0,232,157,0.3);color:var(--fg);padding:14px 24px;border-radius:14px;font-size:.88rem;z-index:9999;opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(0,0,0,0.5);}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+    /* REVEAL & STAGGER */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.vis{opacity:1;transform:translateY(0);}
+    .stagger>*{opacity:0;transform:translateY(20px);transition:opacity .5s ease-out,transform .5s ease-out;}
+    .stagger.vis>*:nth-child(1){transition-delay:0s;opacity:1;transform:translateY(0);}
+    .stagger.vis>*:nth-child(2){transition-delay:.1s;opacity:1;transform:translateY(0);}
+    .stagger.vis>*:nth-child(3){transition-delay:.2s;opacity:1;transform:translateY(0);}
+    .stagger.vis>*:nth-child(4){transition-delay:.25s;opacity:1;transform:translateY(0);}
+    .stagger.vis>*:nth-child(5){transition-delay:.3s;opacity:1;transform:translateY(0);}
+    .stagger.vis>*:nth-child(6){transition-delay:.35s;opacity:1;transform:translateY(0);}
+
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:768px){
+      .hero-grid{grid-template-columns:1fr!important;}
+      .terminal{display:none;}
+      .stats-bar{grid-template-columns:repeat(2,1fr);}
+      .store-grid{grid-template-columns:1fr!important;}
+      .games-grid{grid-template-columns:repeat(2,1fr)!important;}
+      .blog-grid{grid-template-columns:1fr!important;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+      .status-bar{gap:12px;}
+    }
+    @media(max-width:480px){
+      .games-grid{grid-template-columns:1fr!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkStore</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="hidden md:flex items-center gap-7">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="store.html" class="nav-link">Store</a>
+        <a href="support.html" class="nav-link">Support</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="cv.html" class="nav-link">CV</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+      </div>
+      <button id="logoutBtn" class="btn-logout hidden md:inline-flex"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+      <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+        <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+        <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="active">Home</a>
+    <a href="store.html">Store</a>
+    <a href="support.html">Support</a>
+    <a href="contact.html">Contact</a>
+    <a href="cv.html">CV</a>
+    <button id="logoutBtnMobile" class="btn-logout" style="width:100%;margin-top:8px;text-align:left;"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <!-- Hero -->
+  <section style="min-height:100vh;display:flex;align-items:center;padding:120px 24px 60px;">
+    <div style="max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;" class="hero-grid">
+      <div>
+        <div class="hero-badge" style="margin-bottom:24px;animation:cardIn .7s .1s cubic-bezier(.4,0,.2,1) both;">
+          <span class="dot"></span>
+          All Systems Operational
+        </div>
+        <h1 class="hero-title" style="animation:cardIn .7s .2s cubic-bezier(.4,0,.2,1) both;">
+          High Performance<br><span class="accent-text">Cloud Hosting</span>
+        </h1>
+        <p style="color:var(--muted);margin-top:18px;max-width:460px;line-height:1.75;font-size:1.05rem;animation:cardIn .7s .35s cubic-bezier(.4,0,.2,1) both;">
+          Solusi hosting modern untuk Game, VPS, dan layanan digital lainnya. Performa tinggi, harga terjangkau, support 24/7.
+        </p>
+        <div style="display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;animation:cardIn .7s .45s cubic-bezier(.4,0,.2,1) both;">
+          <a href="store.html" class="hero-btn" style="background:linear-gradient(135deg,var(--accent),#00c4a0);color:#060a10;"
+             onmouseover="this.style.boxShadow='0 0 30px rgba(0,232,157,0.3)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+            <i class="fas fa-rocket" style="font-size:.85rem;"></i> Lihat Layanan
+          </a>
+          <a href="contact.html" class="hero-btn" style="background:transparent;border:1px solid var(--border);color:var(--fg);"
+             onmouseover="this.style.borderColor='rgba(0,232,157,0.3)';this.style.background='rgba(0,232,157,0.04)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
+            <i class="fab fa-whatsapp" style="color:var(--accent);font-size:.95rem;"></i> Hubungi Kami
+          </a>
+        </div>
+      </div>
+      <div class="terminal" style="animation:cardIn .7s .5s cubic-bezier(.4,0,.2,1) both;">
+        <div class="terminal-header">
+          <div class="terminal-dot" style="background:#ff5f57;"></div>
+          <div class="terminal-dot" style="background:#ffbd2e;"></div>
+          <div class="terminal-dot" style="background:#28c840;"></div>
+          <span style="margin-left:10px;font-size:.73rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">hyunkcloud — overview</span>
+        </div>
+        <div class="terminal-body" id="terminalBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Status -->
+  <section style="padding:0 24px 0;">
+    <div class="status-bar reveal">
+      <div class="status-item">
+        <span class="status-dot-live" style="background:var(--green);"></span>
+        <span>Semua sistem <strong style="color:var(--green);">operasional</strong></span>
+      </div>
+      <div class="status-item" style="color:#1e2d42;">|</div>
+      <div class="status-item">
+        <i class="fas fa-server" style="font-size:.7rem;color:var(--cyan);"></i>
+        <span>SG: <strong style="color:var(--cyan);" id="sgLat">12ms</strong></span>
+      </div>
+      <div class="status-item" style="color:#1e2d42;">|</div>
+      <div class="status-item">
+        <i class="fas fa-server" style="font-size:.7rem;color:var(--green);"></i>
+        <span>ID: <strong style="color:var(--green);" id="idLat">8ms</strong></span>
+      </div>
+      <div class="status-item" style="color:#1e2d42;">|</div>
+      <div class="status-item">
+        <i class="fas fa-clock" style="font-size:.7rem;color:var(--amber);"></i>
+        <span id="liveTime" class="font-mono" style="font-size:.73rem;">--:--:--</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section style="max-width:800px;margin:0 auto;padding:28px 24px 64px;">
+    <div class="stats-bar reveal">
+      <div class="stat-item">
+        <div class="stat-number" data-target="500" data-suffix="+">0</div>
+        <div class="stat-label">User Aktif</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="99" data-suffix=".9%">0</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="250" data-suffix="+">0</div>
+        <div class="stat-label">Server</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-target="24" data-suffix="/7">0</div>
+        <div class="stat-label">Support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Store Cards -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal" style="margin-bottom:40px;">
+      <div class="section-tag">Layanan</div>
+      <h2 style="font-size:1.8rem;font-weight:700;margin-top:8px;">Pilih Kategori</h2>
+    </div>
+    <div class="store-grid stagger reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+
+      <a href="store-hosting.html" class="store-card" style="--card-accent:rgba(0,232,157,0.25);--card-glow:rgba(0,232,157,0.1);--card-bar:linear-gradient(90deg,#00e89d,#34d399);">
+        <div class="card-accent-bar"></div>
+        <div style="position:relative;padding:32px 28px 28px;">
+          <div class="card-icon-wrap" style="background:rgba(0,232,157,0.1);color:var(--green);"><i class="fas fa-cube"></i></div>
+          <h3 style="font-size:1.25rem;font-weight:700;margin-top:18px;">Minecraft Hosting</h3>
+          <p style="color:var(--muted);font-size:.85rem;line-height:1.7;margin-top:10px;">Server MC siap pakai. Java & Bedrock, panel Pterodactyl, performa tanpa lag.</p>
+          <div class="card-price-hint">
+            <span class="label">Mulai dari</span>
+            <span class="price" style="color:var(--green);">Rp15.000<span style="font-size:.68rem;color:var(--muted);font-weight:400;">/bln</span></span>
+          </div>
+          <div style="margin-top:16px;"><span class="card-arrow" style="color:var(--green);">Lihat 6 Paket <i class="fas fa-arrow-right" style="font-size:.8rem;"></i></span></div>
+        </div>
+      </a>
+
+      <a href="store-vps.html" class="store-card" style="--card-accent:rgba(0,196,255,0.25);--card-glow:rgba(0,196,255,0.1);--card-bar:linear-gradient(90deg,#00c4ff,#38bdf8);">
+        <div class="card-accent-bar"></div>
+        <div class="card-badge" style="background:rgba(0,196,255,0.12);color:var(--cyan);border:1px solid rgba(0,196,255,0.25);"><i class="fas fa-fire" style="margin-right:4px;"></i>Populer</div>
+        <div style="position:relative;padding:32px 28px 28px;">
+          <div class="card-icon-wrap" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-server"></i></div>
+          <h3 style="font-size:1.25rem;font-weight:700;margin-top:18px;">VPS Server</h3>
+          <p style="color:var(--muted);font-size:.85rem;line-height:1.7;margin-top:10px;">AMD EPYC, full root access, SSD NVMe, jaringan Singapore stabil.</p>
+          <div class="card-price-hint">
+            <span class="label">Mulai dari</span>
+            <span class="price" style="color:var(--cyan);">Rp55.000<span style="font-size:.68rem;color:var(--muted);font-weight:400;">/bln</span></span>
+          </div>
+          <div style="margin-top:16px;"><span class="card-arrow" style="color:var(--cyan);">Lihat 13 Paket <i class="fas fa-arrow-right" style="font-size:.8rem;"></i></span></div>
+        </div>
+      </a>
+
+      <a href="store-aplikasipremium.html" class="store-card" style="--card-accent:rgba(167,139,250,0.25);--card-glow:rgba(167,139,250,0.1);--card-bar:linear-gradient(90deg,#a78bfa,#f472b6);">
+        <div class="card-accent-bar"></div>
+        <div style="position:relative;padding:32px 28px 28px;">
+          <div class="card-icon-wrap" style="background:rgba(167,139,250,0.1);color:var(--purple);"><i class="fas fa-gem"></i></div>
+          <h3 style="font-size:1.25rem;font-weight:700;margin-top:18px;">Aplikasi Premium</h3>
+          <p style="color:var(--muted);font-size:.85rem;line-height:1.7;margin-top:10px;">Akun premium. Streaming, desain, hingga produktivitas.</p>
+          <div class="card-price-hint">
+            <span class="label">Mulai dari</span>
+            <span class="price" style="color:var(--purple);">Rp1.000<span style="font-size:.68rem;color:var(--muted);font-weight:400;">/bln</span></span>
+          </div>
+          <div style="margin-top:16px;"><span class="card-arrow" style="color:var(--purple);">Lihat Paket <i class="fas fa-arrow-right" style="font-size:.8rem;"></i></span></div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Games Gallery -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal" style="margin-bottom:40px;text-align:center;">
+      <div class="section-tag" style="justify-content:center;">Game Support</div>
+      <h2 style="font-size:1.8rem;font-weight:700;margin-top:8px;">Layanan Terbaik untuk Game Favorit</h2>
+    </div>
+    <div class="games-grid stagger reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+
+      <div class="game-card" style="height:200px;">
+        <img src="https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/redeemheroa/Redeem-Hero_Mobile_576x324.png" alt="Game 1" loading="lazy">
+        <div class="game-card-info"><h4>Minecraft</h4><span>Java & Bedrock</span></div>
+      </div>
+      <div class="game-card" style="height:200px;">
+        <img src="https://i.pinimg.com/736x/5c/4f/d7/5c4fd790dcae28bed50ff2f4b598a5ed.jpg" alt="Game 2" loading="lazy">
+        <div class="game-card-info"><h4>FiveM / GTA V</h4><span>RP Server Ready</span></div>
+      </div>
+      <div class="game-card" style="height:200px;">
+        <img src="https://i.pinimg.com/736x/7f/e2/e7/7fe2e72383990b6dfcc2f41eb5e79f50.jpg" alt="Game 3" loading="lazy">
+        <div class="game-card-info"><h4>Counter Strike 2</h4><span>High Performance</span></div>
+      </div>
+      <div class="game-card" style="height:200px;">
+        <img src="https://i.pinimg.com/736x/1c/22/62/1c2262129e3bbdf5cbbfad68f0031440.jpg" alt="Game 4" loading="lazy">
+        <div class="game-card-info"><h4>Killing Floor 2</h4><span>Mabar Server</span></div>
+      </div>
+      <div class="game-card" style="height:200px;">
+        <img src="https://i.pinimg.com/736x/ca/0d/dd/ca0dddb17b1fbfb1214f10f0b61bb5bb.jpg" alt="Game 5" loading="lazy">
+        <div class="game-card-info"><h4>ARK: Survival</h4><span>Cluster Suppor</span></div>
+      </div>
+      <div class="game-card" style="height:200px;">
+        <img src="https://i.pinimg.com/736x/25/34/8f/25348f8156efbef8ee1224c11516914d.jpg" alt="Game 6" loading="lazy">
+        <div class="game-card-info"><h4>Barotrauma</h4><span>Mabar server</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Blog -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal" style="margin-bottom:40px;text-align:center;">
+      <div class="section-tag" style="justify-content:center;">Blog</div>
+      <h2 style="font-size:1.8rem;font-weight:700;margin-top:8px;">Tips & Panduan</h2>
+    </div>
+    <div class="blog-grid stagger reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+
+      <a href="blog-minecraft.html" class="blog-card">
+        <div class="blog-img"><img src="https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/redeemheroa/Redeem-Hero_Mobile_576x324.png" alt="Blog Minecraft" loading="lazy"></div>
+        <div style="padding:22px;">
+          <span class="blog-tag" style="background:rgba(0,232,157,0.1);color:var(--green);">Minecraft</span>
+          <h3 style="font-size:1.05rem;font-weight:600;margin-top:12px;line-height:1.4;">Cara Setup Server Minecraft</h3>
+          <p style="color:var(--muted);font-size:.83rem;line-height:1.7;margin-top:8px;">Panduan lengkap buat kamu yang baru mulai server MC dari nol.</p>
+          <div style="margin-top:16px;"><span class="blog-link" style="color:var(--green);">Baca Selengkapnya <i class="fas fa-arrow-right" style="font-size:.7rem;"></i></span></div>
+        </div>
+      </a>
+
+      <a href="blog-vps.html" class="blog-card">
+        <div class="blog-img"><img src="https://i.pinimg.com/1200x/0c/71/6b/0c716b63c067362c27697057230b58ab.jpg" alt="Blog VPS" loading="lazy"></div>
+        <div style="padding:22px;">
+          <span class="blog-tag" style="background:rgba(0,196,255,0.1);color:var(--cyan);">VPS</span>
+          <h3 style="font-size:1.05rem;font-weight:600;margin-top:12px;line-height:1.4;">Kenapa VPS Lebih Kencang?</h3>
+          <p style="color:var(--muted);font-size:.83rem;line-height:1.7;margin-top:8px;">Penjelasan singkat kenapa VPS lebih stabil dari shared hosting.</p>
+          <div style="margin-top:16px;"><span class="blog-link" style="color:var(--cyan);">Baca Selengkapnya <i class="fas fa-arrow-right" style="font-size:.7rem;"></i></span></div>
+        </div>
+      </a>
+
+      <a href="blog-optimasi.html" class="blog-card">
+        <div class="blog-img"><img src="https://i.pinimg.com/736x/62/3d/82/623d829e13c1bff04bad5943533baab2.jpg" alt="Blog Optimasi" loading="lazy"></div>
+        <div style="padding:22px;">
+          <span class="blog-tag" style="background:rgba(251,191,36,0.1);color:var(--amber);">Optimasi</span>
+          <h3 style="font-size:1.05rem;font-weight:600;margin-top:12px;line-height:1.4;">Tips Optimasi Server</h3>
+          <p style="color:var(--muted);font-size:.83rem;line-height:1.7;margin-top:8px;">Meningkatkan performa server tanpa upgrade mahal.</p>
+          <div style="margin-top:16px;"><span class="blog-link" style="color:var(--amber);">Baca Selengkapnya <i class="fas fa-arrow-right" style="font-size:.7rem;"></i></span></div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="max-width:900px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal cta-box" style="text-align:center;padding:56px 40px;">
+      <div style="position:relative;">
+        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:10px;">Siap Mulai?</h2>
+        <p style="color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.7;font-size:.95rem;">
+          Deploy server High Performance atau konsultasikan kebutuhanmu dengan tim kami.
+        </p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a href="store.html" style="display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#00c4a0);color:#060a10;font-weight:700;font-size:.95rem;text-decoration:none;transition:all .3s;"
+             onmouseover="this.style.boxShadow='0 0 35px rgba(0,232,157,0.3)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+            <i class="fas fa-rocket" style="font-size:.85rem;"></i> Deploy Now
+          </a>
+          <a href="contact.html" style="display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:14px;background:transparent;border:1px solid var(--border);color:var(--fg);font-weight:600;font-size:.95rem;text-decoration:none;transition:all .3s;"
+             onmouseover="this.style.borderColor='rgba(0,232,157,0.3)';this.style.background='rgba(0,232,157,0.04)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
+            <i class="fab fa-whatsapp" style="color:var(--accent);"></i> Contact
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.92);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">Hyunk Server</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:300px;">Hosting modern dengan performa tinggi dan support aktif 24/7.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Menu</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="support.html" class="footer-link">Support</a>
+        <a href="contact.html" class="footer-link">Contact</a>
+        <a href="cv.html" class="footer-link">CV</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fas fa-envelope" style="width:16px;color:var(--accent);font-size:.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:.78rem;color:var(--muted);">&copy; 2026 HyunkkStore. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.68rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  /* === PARTICLES === */
+  const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+  let pArr=[];
+  function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  resizeCanvas();
+  window.addEventListener('resize',resizeCanvas);
+  for(let i=0;i<55;i++){pArr.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()*1.3+0.4,speedX:(Math.random()-0.5)*0.25,speedY:(Math.random()-0.5)*0.25,opacity:Math.random()*0.4+0.1});}
+  function animP(){ctx.clearRect(0,0,canvas.width,canvas.height);pArr.forEach(p=>{p.x+=p.speedX;p.y+=p.speedY;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.1,p.size),0,Math.PI*2);ctx.fillStyle=`rgba(0,232,157,${p.opacity})`;ctx.fill();});for(let i=0;i<pArr.length;i++)for(let j=i+1;j<pArr.length;j++){const dx=pArr[i].x-pArr[j].x,dy=pArr[i].y-pArr[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<115){ctx.beginPath();ctx.moveTo(pArr[i].x,pArr[i].y);ctx.lineTo(pArr[j].x,pArr[j].y);ctx.strokeStyle=`rgba(0,232,157,${0.035*(1-d/115)})`;ctx.lineWidth=0.5;ctx.stroke();}}requestAnimationFrame(animP);}
+  animP();
+
+  /* === MOUSE GLOW === */
+  const mg=document.getElementById('mouseGlow');
+  document.addEventListener('mousemove',e=>{mg.style.left=e.clientX+'px';mg.style.top=e.clientY+'px';});
+
+  /* === NAVBAR === */
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',()=>navbar.classList.toggle('scrolled',window.scrollY>50));
+
+  /* === MOBILE MENU === */
+  const menuBtn=document.getElementById('menuBtn'),mobileMenu=document.getElementById('mobileMenu'),mOpen=document.getElementById('menuIconOpen'),mClose=document.getElementById('menuIconClose');
+  menuBtn.addEventListener('click',()=>{const o=mobileMenu.classList.toggle('open');mOpen.style.display=o?'none':'inline';mClose.style.display=o?'inline':'none';});
+
+  /* === LIVE TIME & LATENCY === */
+  function updateLiveTime(){const n=new Date();document.getElementById('liveTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
+  updateLiveTime();setInterval(updateLiveTime,1000);
+  setInterval(()=>{document.getElementById('sgLat').textContent=(10+Math.random()*6).toFixed(0)+'ms';document.getElementById('idLat').textContent=(5+Math.random()*8).toFixed(0)+'ms';},3000);
+
+  /* === SCROLL REVEAL === */
+  const rObs=new IntersectionObserver(e=>e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');}),{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+  /* === COUNTER === */
+  let cDone=false;
+  const cObs=new IntersectionObserver(e=>e.forEach(en=>{if(en.isIntersecting&&!cDone){cDone=true;document.querySelectorAll('.stat-number').forEach(el=>{const t=parseInt(el.dataset.target),s=el.dataset.suffix||'';let c=0;const step=Math.ceil(t/35);const timer=setInterval(()=>{c+=step;if(c>=t){c=t;clearInterval(timer);}el.textContent=c+s;},30);});}}),{threshold:0.5});
+  const sb=document.querySelector('.stats-bar');if(sb)cObs.observe(sb);
+
+  /* === TERMINAL === */
+  const termLines=[
+    {type:'prompt',text:'~$ '},{type:'cmd',text:'hyunkstore status'},
+    {type:'output',text:''},{type:'success',text:'  All systems operational'},
+    {type:'output',text:'  Active servers: 154'},
+    {type:'output',text:'  Avg latency SG: 12ms'},
+    {type:'output',text:'  Avg latency ID: 8ms'},
+    {type:'output',text:''},{type:'prompt',text:'~$ '},{type:'cmd',text:'hyunkcloud services'},
+    {type:'output',text:''},{type:'output',text:'  Minecraft Hosting   6 plans  from Rp15k/mo'},
+    {type:'output',text:'  VPS Server          13 plans  from Rp55k/mo'},
+    {type:'output',text:'  Aplikasi Premium    18 plans  from Rp1k/mo'},
+    {type:'output',text:''},{type:'prompt',text:'~$ '}
+  ];
+  const termBody=document.getElementById('terminalBody');
+  let li=0;
+  function typeTerm(){
+    if(li>=termLines.length)return;
+    const l=termLines[li],el=document.createElement('div');el.style.minHeight='1.5em';
+    if(l.type==='prompt'){el.innerHTML=`<span class="prompt">${l.text}</span>`;termBody.appendChild(el);li++;if(li<termLines.length&&termLines[li].type==='cmd'){typeCmd(el,termLines[li].text);}else{setTimeout(typeTerm,150);}}
+    else{el.className=l.type;el.textContent=l.text;termBody.appendChild(el);li++;setTimeout(typeTerm,l.text===''?80:160);}
+    termBody.scrollTop=termBody.scrollHeight;
+  }
+  function typeCmd(container,text){let i=0;const cursor=document.createElement('span');cursor.className='terminal-cursor';container.appendChild(cursor);function tc(){if(i<text.length){container.removeChild(cursor);container.innerHTML=`<span class="prompt">${termLines[li-1].text}</span><span class="cmd">${text.substring(0,i+1)}</span>`;container.appendChild(cursor);i++;setTimeout(tc,30+Math.random()*35);}else{container.removeChild(cursor);li++;setTimeout(typeTerm,250);}}tc();}
+  setTimeout(typeTerm,800);
+
+  /* === TOAST === */
+  function showToast(msg){const t=document.getElementById('toast');t.innerHTML=`<i class="fas fa-circle-check" style="margin-right:8px;color:var(--accent);"></i>${msg}`;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+  /* === SMOOTH SCROLL === */
+  document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});});
+</script>
+
+<!-- Firebase Auth + Logout -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  const firebaseConfig = {
+    apiKey:"AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+    authDomain:"loginpage-2e5aa.firebaseapp.com",
+    projectId:"loginpage-2e5aa",
+    appId:"1:676993662276:web:d8e12ca898fb4c0364eb11"
+  };
+  const app=initializeApp(firebaseConfig),auth=getAuth(app);
+
+  onAuthStateChanged(auth,(user)=>{if(!user)window.location.href="login.html";});
+
+  function handleLogout(){
+    signOut(auth).then(()=>{window.location.href="login.html";}).catch(()=>{showToast('Logout gagal. Coba lagi.');});
+  }
+  document.getElementById('logoutBtn').addEventListener('click',handleLogout);
+  document.getElementById('logoutBtnMobile').addEventListener('click',handleLogout);
+</script>
+
+</body>
+</html>

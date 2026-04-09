@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HYUNK STORE - Minecraft Hosting</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #060a10;
+      --bg-card: #0c1220;
+      --fg: #e8ecf2;
+      --muted: #5a6a80;
+      --accent: #34d399;
+      --accent2: #00e89d;
+      --accent-dim: rgba(52,211,153,0.15);
+      --border: #152035;
+      --green: #34d399;
+      --cyan: #00c4ff;
+      --purple: #a78bfa;
+      --amber: #fbbf24;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'Space Grotesk',sans-serif;
+      background:var(--bg); color:var(--fg);
+      overflow-x:hidden;
+    }
+    .font-mono { font-family:'JetBrains Mono',monospace; }
+
+    .grid-bg {
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(52,211,153,0.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(52,211,153,0.025) 1px,transparent 1px);
+      background-size:60px 60px; z-index:0; pointer-events:none;
+    }
+    .scanline {
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
+    }
+    .orb {
+      position:fixed; border-radius:50%; filter:blur(90px);
+      pointer-events:none; z-index:0;
+      animation:orbFloat 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:450px; height:450px; background:radial-gradient(circle,rgba(52,211,153,0.12),transparent 70%); top:-130px; left:-100px; }
+    .orb-2 { width:350px; height:350px; background:radial-gradient(circle,rgba(0,232,157,0.07),transparent 70%); bottom:8%; right:-80px; animation-delay:-5s; }
+    .orb-3 { width:200px; height:200px; background:radial-gradient(circle,rgba(16,185,129,0.08),transparent 70%); top:55%; left:35%; animation-delay:-9s; }
+    @keyframes orbFloat {
+      0% { transform:translate(0,0) scale(1); }
+      50% { transform:translate(25px,-35px) scale(1.08); }
+      100% { transform:translate(-15px,20px) scale(0.95); }
+    }
+    #particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .mouse-glow {
+      position:fixed; width:450px; height:450px; border-radius:50%;
+      background:radial-gradient(circle,rgba(52,211,153,0.05),transparent 60%);
+      pointer-events:none; z-index:1; transform:translate(-50%,-50%);
+      transition:left 0.35s ease-out, top 0.35s ease-out;
+    }
+
+    /* === NAVBAR === */
+    .navbar {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      backdrop-filter:blur(20px); background:rgba(6,10,16,0.82);
+      border-bottom:1px solid var(--border); transition:box-shadow 0.3s;
+    }
+    .navbar.scrolled { box-shadow:0 4px 30px rgba(0,0,0,0.5); }
+    .nav-link {
+      position:relative; color:var(--muted); transition:color 0.3s;
+      text-decoration:none; font-size:0.9rem;
+    }
+    .nav-link:hover { color:var(--accent); }
+    .nav-link::after {
+      content:''; position:absolute; bottom:-4px; left:0;
+      width:0; height:2px; background:var(--accent); transition:width 0.3s;
+    }
+    .nav-link:hover::after { width:100%; }
+    .nav-back {
+      display:inline-flex; align-items:center; gap:8px;
+      color:var(--muted); text-decoration:none; font-size:0.88rem;
+      transition:color 0.3s;
+    }
+    .nav-back:hover { color:var(--accent); }
+
+    /* === HERO === */
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 16px; border-radius:999px;
+      border:1px solid rgba(52,211,153,0.2);
+      background:rgba(52,211,153,0.05);
+      font-size:0.8rem; color:var(--accent);
+    }
+    .hero-badge .dot {
+      width:6px; height:6px; border-radius:50%; background:var(--accent);
+      animation:pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.3; transform:scale(0.6); }
+    }
+    .hero-title {
+      font-size:clamp(2.2rem,5vw,3.8rem);
+      font-weight:700; line-height:1.1; letter-spacing:-0.03em;
+    }
+    .hero-title .accent-text {
+      background:linear-gradient(135deg,var(--green),#00e89d);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+
+    /* === STATS === */
+    .stats-bar {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      gap:1px; background:var(--border);
+      border:1px solid var(--border); border-radius:16px; overflow:hidden;
+    }
+    .stat-item {
+      background:var(--bg-card); padding:20px 14px;
+      text-align:center; transition:background 0.3s;
+    }
+    .stat-item:hover { background:rgba(52,211,153,0.03); }
+    .stat-number {
+      font-family:'JetBrains Mono',monospace;
+      font-size:1.4rem; font-weight:700; color:var(--accent);
+    }
+    .stat-label {
+      font-size:0.7rem; color:var(--muted); margin-top:4px;
+      text-transform:uppercase; letter-spacing:0.06em;
+    }
+
+    /* === PLATFORM TAGS === */
+    .platform-row {
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+    }
+    .platform-tag {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:8px 18px; border-radius:10px;
+      background:rgba(255,255,255,0.03); border:1px solid var(--border);
+      font-size:0.82rem; color:var(--muted); transition:all 0.3s;
+    }
+    .platform-tag:hover {
+      border-color:rgba(52,211,153,0.25); color:var(--fg);
+      background:rgba(52,211,153,0.04);
+    }
+    .platform-tag i { font-size:0.9rem; }
+
+    /* === PRICING CARDS === */
+    .mc-card {
+      position:relative; background:var(--bg-card);
+      border:1px solid var(--border); border-radius:20px;
+      padding:32px 26px; transition:all 0.45s cubic-bezier(0.4,0,0.2,1);
+      overflow:hidden;
+    }
+    .mc-card::before {
+      content:''; position:absolute; inset:0; border-radius:20px;
+      padding:1px;
+      background:linear-gradient(160deg,transparent 35%,rgba(52,211,153,0.2) 100%);
+      -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude;
+      opacity:0; transition:opacity 0.45s;
+    }
+    .mc-card:hover::before { opacity:1; }
+    .mc-card:hover {
+      transform:translateY(-8px);
+      box-shadow:0 20px 60px rgba(0,0,0,0.4),0 0 40px rgba(52,211,153,0.06);
+    }
+
+    .mc-card.featured {
+      border-color:rgba(52,211,153,0.3);
+      background:linear-gradient(170deg,rgba(52,211,153,0.05),var(--bg-card) 40%);
+    }
+    .mc-card.featured::before {
+      background:linear-gradient(160deg,rgba(52,211,153,0.35),rgba(0,232,157,0.15));
+      opacity:1;
+    }
+    .featured-badge {
+      position:absolute; top:-1px; right:24px;
+      background:linear-gradient(135deg,var(--green),#00e89d);
+      color:#060a10; font-size:0.68rem; font-weight:700;
+      padding:5px 14px; border-radius:0 0 8px 8px;
+      text-transform:uppercase; letter-spacing:0.08em;
+    }
+
+    .mc-tier {
+      font-family:'JetBrains Mono',monospace;
+      font-size:0.68rem; text-transform:uppercase;
+      letter-spacing:0.12em; color:var(--muted); margin-bottom:4px;
+    }
+    .mc-name { font-size:1.35rem; font-weight:700; }
+
+    .mc-specs {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:10px; margin-top:20px; padding:16px;
+      background:rgba(0,0,0,0.25); border-radius:12px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .spec-val {
+      font-family:'JetBrains Mono',monospace;
+      font-size:1rem; font-weight:700; color:var(--fg);
+    }
+    .spec-label {
+      font-size:0.68rem; color:var(--muted); margin-top:2px;
+    }
+
+    .mc-price {
+      margin-top:22px; display:flex; align-items:baseline; gap:4px;
+    }
+    .mc-price .currency { font-size:0.85rem; color:var(--muted); }
+    .mc-price .amount {
+      font-family:'JetBrains Mono',monospace;
+      font-size:1.9rem; font-weight:700; color:var(--accent);
+    }
+    .mc-price .period { font-size:0.78rem; color:var(--muted); }
+
+    .mc-features {
+      margin-top:18px; display:flex; flex-direction:column; gap:7px;
+    }
+    .mc-features li {
+      display:flex; align-items:center; gap:10px;
+      font-size:0.83rem; color:#8a96a8; list-style:none;
+    }
+    .mc-features li i {
+      color:var(--accent); font-size:0.65rem;
+      width:17px; height:17px; display:flex; align-items:center;
+      justify-content:center; background:rgba(52,211,153,0.1);
+      border-radius:50%; flex-shrink:0;
+    }
+
+    .btn-buy {
+      width:100%; margin-top:22px; padding:14px;
+      border:none; border-radius:12px;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:0.93rem; font-weight:600; cursor:pointer;
+      transition:all 0.3s; position:relative; overflow:hidden;
+    }
+    .btn-buy.default {
+      background:rgba(52,211,153,0.1); color:var(--accent);
+      border:1px solid rgba(52,211,153,0.2);
+    }
+    .btn-buy.default:hover {
+      background:rgba(52,211,153,0.18);
+      box-shadow:0 0 25px rgba(52,211,153,0.12);
+    }
+    .btn-buy.primary {
+      background:linear-gradient(135deg,var(--green),#00e89d);
+      color:#060a10;
+    }
+    .btn-buy.primary:hover {
+      box-shadow:0 0 30px rgba(52,211,153,0.3);
+      transform:translateY(-2px);
+    }
+    .btn-buy:active { transform:scale(0.97)!important; }
+
+    /* === FEATURES === */
+    .feature-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:26px; transition:all 0.35s;
+    }
+    .feature-card:hover {
+      border-color:rgba(52,211,153,0.15);
+      transform:translateY(-4px);
+      box-shadow:0 12px 30px rgba(0,0,0,0.25);
+    }
+    .feature-icon {
+      width:46px; height:46px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; margin-bottom:14px;
+    }
+
+    /* === COMPARISON TABLE === */
+    .comp-table {
+      width:100%; border-collapse:separate; border-spacing:0;
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; overflow:hidden;
+    }
+    .comp-table thead th {
+      padding:16px 18px; font-size:0.78rem; font-weight:600;
+      text-transform:uppercase; letter-spacing:0.06em;
+      color:var(--muted); background:rgba(0,0,0,0.3);
+      border-bottom:1px solid var(--border); text-align:left;
+    }
+    .comp-table thead th:not(:first-child) { text-align:center; }
+    .comp-table tbody td {
+      padding:14px 18px; font-size:0.85rem; color:var(--muted);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .comp-table tbody td:not(:first-child) { text-align:center; }
+    .comp-table tbody tr:last-child td { border-bottom:none; }
+    .comp-table tbody tr:hover { background:rgba(52,211,153,0.02); }
+    .comp-table .tier-col { font-weight:600; color:var(--fg); }
+    .comp-table .check { color:var(--accent); }
+    .comp-table .dash { color:#2a3548; }
+
+    /* === FAQ === */
+    .faq-item {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:14px; overflow:hidden; transition:all 0.35s;
+    }
+    .faq-item:hover { border-color:rgba(255,255,255,0.08); }
+    .faq-item.open { border-color:rgba(52,211,153,0.2); }
+    .faq-btn {
+      width:100%; text-align:left; padding:18px 22px;
+      display:flex; justify-content:space-between; align-items:center;
+      background:none; border:none; color:var(--fg);
+      font-family:inherit; font-size:0.92rem; font-weight:500;
+      cursor:pointer; transition:background 0.3s;
+    }
+    .faq-btn:hover { background:rgba(255,255,255,0.015); }
+    .faq-btn .chevron {
+      color:var(--muted); font-size:0.75rem;
+      transition:transform 0.3s; flex-shrink:0;
+    }
+    .faq-item.open .chevron { transform:rotate(180deg); }
+    .faq-answer {
+      max-height:0; overflow:hidden;
+      transition:max-height 0.4s ease, padding 0.4s;
+      padding:0 22px; font-size:0.88rem; color:var(--muted); line-height:1.75;
+    }
+    .faq-item.open .faq-answer { max-height:220px; padding:0 22px 20px; }
+    .faq-answer strong { color:var(--fg); }
+
+    .section-tag {
+      font-family:'JetBrains Mono',monospace;
+      font-size:0.72rem; text-transform:uppercase;
+      letter-spacing:0.12em; color:var(--accent);
+      display:flex; align-items:center; gap:8px;
+    }
+    .section-tag::before {
+      content:''; width:20px; height:1px; background:var(--accent);
+    }
+
+    .footer-link {
+      color:var(--muted); text-decoration:none; font-size:0.85rem;
+      transition:color 0.3s; display:block; padding:3px 0;
+    }
+    .footer-link:hover { color:var(--accent); }
+
+    .mobile-menu {
+      display:none; padding:0 24px 16px;
+      border-top:1px solid var(--border);
+    }
+    .mobile-menu.open { display:block; }
+    .mobile-menu a {
+      display:block; padding:10px 0; color:var(--muted);
+      text-decoration:none; font-size:0.9rem; transition:color 0.3s;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .mobile-menu a:last-child { border-bottom:none; }
+    .mobile-menu a:hover { color:var(--accent); }
+
+    .reveal {
+      opacity:0; transform:translateY(28px);
+      transition:opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+    .reveal.vis { opacity:1; transform:translateY(0); }
+
+    .toast {
+      position:fixed; bottom:30px; left:50%;
+      transform:translateX(-50%) translateY(100px);
+      background:var(--bg-card); border:1px solid rgba(52,211,153,0.3);
+      color:var(--fg); padding:14px 24px; border-radius:14px;
+      font-size:0.88rem; z-index:9999; opacity:0;
+      transition:all 0.4s cubic-bezier(0.4,0,0.2,1);
+      backdrop-filter:blur(12px); box-shadow:0 10px 40px rgba(0,0,0,0.5);
+    }
+    .toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    ::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+
+    @media (prefers-reduced-motion:reduce) {
+      *,*::before,*::after {
+        animation-duration:0.01ms!important;
+        transition-duration:0.01ms!important;
+      }
+    }
+    @media (max-width:1024px) {
+      .mc-grid { grid-template-columns:repeat(2,1fr)!important; }
+      .mc-grid .mc-card.featured { order:-1; }
+    }
+    @media (max-width:768px) {
+      .stats-bar { grid-template-columns:repeat(2,1fr); }
+      .mc-grid { grid-template-columns:1fr!important; }
+      .feat-grid { grid-template-columns:1fr 1fr!important; }
+      .comp-wrap { overflow-x:auto; }
+      .footer-grid { grid-template-columns:1fr!important; gap:24px!important; }
+    }
+    @media (max-width:480px) {
+      .feat-grid { grid-template-columns:1fr!important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="mouse-glow" id="mouseGlow"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div style="max-width:1200px; margin:0 auto; padding:16px 24px; display:flex; justify-content:space-between; align-items:center;">
+      <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:10px;">
+        <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <span style="font-weight:700; font-size:1.05rem; color:var(--fg);">HyunkkCloud</span>
+      </a>
+      <div style="display:flex; align-items:center; gap:24px;">
+        <a href="store.html" class="nav-back hidden md:inline-flex">
+          <i class="fas fa-arrow-left" style="font-size:0.75rem;"></i> Kembali
+        </a>
+        <div class="hidden md:flex items-center gap-7">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="store.html" class="nav-link">Store</a>
+          <a href="support.html" class="nav-link">Support</a>
+        </div>
+        <button id="menuBtn" class="md:hidden" style="background:none; border:none; color:var(--muted); cursor:pointer; padding:4px;" aria-label="Toggle menu">
+          <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+          <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem; display:none;"></i>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="store.html"><i class="fas fa-arrow-left" style="margin-right:6px; font-size:0.75rem;"></i> Kembali ke Store</a>
+      <a href="index.html">Home</a>
+      <a href="store.html">Store</a>
+      <a href="support.html">Support</a>
+    </div>
+  </nav>
+
+  <main style="position:relative; z-index:2;">
+
+    <!-- Hero -->
+    <section style="padding:140px 24px 32px; text-align:center;">
+      <div class="reveal" style="display:inline-flex; flex-direction:column; align-items:center;">
+        <div class="hero-badge" style="margin-bottom:24px;">
+          <span class="dot"></span>
+          Panel Pterodactyl
+        </div>
+        <h1 class="hero-title">
+          <span class="accent-text">Minecraft</span> Hosting
+        </h1>
+        <p style="color:var(--muted); margin-top:16px; max-width:480px; line-height:1.7; font-size:1.05rem;">
+          Server Minecraft siap pakai. Java & Bedrock support, panel modern, dan performa tanpa kompromi.
+        </p>
+        <div class="platform-row" style="margin-top:24px;">
+          <span class="platform-tag"><i class="fab fa-java" style="color:#f89820;"></i> Java Edition</span>
+          <span class="platform-tag"><i class="fas fa-cube" style="color:var(--green);"></i> Bedrock Edition</span>
+          <span class="platform-tag"><i class="fas fa-gamepad" style="color:var(--cyan);"></i> Pterodactyl Panel</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section style="max-width:700px; margin:0 auto; padding:16px 24px 56px;">
+      <div class="stats-bar reveal">
+        <div class="stat-item">
+          <div class="stat-number" data-target="99" data-suffix=".9%">0</div>
+          <div class="stat-label">Uptime</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="150" data-suffix="+">0</div>
+          <div class="stat-label">Server Aktif</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="20" data-suffix=" Player">0</div>
+          <div class="stat-label">Slot Terbanyak</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="60" data-suffix="dtk">0</div>
+          <div class="stat-label">Deploy Time</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Cards -->
+    <section style="max-width:1200px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; margin-bottom:48px;">
+        <div class="section-tag" style="justify-content:center;">Paket Hosting</div>
+        <h2 style="font-size:1.8rem; font-weight:700; margin-top:8px;">Pilih Paket Sesuai Kebutuhan</h2>
+      </div>
+
+      <div class="mc-grid reveal" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+
+        <!-- Stone -->
+        <div class="mc-card">
+          <div class="mc-tier">Starter</div>
+          <div class="mc-name">Stone</div>
+          <div class="mc-specs">
+            <div><div class="spec-val">2 GB</div><div class="spec-label">RAM</div></div>
+            <div><div class="spec-val">1 vCPU</div><div class="spec-label">Processor</div></div>
+            <div><div class="spec-val">15 GB</div><div class="spec-label">NVMe Storage</div></div>
+            <div><div class="spec-val">10</div><div class="spec-label">Max Player</div></div>
+          </div>
+          <div class="mc-price">
+            <span class="currency">Rp</span>
+            <span class="amount">15.000</span>
+            <span class="period">/bln</span>
+          </div>
+          <ul class="mc-features">
+            <li><i class="fas fa-check"></i> Pterodactyl Panel</li>
+            <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+            <li><i class="fas fa-check"></i> DDoS Protection</li>
+            <li><i class="fas fa-check"></i> Java & Bedrock</li>
+          </ul>
+          <button class="btn-buy default" onclick="beli('MC Stone - 15k')">
+            <i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang
+          </button>
+        </div>
+
+        <!-- Iron -->
+        <div class="mc-card">
+          <div class="mc-tier">Basic</div>
+          <div class="mc-name">Iron</div>
+          <div class="mc-specs">
+            <div><div class="spec-val">4 GB</div><div class="spec-label">RAM</div></div>
+            <div><div class="spec-val">2 vCPU</div><div class="spec-label">Processor</div></div>
+            <div><div class="spec-val">30 GB</div><div class="spec-label">NVMe Storage</div></div>
+            <div><div class="spec-val">20</div><div class="spec-label">Max Player</div></div>
+          </div>
+          <div class="mc-price">
+            <span class="currency">Rp</span>
+            <span class="amount">30.000</span>
+            <span class="period">/bln</span>
+          </div>
+          <ul class="mc-features">
+            <li><i class="fas fa-check"></i> Pterodactyl Panel</li>
+            <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+            <li><i class="fas fa-check"></i> DDoS Protection</li>
+            <li><i class="fas fa-check"></i> Java & Bedrock</li>
+          </ul>
+          <button class="btn-buy default" onclick="beli('MC Iron - 30k')">
+            <i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang
+          </button>
+        </div>
+
+        <!-- Gold (Featured) -->
+        <div class="mc-card featured">
+          <div class="featured-badge">Terlaris</div>
+          <div class="mc-tier">Standard</div>
+          <div class="mc-name">Gold</div>
+          <div class="mc-specs">
+            <div><div class="spec-val">6 GB</div><div class="spec-label">RAM</div></div>
+            <div><div class="spec-val">2 vCPU</div><div class="spec-label">Processor</div></div>
+            <div><div class="spec-val">50 GB</div><div class="spec-label">NVMe Storage</div></div>
+            <div><div class="spec-val">40</div><div class="spec-label">Max Player</div></div>
+          </div>
+          <div class="mc-price">
+            <span class="currency">Rp</span>
+            <span class="amount">50.000</span>
+            <span class="period">/bln</span>
+          </div>
+          <ul class="mc-features">
+            <li><i class="fas fa-check"></i> Pterodactyl Panel</li>
+            <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+            <li><i class="fas fa-check"></i> DDoS Protection</li>
+            <li><i class="fas fa-check"></i> Auto Backup Mingguan</li>
+            <li><i class="fas fa-check"></i> Java & Bedrock</li>
+          </ul>
+          <button class="btn-buy primary" onclick="beli('MC Gold - 50k')">
+            <i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang
+          </button>
+        </div>
+
+        <!-- Diamond -->
+        <div class="mc-card">
+          <div class="mc-tier">Advanced</div>
+          <div class="mc-name">Diamond</div>
+          <div class="mc-specs">
+            <div><div class="spec-val">8 GB</div><div class="spec-label">RAM</div></div>
+            <div><div class="spec-val">3 vCPU</div><div class="spec-label">Processor</div></div>
+            <div><div class="spec-val">80 GB</div><div class="spec-label">NVMe Storage</div></div>
+            <div><div class="spec-val">60</div><div class="spec-label">Max Player</div></div>
+          </div>
+          <div class="mc-price">
+            <span class="currency">Rp</span>
+            <span class="amount">80.000</span>
+            <span class="period">/bln</span>
+          </div>
+          <ul class="mc-features">
+            <li><i class="fas fa-check"></i> Pterodactyl Panel</li>
+            <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+            <li><i class="fas fa-check"></i> DDoS Protection</li>
+            <li><i class="fas fa-check"></i> Auto Backup Mingguan</li>
+            <li><i class="fas fa-check"></i> Priority Support</li>
+            <li><i class="fas fa-check"></i> Java & Bedrock</li>
+          </ul>
+          <button class="btn-buy default" onclick="beli('MC Diamond - 80k')">
+            <i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang
+          </button>
+        </div>
+
+        <!-- Netherite -->
+        <div class="mc-card">
+          <div class="mc-tier">Professional</div>
+          <div class="mc-name">Netherite</div>
+          <div class="mc-specs">
+            <div><div class="spec-val">12 GB</div><div class="spec-label">RAM</div></div>
+            <div><div class="spec-val">4 vCPU</div><div class="spec-label">Processor</div></div>
+            <div><div class="spec-val">120 GB</div><div class="spec-label">NVMe Storage</div></div>
+            <div><div class="spec-val">100</div><div class="spec-label">Max Player</div></div>
+          </div>
+          <div class="mc-price">
+            <span class="currency">Rp</span>
+            <span class="amount">120.000</span>
+            <span class="period">/bln</span>
+          </div>
+          <ul class="mc-features">
+            <li><i class="fas fa-check"></i> Pterodactyl Panel</li>
+            <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+            <li><i class="fas fa-check"></i> DDoS Protection</li>
+            <li><i class="fas fa-check"></i> Auto Backup Harian</li>
+            <li><i class="fas fa-check"></i> Priority Support</li>
+            <li><i class="fas fa-check"></i> Custom Plugin Help</li>
+            <li><i class="fas fa-check"></i> Java & Bedrock</li>
+          </ul>
+          <button class="btn-buy default" onclick="beli('MC Netherite - 120k')">
+            <i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang
+          </button>
+        </div>
+
+        <!-- End Crystal -->
+        <div class="mc-card">
+          <div class="mc-tier">Enterprise</div>
+          <div class="mc-name">End Crystal</div>
+          <div class="mc-specs">
+            <div><div class="spec-val">16 GB</div><div class="spec-label">RAM</div></div>
+            <div><div class="spec-val">4 vCPU</div><div class="spec-label">Processor</div></div>
+            <div><div class="spec-val">200 GB</div><div class="spec-label">NVMe Storage</div></div>
+            <div><div class="spec-val">Unlimited</div><div class="spec-label">Max Player</div></div>
+          </div>
+          <div class="mc-price">
+            <span class="currency">Rp</span>
+            <span class="amount">160.000</span>
+            <span class="period">/bln</span>
+          </div>
+          <ul class="mc-features">
+            <li><i class="fas fa-check"></i> Pterodactyl Panel</li>
+            <li><i class="fas fa-check"></i> 2 Dedicated IP</li>
+            <li><i class="fas fa-check"></i> DDoS Protection</li>
+            <li><i class="fas fa-check"></i> Auto Backup Harian</li>
+            <li><i class="fas fa-check"></i> Dedicated Support</li>
+            <li><i class="fas fa-check"></i> Custom Plugin Help</li>
+            <li><i class="fas fa-check"></i> Java & Bedrock</li>
+          </ul>
+          <button class="btn-buy default" onclick="beli('MC End Crystal - 160k')">
+            <i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section style="max-width:1100px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; margin-bottom:40px;">
+        <div class="section-tag" style="justify-content:center;">Perbandingan</div>
+        <h2 style="font-size:1.8rem; font-weight:700; margin-top:8px;">Bandingkan Semua Paket</h2>
+      </div>
+      <div class="comp-wrap reveal">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th style="min-width:140px;">Fitur</th>
+              <th>Stone</th>
+              <th>Iron</th>
+              <th style="color:var(--accent);">Gold</th>
+              <th>Diamond</th>
+              <th>Netherite</th>
+              <th>End Crystal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier-col">RAM</td>
+              <td>2 GB</td><td>4 GB</td>
+              <td style="color:var(--accent); font-weight:600;">6 GB</td>
+              <td>8 GB</td><td>12 GB</td><td>16 GB</td>
+            </tr>
+            <tr>
+              <td class="tier-col">vCPU</td>
+              <td>1</td><td>2</td>
+              <td style="color:var(--accent);">2</td>
+              <td>3</td><td>4</td><td>4</td>
+            </tr>
+            <tr>
+              <td class="tier-col">Storage</td>
+              <td>15 GB</td><td>30 GB</td>
+              <td style="color:var(--accent);">50 GB</td>
+              <td>80 GB</td><td>120 GB</td><td>200 GB</td>
+            </tr>
+            <tr>
+              <td class="tier-col">Max Player</td>
+              <td>10</td><td>20</td>
+              <td style="color:var(--accent);">40</td>
+              <td>60</td><td>100</td><td>Unlimited</td>
+            </tr>
+            <tr>
+              <td class="tier-col">Pterodactyl</td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+            </tr>
+            <tr>
+              <td class="tier-col">DDoS Guard</td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+              <td class="check"><i class="fas fa-check"></i></td>
+            </tr>
+            <tr>
+              <td class="tier-col">Auto Backup</td>
+              <td class="dash">—</td>
+              <td class="dash">—</td>
+              <td style="color:var(--accent);">Mingguan</td>
+              <td>Mingguan</td>
+              <td>Harian</td>
+              <td>Harian</td>
+            </tr>
+            <tr>
+              <td class="tier-col">Priority Support</td>
+              <td class="dash">—</td>
+              <td class="dash">—</td>
+              <td class="dash">—</td>
+              <td style="color:var(--accent);"><i class="fas fa-check"></i></td>
+              <td><i class="fas fa-check"></i></td>
+              <td><i class="fas fa-check"></i></td>
+            </tr>
+            <tr>
+              <td class="tier-col">Plugin Help</td>
+              <td class="dash">—</td>
+              <td class="dash">—</td>
+              <td class="dash">—</td>
+              <td class="dash">—</td>
+              <td><i class="fas fa-check"></i></td>
+              <td><i class="fas fa-check"></i></td>
+            </tr>
+            <tr>
+              <td class="tier-col">Dedicated IP</td>
+              <td>1</td><td>1</td>
+              <td>1</td><td>1</td><td>1</td>
+              <td style="color:var(--accent); font-weight:600;">2</td>
+            </tr>
+            <tr>
+              <td class="tier-col">Harga</td>
+              <td class="font-mono" style="color:var(--fg);">15k</td>
+              <td class="font-mono" style="color:var(--fg);">30k</td>
+              <td class="font-mono" style="color:var(--accent); font-weight:700;">50k</td>
+              <td class="font-mono" style="color:var(--fg);">80k</td>
+              <td class="font-mono" style="color:var(--fg);">120k</td>
+              <td class="font-mono" style="color:var(--fg);">160k</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section style="max-width:1100px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="margin-bottom:40px; text-align:center;">
+        <div class="section-tag" style="justify-content:center;">Fitur Hosting</div>
+        <h2 style="font-size:1.8rem; font-weight:700; margin-top:8px;">Semua Paket Sudah Termasuk</h2>
+      </div>
+      <div class="feat-grid reveal" style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(52,211,153,0.1); color:var(--green);">
+            <i class="fas fa-gauge-high"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">NVMe SSD</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Storage tercepat untuk loading chunk dan world save yang instan.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(0,196,255,0.1); color:var(--cyan);">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">DDoS Protection</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Lindungi server dari serangan. Filtering real-time tanpa lag.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(251,191,36,0.1); color:var(--amber);">
+            <i class="fas fa-desktop"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Pterodactyl Panel</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Panel modern untuk manage server, install plugin, dan monitor realtime.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(167,139,250,0.1); color:var(--purple);">
+            <i class="fas fa-globe"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Java + Bedrock</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Support kedua versi Minecraft. Ganti versi kapan saja dari panel.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(248,113,113,0.1); color:#f87171;">
+            <i class="fas fa-database"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Auto Backup</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Backup otomatis terjadwal. Restore dengan satu klik jika ada masalah.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(52,211,153,0.1); color:var(--green);">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Instant Deploy</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Server siap dalam 60 detik. Tinggal login dan langsung main.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section style="max-width:720px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; margin-bottom:36px;">
+        <div class="section-tag" style="justify-content:center;">FAQ</div>
+        <h2 style="font-size:1.5rem; font-weight:700; margin-top:8px;">Pertanyaan Seputar MC Hosting</h2>
+      </div>
+      <div class="reveal" style="display:flex; flex-direction:column; gap:10px;">
+
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Bisa pakai mod/plugin?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Bisa! Kamu bisa install mod dan plugin bebas melalui <strong>Pterodactyl Panel</strong>. Untuk paket Netherite ke atas, kami juga bantu setup plugin yang kamu butuhkan.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Bisa ganti versi Minecraft?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Tentu. Dari panel kamu bisa switch antara versi <strong>1.8 sampai versi terbaru</strong> dengan satu klik. Java dan Bedrock juga bisa diganti.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Lokasi server dimana?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Server kami berlokasi di <strong>Singapore</strong> dan <strong>Jakarta</strong>. Kamu bisa pilih lokasi saat order untuk latency terbaik.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Kalau mau upgrade paket gimana?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Hubungi support via WhatsApp, kami akan upgrade resource tanpa <strong>downtime</strong>. Data world dan plugin kamu tetap aman. Selisih biaya dihitung prorata.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Max player itu pasti tercapai?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Angka max player adalah estimasi untuk vanilla. Jika pakai <strong>banyak mod/plugin</strong>, jumlah player yang bisa masuk bisa lebih sedikit. Kami sarankan pilih paket satu level di atas kebutuhan.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="max-width:900px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; padding:56px 40px; border-radius:24px; border:1px solid var(--border); background:var(--bg-card); position:relative; overflow:hidden;">
+        <div style="position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:300px; height:200px; background:radial-gradient(circle,rgba(52,211,153,0.08),transparent 70%); border-radius:50%; pointer-events:none;"></div>
+        <div style="position:relative;">
+          <h2 style="font-size:1.8rem; font-weight:700; margin-bottom:10px;">Bingung Pilih Paket?</h2>
+          <p style="color:var(--muted); max-width:420px; margin:0 auto 28px; line-height:1.7; font-size:0.95rem;">
+            Ceritakan kebutuhan servermu — jumlah player, mod/plugin yang dipakai — dan kami rekomendasikan paket yang paling pas.
+          </p>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20butuh%20rekomendasi%20paket%20MC%20hosting" target="_blank"
+             style="display:inline-flex; align-items:center; gap:10px; padding:16px 32px; border-radius:14px; background:linear-gradient(135deg,var(--green),#00e89d); color:#060a10; font-weight:700; font-size:0.95rem; text-decoration:none; transition:all 0.3s;"
+             onmouseover="this.style.boxShadow='0 0 35px rgba(52,211,153,0.3)'; this.style.transform='translateY(-3px)'"
+             onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+            <i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Konsultasi Gratis
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--border); background:rgba(6,10,16,0.92);">
+    <div style="max-width:1200px; margin:0 auto; padding:48px 24px 32px;">
+      <div class="footer-grid" style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:40px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+            <div style="width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,var(--green),#00e89d); display:flex; align-items:center; justify-content:center; font-weight:800; color:#060a10; font-size:0.75rem;">H</div>
+            <span style="font-weight:700;">HyunkkCloud</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--muted); line-height:1.7; max-width:300px;">Minecraft hosting performa tinggi dengan harga terjangkau dan support 24/7.</p>
+        </div>
+        <div>
+          <h4 style="font-weight:600; margin-bottom:14px; font-size:0.9rem;">Menu</h4>
+          <a href="store.html" class="footer-link">Store</a>
+          <a href="support.html" class="footer-link">Support</a>
+          <a href="contact.html" class="footer-link">Contact</a>
+        </div>
+        <div>
+          <h4 style="font-weight:600; margin-bottom:14px; font-size:0.9rem;">Kontak</h4>
+          <p style="font-size:0.85rem; color:var(--muted); line-height:2;">
+            <i class="fas fa-envelope" style="width:16px; color:var(--accent); font-size:0.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+            <i class="fab fa-whatsapp" style="width:16px; color:var(--accent); font-size:0.75rem;"></i> 082189822272<br>
+            <i class="fas fa-map-marker-alt" style="width:16px; color:var(--accent); font-size:0.75rem;"></i> Indonesia
+          </p>
+        </div>
+      </div>
+      <div style="margin-top:36px; padding-top:20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <span style="font-size:0.78rem; color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+        <span class="font-mono" style="font-size:0.68rem; color:rgba(90,106,128,0.5);">v2.0.0</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* === PARTICLES === */
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    for(let i=0;i<50;i++){
+      pArr.push({
+        x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+        size:Math.random()*1.3+0.4, speedX:(Math.random()-0.5)*0.22, speedY:(Math.random()-0.5)*0.22,
+        opacity:Math.random()*0.35+0.1
+      });
+    }
+    function animP(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pArr.forEach(p=>{
+        p.x+=p.speedX; p.y+=p.speedY;
+        if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+        if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(0.1,p.size),0,Math.PI*2);
+        ctx.fillStyle=`rgba(52,211,153,${p.opacity})`; ctx.fill();
+      });
+      for(let i=0;i<pArr.length;i++) for(let j=i+1;j<pArr.length;j++){
+        const dx=pArr[i].x-pArr[j].x, dy=pArr[i].y-pArr[j].y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<110){ ctx.beginPath(); ctx.moveTo(pArr[i].x,pArr[i].y); ctx.lineTo(pArr[j].x,pArr[j].y);
+          ctx.strokeStyle=`rgba(52,211,153,${0.03*(1-d/110)})`; ctx.lineWidth=0.5; ctx.stroke(); }
+      }
+      requestAnimationFrame(animP);
+    }
+    animP();
+
+    /* === MOUSE GLOW === */
+    const mg=document.getElementById('mouseGlow');
+    document.addEventListener('mousemove',e=>{ mg.style.left=e.clientX+'px'; mg.style.top=e.clientY+'px'; });
+
+    /* === NAVBAR === */
+    const navbar=document.getElementById('navbar');
+    window.addEventListener('scroll',()=>navbar.classList.toggle('scrolled',window.scrollY>50));
+
+    /* === MOBILE MENU === */
+    const menuBtn=document.getElementById('menuBtn');
+    const mobileMenu=document.getElementById('mobileMenu');
+    const mOpen=document.getElementById('menuIconOpen');
+    const mClose=document.getElementById('menuIconClose');
+    menuBtn.addEventListener('click',()=>{
+      const open=mobileMenu.classList.toggle('open');
+      mOpen.style.display=open?'none':'inline';
+      mClose.style.display=open?'inline':'none';
+    });
+
+    /* === SCROLL REVEAL === */
+    const rObs=new IntersectionObserver(e=>e.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('vis'); }),{threshold:0.08});
+    document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+    /* === COUNTER === */
+    let cDone=false;
+    const cObs=new IntersectionObserver(e=>e.forEach(en=>{
+      if(en.isIntersecting&&!cDone){
+        cDone=true;
+        document.querySelectorAll('.stat-number').forEach(el=>{
+          const t=parseInt(el.dataset.target), s=el.dataset.suffix||'';
+          let c=0; const step=Math.max(1,Math.ceil(t/35));
+          const timer=setInterval(()=>{ c+=step; if(c>=t){c=t;clearInterval(timer);} el.textContent=c+s; },30);
+        });
+      }
+    }),{threshold:0.5});
+    const sb=document.querySelector('.stats-bar');
+    if(sb)cObs.observe(sb);
+
+    /* === FAQ === */
+    function toggleFaq(btn){
+      const item=btn.parentElement, wasOpen=item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    }
+
+    /* === BELI === */
+    function beli(produk){
+      const nomor='6282189822272';
+      const pesan=`Halo, saya mau beli ${produk}`;
+      showToast('Mengarahkan ke WhatsApp...');
+      setTimeout(()=>{ window.open(`https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`,'_blank'); },600);
+    }
+
+    /* === TOAST === */
+    function showToast(msg){
+      const toast=document.getElementById('toast');
+      toast.innerHTML=`<i class="fas fa-circle-notch fa-spin" style="margin-right:8px; color:var(--accent);"></i>${msg}`;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),2500);
+    }
+  </script>
+
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+    const firebaseConfig = {
+      apiKey:"AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+      authDomain:"loginpage-2e5aa.firebaseapp.com",
+      projectId:"loginpage-2e5aa",
+      appId:"1:676993662276:web:d8e12ca898fb4c0364eb11"
+    };
+    const app=initializeApp(firebaseConfig);
+    const auth=getAuth(app);
+    onAuthStateChanged(auth,(user)=>{ if(!user) window.location.href="login.html"; });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HYUNK STORE - VPS Server</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg:#060a10;--bg-card:#0c1220;--fg:#e8ecf2;--muted:#5a6a80;
+      --accent:#00e89d;--accent2:#00c4ff;--border:#152035;
+      --glow:rgba(0,232,157,0.15);--green:#00e89d;--cyan:#00c4ff;
+      --purple:#a78bfa;--amber:#fbbf24;--red:#f87171;--pink:#f472b6;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,232,157,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,232,157,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:orbFloat 12s ease-in-out infinite alternate;}
+    .orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(0,232,157,0.12),transparent 70%);top:-100px;left:-100px;}
+    .orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(0,196,255,0.1),transparent 70%);bottom:-80px;right:-80px;animation-delay:-4s;}
+    .orb-3{width:250px;height:250px;background:radial-gradient(circle,rgba(0,232,157,0.08),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation-delay:-8s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-40px) scale(1.1);}66%{transform:translate(-20px,30px) scale(0.95);}100%{transform:translate(15px,-15px) scale(1.05);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,232,157,0.06),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .3s ease-out,top .3s ease-out;}
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.8);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover{color:var(--accent);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s;}
+    .nav-link:hover::after{width:100%;}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover{color:var(--accent);}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(0,232,157,0.25);background:rgba(0,232,157,0.06);font-size:.8rem;color:var(--accent);animation:fadeSlideUp .8s ease-out both;}
+    .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s ease-in-out infinite;}
+    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+    .hero-title{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;animation:fadeSlideUp .8s .15s ease-out both;}
+    .hero-title .accent-text{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero-desc{font-size:1.1rem;color:var(--muted);max-width:500px;line-height:1.7;animation:fadeSlideUp .8s .3s ease-out both;}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+    .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden;animation:fadeSlideUp .8s .45s ease-out both;}
+    .stat-item{background:var(--bg-card);padding:20px 16px;text-align:center;transition:background .3s;}
+    .stat-item:hover{background:rgba(0,232,157,.04);}
+    .stat-number{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
+    .stat-label{font-size:.75rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em;}
+    .terminal{background:#080c14;border:1px solid var(--border);border-radius:12px;overflow:hidden;animation:fadeSlideUp .8s .5s ease-out both;}
+    .terminal-header{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);}
+    .terminal-dot{width:10px;height:10px;border-radius:50%;}
+    .terminal-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.8;color:var(--muted);min-height:200px;}
+    .terminal-body .prompt{color:var(--accent);}
+    .terminal-body .cmd{color:#e8ecf2;}
+    .terminal-body .output{color:#5a6a80;}
+    .terminal-body .success{color:#00e89d;}
+    .terminal-body .highlight{color:var(--amber);}
+    .terminal-cursor{display:inline-block;width:8px;height:16px;background:var(--accent);animation:blink-cursor 1s step-end infinite;vertical-align:text-bottom;margin-left:2px;}
+    @keyframes blink-cursor{0%,100%{opacity:1;}50%{opacity:0;}}
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;text-transform:uppercase;letter-spacing:.15em;color:var(--accent);display:flex;align-items:center;gap:10px;}
+    .section-tag::before{content:'';width:24px;height:1px;background:var(--accent);}
+    .section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;letter-spacing:-0.02em;margin-top:12px;}
+
+    .vps-card{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;transition:all .4s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+    .vps-card::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(135deg,transparent 40%,rgba(0,232,157,.15) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s;}
+    .vps-card:hover::before{opacity:1;}
+    .vps-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px var(--glow);}
+    .vps-card.featured{border-color:rgba(0,232,157,.3);background:linear-gradient(170deg,rgba(0,232,157,.05),var(--bg-card) 40%);}
+    .vps-card.featured::before{background:linear-gradient(135deg,rgba(0,232,157,.3),rgba(0,196,255,.15));opacity:1;}
+    .featured-badge{position:absolute;top:-1px;right:24px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#060a10;font-size:.7rem;font-weight:700;padding:5px 14px;border-radius:0 0 8px 8px;text-transform:uppercase;letter-spacing:.08em;}
+    .value-badge{position:absolute;top:16px;right:16px;padding:3px 10px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:700;backdrop-filter:blur(8px);}
+    .vps-tier{font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:4px;}
+    .vps-name{font-size:1.4rem;font-weight:700;}
+    .vps-chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted);margin-top:8px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);}
+    .vps-chip i{font-size:.65rem;}
+    .vps-chip.genoa i{color:var(--cyan);}
+    .vps-chip.milan i{color:var(--purple);}
+    .vps-specs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;padding:16px;background:rgba(0,0,0,.25);border-radius:12px;border:1px solid rgba(255,255,255,.03);}
+    .spec-item .spec-val{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:var(--fg);}
+    .spec-item .spec-label{font-size:.7rem;color:var(--muted);margin-top:2px;}
+    .vps-price{margin-top:24px;display:flex;align-items:baseline;gap:4px;}
+    .vps-price .currency{font-size:.9rem;color:var(--muted);}
+    .vps-price .amount{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--accent);}
+    .vps-price .period{font-size:.8rem;color:var(--muted);}
+    .vps-features{margin-top:20px;display:flex;flex-direction:column;gap:8px;}
+    .vps-features li{display:flex;align-items:center;gap:10px;font-size:.85rem;color:#8a96a8;}
+    .vps-features li i{color:var(--accent);font-size:.7rem;width:18px;height:18px;display:flex;align-items:center;justify-content:center;background:rgba(0,232,157,.1);border-radius:50%;flex-shrink:0;}
+    .btn-buy{width:100%;margin-top:24px;padding:14px;border:none;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;}
+    .btn-buy.default{background:rgba(0,232,157,.1);color:var(--accent);border:1px solid rgba(0,232,157,.2);}
+    .btn-buy.default:hover{background:rgba(0,232,157,.18);box-shadow:0 0 25px rgba(0,232,157,.15);}
+    .btn-buy.primary{background:linear-gradient(135deg,var(--accent),#00c4a0);color:#060a10;}
+    .btn-buy.primary:hover{box-shadow:0 0 30px rgba(0,232,157,.3);transform:translateY(-2px);}
+    .btn-buy:active{transform:scale(.97);}
+
+    .table-wrap{border-radius:16px;border:1px solid var(--border);overflow:hidden;background:var(--bg-card);}
+    .vps-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+    .vps-table thead{background:rgba(0,0,0,.3);}
+    .vps-table th{padding:14px 16px;text-align:left;font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border);}
+    .vps-table th:not(:first-child){text-align:center;}
+    .vps-table td{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.03);color:#8a96a8;transition:background .2s;}
+    .vps-table tbody tr:hover td{background:rgba(0,232,157,.02);}
+    .vps-table tbody tr:last-child td{border-bottom:none;}
+    .vps-table .td-name{font-weight:600;color:var(--fg);}
+    .vps-table .td-cpu{font-family:'JetBrains Mono',monospace;color:var(--cyan);text-align:center;font-weight:600;}
+    .vps-table .td-ram{font-family:'JetBrains Mono',monospace;color:var(--amber);text-align:center;font-weight:600;}
+    .vps-table .td-disk{font-family:'JetBrains Mono',monospace;text-align:center;}
+    .vps-table .td-bw{font-family:'JetBrains Mono',monospace;text-align:center;}
+    .vps-table .td-price{font-family:'JetBrains Mono',monospace;color:var(--accent);text-align:center;font-weight:700;white-space:nowrap;}
+    .vps-table .td-arch{font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;text-align:center;padding:3px 8px;border-radius:4px;display:inline-block;}
+    .vps-table .td-arch.genoa{background:rgba(0,196,255,.1);color:var(--cyan);}
+    .vps-table .td-arch.milan{background:rgba(167,139,250,.1);color:var(--purple);}
+    .vps-table .td-action{text-align:center;}
+    .btn-table{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .3s;border:1px solid rgba(0,232,157,.2);background:rgba(0,232,157,.08);color:var(--accent);text-decoration:none;}
+    .btn-table:hover{background:rgba(0,232,157,.18);box-shadow:0 0 15px rgba(0,232,157,.15);}
+    .expand-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);color:var(--muted);font-family:inherit;font-size:.88rem;cursor:pointer;transition:all .3s;width:100%;margin-top:16px;}
+    .expand-btn:hover{border-color:rgba(0,232,157,.2);color:var(--fg);}
+    .expand-btn i{transition:transform .3s;font-size:.8rem;}
+    .expand-btn.expanded i{transform:rotate(180deg);}
+    .expand-btn.expanded{border-color:rgba(0,232,157,.2);color:var(--accent);background:rgba(0,232,157,.04);}
+    .table-hidden{max-height:0;overflow:hidden;transition:max-height .5s ease;}
+    .table-visible{max-height:3000px;}
+
+    .pn-section{position:relative;}
+    .pn-section::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),#fb923c,var(--amber));border-radius:3px 3px 0 0;}
+    .pn-card{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;transition:all .4s cubic-bezier(.4,0,.2,1);overflow:hidden;}
+    .pn-card::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(160deg,transparent 30%,rgba(248,113,113,.15) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s;}
+    .pn-card:hover::before{opacity:1;}
+    .pn-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(248,113,113,.08);}
+    .pn-card.featured{border-color:rgba(248,113,113,.25);background:linear-gradient(170deg,rgba(248,113,113,.04),var(--bg-card) 40%);}
+    .pn-card.featured::before{background:linear-gradient(135deg,rgba(248,113,113,.3),rgba(251,191,36,.15));opacity:1;}
+    .pn-badge{position:absolute;top:-1px;right:24px;background:linear-gradient(135deg,var(--red),#fb923c);color:#fff;font-size:.65rem;font-weight:700;padding:5px 14px;border-radius:0 0 8px 8px;text-transform:uppercase;letter-spacing:.08em;}
+    .pn-badge.alt{background:linear-gradient(135deg,var(--amber),#f59e0b);}
+    .pn-tier{font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;}
+    .pn-tier.green{color:var(--green);}
+    .pn-tier.blue{color:var(--cyan);}
+    .pn-tier.purple{color:var(--purple);}
+    .pn-name{font-size:1.3rem;font-weight:700;}
+    .pn-chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted);margin-top:8px;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.04);}
+    .pn-chip i{font-size:.65rem;}
+    .pn-chip.fire i{color:var(--red);}
+    .pn-chip.game i{color:var(--amber);}
+    .pn-chip.shield i{color:var(--green);}
+    .pn-specs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;padding:16px;background:rgba(0,0,0,.25);border-radius:12px;border:1px solid rgba(255,255,255,.03);}
+    .pn-price{margin-top:24px;display:flex;align-items:baseline;gap:4px;}
+    .pn-price .currency{font-size:.9rem;color:var(--muted);}
+    .pn-price .amount{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;}
+    .pn-price .green{color:var(--green);}
+    .pn-price .cyan{color:var(--cyan);}
+    .pn-price .purple{color:var(--purple);}
+    .pn-price .period{font-size:.8rem;color:var(--muted);}
+    .pn-features{margin-top:20px;display:flex;flex-direction:column;gap:8px;}
+    .pn-features li{display:flex;align-items:center;gap:10px;font-size:.85rem;color:#8a96a8;}
+    .pn-features li i{font-size:.7rem;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;}
+    .pn-features li i.green{background:rgba(0,232,157,.1);color:var(--green);}
+    .pn-features li.amber{background:rgba(251,191,36,.1);color:var(--amber);}
+    .pn-features li.cyan{background:rgba(0,196,255,.1);color:var(--cyan);}
+    .pn-features li.purple{background:rgba(167,139,250,.1);color:var(--purple);}
+    .btn-pn{width:100%;margin-top:24px;padding:14px;border:none;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .3s;display:inline-flex;align-items:center;gap:8px;text-decoration:none;}
+    .btn-pn.fire{background:linear-gradient(135deg,var(--red),#fb923c);color:#fff;}
+    .btn-pn.fire:hover{box-shadow:0 0 30px rgba(248,113,113,.3);transform:translateY(-2px);}
+    .btn-pn.blue{background:linear-gradient(135deg,var(--cyan),#0284c7);color:#060a10;}
+    .btn-pn.blue:hover{box-shadow:0 0 30px rgba(0,196,255,.3);transform:translateY(-2px);}
+    .btn-pn.purple{background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;}
+    .btn-pn.purple:hover{box-shadow:0 0 30px rgba(167,139,250,.3);transform:translateY(-2px);}
+
+    .feature-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all .3s;}
+    .feature-card:hover{border-color:rgba(0,232,157,.15);background:rgba(0,232,157,.02);transform:translateY(-4px);}
+    .feature-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:16px;}
+
+    .faq-item{border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .3s;}
+    .faq-item:hover{border-color:rgba(0,232,157,.2);}
+    .faq-question{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;cursor:pointer;font-weight:500;background:var(--bg-card);transition:background .3s;user-select:none;}
+    .faq-question:hover{background:rgba(0,232,157,.03);}
+    .faq-question i{transition:transform .3s;color:var(--muted);font-size:.8rem;}
+    .faq-item.open .faq-question i{transform:rotate(180deg);}
+    .faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s;padding:0 20px;background:var(--bg-card);font-size:.9rem;color:var(--muted);line-height:1.7;}
+    .faq-item.open .faq-answer{max-height:200px;padding:0 20px 18px;}
+    .faq-answer strong{color:var(--fg);}
+
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--bg-card);border:1px solid rgba(0,232,157,.3);color:var(--fg);padding:14px 24px;border-radius:12px;font-size:.9rem;z-index:9999;opacity:0;transition:all .4s cubic-bezier(.4,0,.2,1);backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(0,0,0,.5);}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;}
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent);}
+
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:768px){
+      .stats-bar{grid-template-columns:repeat(2,1fr);}
+      .hero-grid{grid-template-columns:1fr!important;}
+      .terminal{display:none;}
+      .featured-grid,.pn-grid{grid-template-columns:1fr!important;}
+      .feat-grid{grid-template-columns:1fr!important;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+      .vps-table th,.vps-table td{font-size:.75rem;padding:10px 8px;}
+      .vps-table .td-action{padding:8px 4px;}
+      .btn-table{padding:6px 10px;font-size:.72rem;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkkCloud</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="hidden md:flex items-center gap-7">
+        <a href="store.html" class="nav-link"><i class="fas fa-arrow-left" style="margin-right:4px;font-size:.75rem;"></i> Store</a>
+        <a href="#vps" class="nav-link">VPS</a>
+        <a href="#node" class="nav-link">Private Node</a>
+        <a href="#fitur" class="nav-link">Fitur</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="monitoring.html" class="nav-link" style="color:var(--accent);"><i class="fas fa-chart-line" style="margin-right:4px;font-size:.75rem;"></i> Monitoring</a>
+      </div>
+      <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+        <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+        <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="store.html">Store</a>
+    <a href="#vps">VPS</a>
+    <a href="#node">Private Node</a>
+    <a href="#fitur">Fitur</a>
+    <a href="#faq">FAQ</a>
+    <a href="monitoring.html" style="color:var(--accent);"><i class="fas fa-chart-line" style="margin-right:6px;font-size:.8rem;"></i> Monitoring</a>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <!-- HERO -->
+  <section style="min-height:100vh;display:flex;align-items:center;padding:120px 24px 80px;">
+    <div style="max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;" class="hero-grid">
+      <div>
+        <div class="hero-badge"><span class="dot"></span>Hetzner Singapore</div>
+        <h1 class="hero-title" style="margin-top:24px;">Power Your<br>Project with<br><span class="accent-text">VPS Server</span></h1>
+        <p class="hero-desc" style="margin-top:20px;">Infrastruktur cloud performa tinggi dari Hetzner Singapore. Deploy dalam hitungan detik, kelola dengan full root access.</p>
+        <div style="display:flex;gap:14px;margin-top:32px;animation:fadeSlideUp .8s .45s ease-out both;flex-wrap:wrap;">
+          <a href="#vps" style="text-decoration:none;padding:14px 28px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#00c4a0);color:#060a10;font-weight:600;font-size:.95rem;transition:all .3s;display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.boxShadow='0 0 30px rgba(0,232,157,0.3)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">Lihat Paket <i class="fas fa-arrow-down" style="font-size:.8rem;"></i></a>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20tanya%20VPS" target="_blank" style="text-decoration:none;padding:14px 28px;border-radius:12px;background:transparent;border:1px solid var(--border);color:var(--fg);font-weight:500;font-size:.95rem;transition:all .3s;display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.borderColor='rgba(0,232,157,0.3)';this.style.background='rgba(0,232,157,0.04)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'"><i class="fab fa-whatsapp" style="color:var(--accent);"></i> Hubungi Kami</a>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot" style="background:#ff5f57;"></div>
+          <div class="terminal-dot" style="background:#ffbd2e;"></div>
+          <div class="terminal-dot" style="background:#28c840;"></div>
+          <span style="margin-left:10px;font-size:.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">ssh root@sg1.hyunkcloud.com</span>
+        </div>
+        <div class="terminal-body" id="terminalBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section style="max-width:1200px;margin:0 auto;padding:0 24px 80px;">
+    <div class="stats-bar">
+      <div class="stat-item"><div class="stat-number" data-target="10" data-suffix="+">0</div><div class="stat-label">Paket Tersedia</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="99" data-suffix=".9%">0</div><div class="stat-label">Uptime</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="1" data-suffix=" Lokasi">0</div><div class="stat-label">Data Center</div></div>
+      <div class="stat-item"><div class="stat-number" data-target="24" data-suffix="/7">0</div><div class="stat-label">Support</div></div>
+    </div>
+  </section>
+
+  <!-- FEATURED VPS CARDS -->
+  <section id="vps" style="max-width:1200px;margin:0 auto;padding:0 24px 60px;">
+    <div class="reveal" style="text-align:center;margin-bottom:56px;">
+      <div class="section-tag" style="justify-content:center;">Paket Unggulan</div>
+      <h2 class="section-title">Pilihan Terbaik untuk Setiap Kebutuhan</h2>
+      <p style="color:var(--muted);margin-top:12px;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;">3 paket VPS yang paling banyak dipilih oleh pelanggan kami.</p>
+    </div>
+    <div class="featured-grid reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+      <!-- Genoa 4GB -->
+      <div class="vps-card">
+        <div class="value-badge" style="background:rgba(0,196,255,.12);color:var(--cyan);">2 vCPU</div>
+        <div class="vps-tier" style="color:var(--cyan);">AMD EPYC GENOA</div>
+        <div class="vps-name">VPS 4GB</div>
+        <div class="vps-chip"><i class="fas fa-microchip genoa"></i> Genoa &bull; Singapore</div>
+        <div class="vps-specs">
+          <div class="spec-item"><div class="spec-val">2 vCPU</div><div class="spec-label">Processor</div></div>
+          <div class="spec-item"><div class="spec-val">4 GB</div><div class="spec-label">RAM</div></div>
+          <div class="spec-item"><div class="spec-val">80 GB</div><div class="spec-label">SSD NVMe</div></div>
+          <div class="spec-item"><div class="spec-val">1 TB</div><div class="spec-label">Bandwidth</div></div>
+        </div>
+        <div class="vps-price"><span class="currency">Rp</span><span class="amount">80.000</span><span class="period">/bln</span></div>
+        <ul class="vps-features">
+          <li><i class="fas fa-check"></i> Full Root Access</li>
+          <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+          <li><i class="fas fa-check"></i> DDoS Protection</li>
+        </ul>
+        <button class="btn-buy default" onclick="beli('VPS 4GB Genoa - Rp80.000/bln')"><i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang</button>
+      </div>
+      <!-- Milan 16GB -->
+      <div class="vps-card featured">
+        <div class="featured-badge">Best Value</div>
+        <div class="vps-tier" style="color:var(--purple);">AMD EPYC MILAN</div>
+        <div class="vps-name">VPS 16GB</div>
+        <div class="vps-chip"><i class="fas fa-microchip milan"></i> Milan &bull; Singapore</div>
+        <div class="vps-specs">
+          <div class="spec-item"><div class="spec-val">4 vCPU</div><div class="spec-label">Processor</div></div>
+          <div class="spec-item"><div class="spec-val">16 GB</div><div class="spec-label">RAM</div></div>
+          <div class="spec-item"><div class="spec-val">160 GB</div><div class="spec-label">SSD NVMe</div></div>
+          <div class="spec-item"><div class="spec-val">2 TB</div><div class="spec-label">Bandwidth</div></div>
+        </div>
+        <div class="vps-price"><span class="currency">Rp</span><span class="amount">115.000</span><span class="period">/bln</span></div>
+        <ul class="vps-features">
+          <li><i class="fas fa-check"></i> Full Root Access</li>
+          <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+          <li><i class="fas fa-check"></i> DDoS Protection</li>
+          <li><i class="fas fa-check"></i> Auto Backup Mingguan</li>
+        </ul>
+        <button class="btn-buy primary" onclick="beli('VPS 16GB Milan - Rp115.000/bln')"><i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang</button>
+      </div>
+      <!-- Milan 64GB -->
+      <div class="vps-card">
+        <div class="value-badge" style="background:rgba(167,139,250,.12);color:var(--purple);">8 vCPU</div>
+        <div class="vps-tier" style="color:var(--purple);">AMD EPYC MILAN</div>
+        <div class="vps-name">VPS 64GB</div>
+        <div class="vps-chip"><i class="fas fa-microchip milan"></i> Milan &bull; Singapore</div>
+        <div class="vps-specs">
+          <div class="spec-item"><div class="spec-val">8 vCPU</div><div class="spec-label">Processor</div></div>
+          <div class="spec-item"><div class="spec-val">64 GB</div><div class="spec-label">RAM</div></div>
+          <div class="spec-item"><div class="spec-val">320 GB</div><div class="spec-label">SSD NVMe</div></div>
+          <div class="spec-item"><div class="spec-val">4 TB</div><div class="spec-label">Bandwidth</div></div>
+        </div>
+        <div class="vps-price"><span class="currency">Rp</span><span class="amount">155.000</span><span class="period">/bln</span></div>
+        <ul class="vps-features">
+          <li><i class="fas fa-check"></i> Full Root Access</li>
+          <li><i class="fas fa-check"></i> 1 Dedicated IP</li>
+          <li><i class="fas fa-check"></i> DDoS Protection</li>
+          <li><i class="fas fa-check"></i> Auto Backup Harian</li>
+          <li><i class="fas fa-check"></i> Priority Support</li>
+        </ul>
+        <button class="btn-buy default" onclick="beli('VPS 64GB Milan - Rp155.000/bln')"><i class="fab fa-whatsapp" style="margin-right:6px;"></i> Beli Sekarang</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FULL VPS TABLE -->
+  <section style="max-width:1200px;margin:0 auto;padding:0 24px 72px;">
+    <div class="reveal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="section-tag" style="justify-content:center;">Tabel Lengkap</div>
+          <h3 style="font-size:1.3rem;font-weight:700;margin-top:0;">Semua Paket VPS Hetzner Singapore</h3>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);">10 paket &bull; Genoa + Milan</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-hidden" id="tableHidden">
+          <table class="vps-table">
+            <thead>
+              <tr>
+                <th>Paket</th>
+                <th>CPU</th>
+                <th>RAM</th>
+                <th>Disk</th>
+                <th>BW</th>
+                <th>Harga/bln</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-name">Genoa 2GB</td>
+                <td class="td-cpu">1 vCPU</td>
+                <td class="td-ram">2 GB</td>
+                <td class="td-disk">40 GB</td>
+                <td class="td-bw">0.5 TB</td>
+                <td class="td-price">Rp60.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Genoa 2GB - Rp60.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Genoa 4GB</td>
+                <td class="td-cpu">2 vCPU</td>
+                <td class="td-ram">4 GB</td>
+                <td class="td-disk">80 GB</td>
+                <td class="td-bw">1 TB</td>
+                <td class="td-price">Rp80.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Genoa 4GB - Rp80.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Genoa 8GB</td>
+                <td class="td-cpu">4 vCPU</td>
+                <td class="td-ram">8 GB</td>
+                <td class="td-disk">160 GB</td>
+                <td class="td-bw">2 TB</td>
+                <td class="td-price">Rp100.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Genoa 8GB - Rp100.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Milan 16GB</td>
+                <td class="td-cpu">4 vCPU</td>
+                <td class="td-ram">16 GB</td>
+                <td class="td-disk">160 GB</td>
+                <td class="td-bw">2 TB</td>
+                <td class="td-price">Rp115.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Milan 16GB - Rp115.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Genoa 16GB</td>
+                <td class="td-cpu">8 vCPU</td>
+                <td class="td-ram">16 GB</td>
+                <td class="td-disk">320 GB</td>
+                <td class="td-bw">3 TB</td>
+                <td class="td-price">Rp125.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Genoa 16GB - Rp125.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Milan 32GB</td>
+                <td class="td-cpu">8 vCPU</td>
+                <td class="td-ram">32 GB</td>
+                <td class="td-disk">240 GB</td>
+                <td class="td-bw">3 TB</td>
+                <td class="td-price">Rp135.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Milan 32GB - Rp135.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Genoa 32GB</td>
+                <td class="td-cpu">16 vCPU</td>
+                <td class="td-ram">32 GB</td>
+                <td class="td-disk">680 GB</td>
+                <td class="td-bw">1 TB</td>
+                <td class="td-price">Rp145.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Genoa 32GB - Rp145.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Milan 64GB</td>
+                <td class="td-cpu">8 vCPU</td>
+                <td class="td-ram">64 GB</td>
+                <td class="td-disk">320 GB</td>
+                <td class="td-bw">4 TB</td>
+                <td class="td-price">Rp155.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Milan 64GB - Rp155.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Milan 128GB</td>
+                <td class="td-cpu">32 vCPU</td>
+                <td class="td-ram">128 GB</td>
+                <td class="td-disk">600 GB</td>
+                <td class="td-bw">6 TB</td>
+                <td class="td-price">Rp185.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Milan 128GB - Rp185.000/bln')">Beli</a></td>
+              </tr>
+              <tr>
+                <td class="td-name">Milan 192GB</td>
+                <td class="td-cpu">48 vCPU</td>
+                <td class="td-ram">192 GB</td>
+                <td class="td-disk">960 GB</td>
+                <td class="td-bw">8 TB</td>
+                <td class="td-price">Rp225.000</td>
+                <td class="td-action"><a class="btn-table" onclick="beli('VPS Milan 192GB - Rp225.000/bln')">Beli</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="expand-btn" id="expandBtn" onclick="toggleTable()">
+          <i class="fas fa-chevron-down"></i>
+          <span id="expandText">Tampilkan Semua Paket</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVATE NODE -->
+  <section id="node" class="pn-section" style="max-width:1200px;margin:0 auto;padding:80px 24px;">
+    <div class="reveal" style="text-align:center;margin-bottom:48px;">
+      <div class="section-tag" style="justify-content:center;"><i class="fas fa-fire" style="color:var(--red);width:16px;text-align:center;"></i> Private Node</div>
+      <h2 class="section-title" style="color:var(--fg);">High Performance Server</h2>
+      <p style="color:var(--muted);margin-top:12px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7;">Server dedicated untuk kebutuhan berat — Minecraft besar, bot aktif, hosting multi-tenant.</p>
+    </div>
+    <div class="pn-grid reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+      <div class="pn-card">
+        <div class="pn-tier green">Starter</div>
+        <div class="pn-name">Private Node 8GB</div>
+        <div class="pn-chip"><i class="fas fa-gamepad game"></i> Cocok Pemula</div>
+        <div class="pn-specs">
+          <div class="spec-item"><div class="spec-val">4 Core</div><div class="spec-label">CPU (800%)</div></div>
+          <div class="spec-item"><div class="spec-val">8 GB</div><div class="spec-label">RAM</div></div>
+          <div class="spec-item"><div class="spec-val">80 GB</div><div class="spec-label">SSD</div></div>
+        </div>
+        <div class="pn-price"><span class="currency">Rp</span><span class="amount green">120.000</span><span class="period">/bln</span></div>
+        <ul class="pn-features">
+          <li><i class="fas fa-check green"></i> Minecraft 20-30 player</li>
+          <li><i class="fas fa-check amber"></i> Auto Backup</li>
+          <li><i class="fas fa-check cyan"></i> Anti DDoS Protection</li>
+          <li><i class="fas fa-check purple"></i> 30 Hari Aktif</li>
+        </ul>
+        <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Private%20Node%208GB" target="_blank" class="btn-pn blue"><i class="fab fa-whatsapp"></i> Beli Sekarang</a>
+      </div>
+      <div class="pn-card featured">
+        <div class="pn-badge">Populer</div>
+        <div class="pn-tier cyan">Standard</div>
+        <div class="pn-name">Private Node 16GB</div>
+        <div class="pn-chip"><i class="fas fa-fire fire"></i> Best Seller</div>
+        <div class="pn-specs">
+          <div class="spec-item"><div class="spec-val">4 Core</div><div class="spec-label">CPU (400%)</div></div>
+          <div class="spec-item"><div class="spec-val">16 GB</div><div class="spec-label">RAM</div></div>
+          <div class="spec-item"><div class="spec-val">140 GB</div><div class="spec-label">SSD</div></div>
+        </div>
+        <div class="pn-price"><span class="currency">Rp</span><span class="amount cyan">150.000</span><span class="period">/bln</span></div>
+        <ul class="pn-features">
+          <li><i class="fas fa-check green"></i> Minecraft 30-50 player</li>
+          <li><i class="fas fa-check cyan"></i> 10x Backup Slot</li>
+          <li><i class="fas fa-check amber"></i> Multi Server</li>
+          <li><i class="fas fa-check green"></i> Gratis Pterodactyl Install</li>
+        </ul>
+        <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Private%20Node%2016GB" target="_blank" class="btn-pn purple"><i class="fab fa-whatsapp"></i> Beli Sekarang</a>
+      </div>
+      <div class="pn-card">
+        <div class="pn-badge alt">Premium</div>
+        <div class="pn-tier purple">Professional</div>
+        <div class="pn-name">Private Node 32GB</div>
+        <div class="pn-chip"><i class="fas fa-shield-halved shield"></i> Performa Maksimal</div>
+        <div class="pn-specs">
+          <div class="spec-item"><div class="spec-val">8 Core</div><div class="spec-label">CPU (800%)</div></div>
+          <div class="spec-item"><div class="spec-val">32 GB</div><div class="spec-label">RAM</div></div>
+          <div class="spec-item"><div class="spec-val">230 GB</div><div class="spec-label">SSD</div></div>
+        </div>
+        <div class="pn-price"><span class="currency">Rp</span><span class="amount purple">230.000</span><span class="period">/bln</span></div>
+        <ul class="pn-features">
+          <li><i class="fas fa-check green"></i> Minecraft 50+ player</li>
+          <li><i class="fas fa-check cyan"></i> 10x Backup Slot</li>
+          <li><i class="fas fa-check amber"></i> Full Tutorial Support</li>
+          <li><i class="fas fa-check purple"></i> 30 Hari Aktif</li>
+        </ul>
+        <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Private%20Node%2032GB" target="_blank" class="btn-pn purple"><i class="fab fa-whatsapp"></i> Beli Sekarang</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="fitur" style="max-width:1200px;margin:0 auto;padding:0 24px 100px;">
+    <div class="reveal" style="margin-bottom:56px;">
+      <div class="section-tag">Keunggulan</div>
+      <h2 class="section-title">Infrastruktur yang Bisa Diandalkan</h2>
+    </div>
+    <div class="feat-grid reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(0,196,255,.1);color:var(--cyan);"><i class="fas fa-bolt"></i></div>
+        <h3 style="font-weight:600;font-size:1.05rem;margin-bottom:8px;">SSD NVMe Storage</h3>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;">Baca/tulis hingga 3500 MB/s. Bukan SSD biasa, tapi NVMe generasi terbaru untuk I/O maksimal.</p>
+      </div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(0,232,157,.1);color:var(--green);"><i class="fas fa-shield-alt"></i></div>
+        <h3 style="font-weight:600;font-size:1.05rem;margin-bottom:8px;">DDoS Protection</h3>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;">Lindungi server dari serangan hingga 1Tbps. Filtering real-time tanpa mengganggu performa.</p>
+      </div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(255,189,46,.1);color:#ffbd2e;"><i class="fas fa-clock"></i></div>
+        <h3 style="font-weight:600;font-size:1.05rem;margin-bottom:8px;">Instant Deployment</h3>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;">Server siap dalam 60 detik setelah pembayaran. Tidak perlu menunggu provisioning manual.</p>
+      </div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(232,76,61,.1);color:#e84c3d;"><i class="fas fa-server"></i></div>
+        <h3 style="font-weight:600;font-size:1.05rem;margin-bottom:8px;">Dedicated Resource</h3>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;">CPU dan RAM tidak dibagi dengan user lain. Performa konsisten 24 jam tanpa gangguan.</p>
+      </div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(155,89,182,.1);color:#9b59b6;"><i class="fas fa-expand-arrows-alt"></i></div>
+        <h3 style="font-weight:600;font-size:1.05rem;margin-bottom:8px;">Scalable</h3>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;">Upgrade resource kapan saja tanpa downtime. Cukup hubungi support, langsung kami naikkan.</p>
+      </div>
+      <div class="feature-card"><div class="feature-icon" style="background:rgba(0,232,157,.1);color:var(--green);"><i class="fas fa-headset"></i></div>
+        <h3 style="font-weight:600;font-size:1.05rem;margin-bottom:8px;">Support 24/7</h3>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;">Tim support siap membantu kapan saja via WhatsApp. Respon rata-rata kurang dari 5 menit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" style="max-width:720px;margin:0 auto;padding:0 24px 100px;">
+    <div class="reveal" style="text-align:center;margin-bottom:48px;">
+      <div class="section-tag" style="justify-content:center;">FAQ</div>
+      <h2 class="section-title">Pertanyaan Umum</h2>
+    </div>
+    <div class="reveal" style="display:flex;flex-direction:column;gap:12px;">
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Apa bedanya VPS dengan shared hosting?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">VPS memberikan resource yang <strong>dedicated</strong> (tidak dibagi pengguna lain), full root access untuk konfigurasi bebas, dan performa yang jauh lebih stabil dibanding shared hosting.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Kenapa pakai Hetzner?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Hetzner adalah penyedia infrastruktur cloud terpercaya dengan <strong>AMD EPYC</strong> processor tercepat di dunia. Kami pilih Hetzner karena performa CPU single-core terbaik dan jaringan Singapore yang stabil.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Bedanya Genoa dan Milan?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer"><strong>Genoa</strong> = CPU lebih baru, clock lebih tinggi per core — cocok untuk single-thread. <strong>Milan</strong> = CPU lebih lawas tapi lebih efisien multi-thread — cocok untuk workload berat. Pilih berdasarkan kebutuhan spesifik kamu.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Itu Private Node bedanya apa?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Private Node adalah server dedicated untuk <strong>penggunaan intensif</strong> (MC besar, banyak bot). Resource lebih stabil karena tidak ada tetangga, cocok untuk performa maksimal. Tidak ada root access, dikelola oleh tim kami.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Bisa bayar pakai apa saja?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Kami menerima pembayaran via <strong>QRIS, GoPay, OVO, Dana, ShopeePay</strong>, transfer bank (BCA, BRI, Mandiri, BNI), dan pulsa (dengan rate tertentu).</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">Apakah bisa upgrade paket?<i class="fas fa-chevron-down"></i></div>
+        <div class="faq-answer">Ya! Hubungi support kami, sebutkan paket yang ingin dinaikkan, proses dilakukan <strong>tanpa downtime</strong>. Selisih biaya dihitung prorata sesuai sisa masa aktif paket.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="max-width:1200px;margin:0 auto;padding:0 24px 100px;">
+    <div class="reveal" style="text-align:center;padding:64px 40px;border-radius:24px;border:1px solid var(--border);background:linear-gradient(170deg,rgba(0,232,157,0.04),var(--bg-card) 50%);position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-80px;right:-80px;width:200px;height:200px;background:radial-gradient(circle,rgba(0,232,157,0.08),transparent 70%);border-radius:50%;pointer-events:none;"></div>
+      <h2 style="font-size:2rem;font-weight:700;margin-bottom:12px;">Masih Ragu?</h2>
+      <p style="color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.7;">Hubungi kami sekarang dan tim kami akan membantu memilihkan paket yang paling sesuai kebutuhanmu.</p>
+      <button onclick="beli('Konsultasi VPS')" style="padding:16px 36px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent),#00c4a0);color:#060a10;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit;transition:all .3s;display:inline-flex;align-items:center;gap:10px;" onmouseover="this.style.boxShadow='0 0 40px rgba(0,232,157,0.3)';this.style.transform='translateY(-3px)'" onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'"><i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Chat via WhatsApp</button>
+    </div>
+  </section>
+
+</main>
+
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.9);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">HyunkkCloud</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:320px;">Layanan VPS dan cloud hosting dengan performa tinggi, harga terjangkau, dan support responsif.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:16px;font-size:.9rem;">Navigasi</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="#vps" class="footer-link">VPS</a>
+        <a href="#node" class="footer-link">Private Node</a>
+        <a href="monitoring.html" class="footer-link">Monitoring</a>
+        <a href="#faq" class="footer-link">FAQ</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:16px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:40px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <span style="font-size:.8rem;color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.7rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* === PARTICLES === */
+  var canvas = document.getElementById('particles');
+  var ctx = canvas.getContext('2d');
+  var pArr = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  for (var i = 0; i < 60; i++) {
+    pArr.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.5 + 0.5,
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.5 + 0.1
+    });
+  }
+
+  function animP() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < pArr.length; i++) {
+      var p = pArr[i];
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.1, p.size), 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,232,157,' + p.opacity + ')';
+      ctx.fill();
+    }
+    for (var i = 0; i < pArr.length; i++) {
+      for (var j = i + 1; j < pArr.length; j++) {
+        var dx = pArr[i].x - pArr[j].x;
+        var dy = pArr[i].y - pArr[j].y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.moveTo(pArr[i].x, pArr[i].y);
+          ctx.lineTo(pArr[j].x, pArr[j].y);
+          ctx.strokeStyle = 'rgba(0,232,157,' + (0.04 * (1 - d / 120)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animP);
+  }
+  animP();
+
+  /* === MOUSE GLOW === */
+  var mg = document.getElementById('mouseGlow');
+  document.addEventListener('mousemove', function(e) {
+    mg.style.left = e.clientX + 'px';
+    mg.style.top = e.clientY + 'px';
+  });
+
+  /* === NAVBAR SCROLL === */
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  /* === MOBILE MENU === */
+  var menuBtn = document.getElementById('menuBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var mOpen = document.getElementById('menuIconOpen');
+  var mClose = document.getElementById('menuIconClose');
+  menuBtn.addEventListener('click', function() {
+    var isOpen = mobileMenu.classList.toggle('open');
+    mOpen.style.display = isOpen ? 'none' : 'inline';
+    mClose.style.display = isOpen ? 'inline' : 'none';
+  });
+  /* Tutup mobile menu saat klik link */
+  mobileMenu.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      mobileMenu.classList.remove('open');
+      mOpen.style.display = 'inline';
+      mClose.style.display = 'none';
+    });
+  });
+
+  /* === SMOOTH SCROLL === */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var href = this.getAttribute('href');
+      if (href === '#') return;
+      e.preventDefault();
+      var target = document.querySelector(href);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  /* === SCROLL REVEAL === */
+  var rObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(en) {
+      if (en.isIntersecting) en.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(function(el) { rObs.observe(el); });
+
+  /* === COUNTER === */
+  var cDone = false;
+  var cObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(en) {
+      if (en.isIntersecting && !cDone) {
+        cDone = true;
+        document.querySelectorAll('.stat-number').forEach(function(el) {
+          var target = parseInt(el.dataset.target);
+          var suffix = el.dataset.suffix || '';
+          var current = 0;
+          var step = Math.ceil(target / 35);
+          var timer = setInterval(function() {
+            current += step;
+            if (current >= target) {
+              current = target;
+              clearInterval(timer);
+            }
+            el.textContent = current + suffix;
+          }, 30);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+  var sb = document.querySelector('.stats-bar');
+  if (sb) cObs.observe(sb);
+
+  /* === TERMINAL ANIMATION (FIXED) === */
+  var terminalLines = [
+    { type: 'prompt', text: '~$ ' },
+    { type: 'cmd', text: 'ssh root@sg1.hyunkcloud.com' },
+    { type: 'output', text: '' },
+    { type: 'output', text: 'Connecting to sg1.hyunkcloud.com...' },
+    { type: 'success', text: 'Authenticated successfully.' },
+    { type: 'output', text: '' },
+    { type: 'prompt', text: 'root@sg1:~$ ' },
+    { type: 'cmd', text: 'neofetch' },
+    { type: 'output', text: '' },
+    { type: 'highlight', text: '  CPU: AMD EPYC 7763 (2 cores)' },
+    { type: 'highlight', text: '  RAM: 4096MB / 4096MB' },
+    { type: 'highlight', text: '  Disk: 80GB / 80GB (SSD NVMe)' },
+    { type: 'highlight', text: '  Network: 1Gbps | SG-Singapore' },
+    { type: 'output', text: '' },
+    { type: 'prompt', text: 'root@sg1:~$ ' }
+  ];
+
+  var terminalBody = document.getElementById('terminalBody');
+  var lineIdx = 0;
+
+  function processTerminal() {
+    if (lineIdx >= terminalLines.length) return;
+
+    var line = terminalLines[lineIdx];
+
+    if (line.type === 'prompt') {
+      /* Tampilkan prompt */
+      var promptEl = document.createElement('div');
+      promptEl.innerHTML = '<span class="prompt">' + line.text + '</span>';
+      terminalBody.appendChild(promptEl);
+      lineIdx++;
+
+      /* Cek apakah baris berikutnya adalah command */
+      if (lineIdx < terminalLines.length && terminalLines[lineIdx].type === 'cmd') {
+        var cmdLine = terminalLines[lineIdx];
+        var promptText = line.text;
+        lineIdx++;
+        typeCommand(promptEl, promptText, cmdLine.text, function() {
+          processTerminal();
+        });
+      } else {
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+        setTimeout(processTerminal, 50);
+      }
+    } else {
+      /* Baris biasa: output, success, highlight */
+      var el = document.createElement('div');
+      el.className = line.type;
+      el.textContent = line.text;
+      terminalBody.appendChild(el);
+      lineIdx++;
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+
+      var delay = (line.type === 'output' && line.text === '') ? 80 : 150;
+      setTimeout(processTerminal, delay);
+    }
+  }
+
+  function typeCommand(container, promptText, text, callback) {
+    var i = 0;
+    var cursor = document.createElement('span');
+    cursor.className = 'terminal-cursor';
+    container.appendChild(cursor);
+
+    function tick() {
+      if (i < text.length) {
+        container.removeChild(cursor);
+        container.innerHTML = '<span class="prompt">' + promptText + '</span><span class="cmd">' + text.substring(0, i + 1) + '</span>';
+        container.appendChild(cursor);
+        i++;
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+        setTimeout(tick, 30 + Math.random() * 40);
+      } else {
+        /* Selesai mengetik — hapus cursor setelah jeda */
+        setTimeout(function() {
+          if (cursor.parentNode) cursor.remove();
+          callback();
+        }, 400);
+      }
+    }
+    tick();
+  }
+
+  setTimeout(processTerminal, 1000);
+
+  /* === FAQ === */
+  function toggleFaq(el) {
+    var item = el.parentElement;
+    var wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(f) { f.classList.remove('open'); });
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  /* === BELI (WhatsApp) === */
+  function beli(produk) {
+    var n = '6282189822272';
+    var p = 'Halo, saya mau beli ' + produk;
+    showToast('Mengarah ke WhatsApp...');
+    setTimeout(function() {
+      window.open('https://wa.me/' + n + '?text=' + encodeURIComponent(p), '_blank');
+    }, 600);
+  }
+
+  /* === TOAST === */
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="margin-right:8px;color:var(--accent);"></i>' + msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+  /* === EXPAND TABLE === */
+  function toggleTable() {
+    var h = document.getElementById('tableHidden');
+    var b = document.getElementById('expandBtn');
+    var isNowVisible = !h.classList.contains('table-visible');
+    h.classList.toggle('table-visible');
+    b.classList.toggle('expanded');
+    if (isNowVisible) {
+      b.innerHTML = '<i class="fas fa-chevron-up"></i> <span>Tutup Tabel</span>';
+    } else {
+      b.innerHTML = '<i class="fas fa-chevron-down"></i> <span>Tampilkan Semua Paket</span>';
+    }
+  }
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+    authDomain: "loginpage-2e5aa.firebaseapp.com",
+    projectId: "loginpage-2e5aa",
+    appId: "1:676993662276:web:d8e12ca898fb4c0364eb11"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, function(user) {
+    if (!user) window.location.href = "login.html";
+  });
+</script>
+
+</body>
+</html>

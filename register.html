@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - HyunkkCloud</title>
+  <link rel="icon" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #060a10;
+      --bg-card: #0c1220;
+      --fg: #e8ecf2;
+      --muted: #5a6a80;
+      --accent: #00e89d;
+      --accent2: #00c4ff;
+      --border: #152035;
+      --input-bg: #080d16;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'Space Grotesk',sans-serif;
+      background:var(--bg); color:var(--fg);
+      overflow-x:hidden;
+    }
+    .font-mono { font-family:'JetBrains Mono',monospace; }
+
+    .grid-bg {
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(0,232,157,0.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(0,232,157,0.025) 1px,transparent 1px);
+      background-size:60px 60px; z-index:0; pointer-events:none;
+    }
+    .scanline {
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
+    }
+    .orb {
+      position:fixed; border-radius:50%; filter:blur(90px);
+      pointer-events:none; z-index:0;
+      animation:orbFloat 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:400px; height:400px; background:radial-gradient(circle,rgba(0,232,157,0.1),transparent 70%); top:-120px; right:-100px; }
+    .orb-2 { width:300px; height:300px; background:radial-gradient(circle,rgba(0,196,255,0.08),transparent 70%); bottom:-80px; left:-80px; animation-delay:-5s; }
+    @keyframes orbFloat {
+      0% { transform:translate(0,0) scale(1); }
+      50% { transform:translate(20px,-30px) scale(1.06); }
+      100% { transform:translate(-10px,15px) scale(0.96); }
+    }
+    #particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .mouse-glow {
+      position:fixed; width:400px; height:400px; border-radius:50%;
+      background:radial-gradient(circle,rgba(0,232,157,0.05),transparent 60%);
+      pointer-events:none; z-index:1; transform:translate(-50%,-50%);
+      transition:left 0.35s ease-out, top 0.35s ease-out;
+    }
+
+    /* === AUTH CARD === */
+    .auth-wrapper {
+      position:relative; z-index:2;
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      padding:24px;
+    }
+    .auth-card {
+      width:100%; max-width:440px;
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:24px; padding:40px 36px;
+      position:relative; overflow:hidden;
+      animation:cardIn 0.7s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform:translateY(30px) scale(0.97); }
+      to { opacity:1; transform:translateY(0) scale(1); }
+    }
+    .auth-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);
+      opacity:0.6;
+    }
+    .auth-card-glow {
+      position:absolute; top:-80px; left:50%; transform:translateX(-50%);
+      width:280px; height:180px;
+      background:radial-gradient(circle,rgba(0,232,157,0.06),transparent 70%);
+      border-radius:50%; pointer-events:none;
+    }
+
+    .auth-logo {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      margin-bottom:8px;
+    }
+    .auth-logo-icon {
+      width:40px; height:40px; border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; color:#060a10; font-size:0.95rem;
+    }
+    .auth-logo-text {
+      font-weight:700; font-size:1.1rem; color:var(--fg);
+    }
+
+    .auth-title {
+      text-align:center; font-size:1.5rem; font-weight:700;
+      margin-top:20px; letter-spacing:-0.02em;
+    }
+    .auth-subtitle {
+      text-align:center; color:var(--muted); font-size:0.9rem;
+      margin-top:6px; line-height:1.5;
+    }
+
+    /* === FORM === */
+    .form-group {
+      margin-top:20px; position:relative;
+    }
+    .form-label {
+      display:block; font-size:0.78rem; font-weight:500;
+      color:var(--muted); margin-bottom:8px;
+      text-transform:uppercase; letter-spacing:0.06em;
+    }
+    .form-input-wrap {
+      position:relative;
+    }
+    .form-input-wrap i.field-icon {
+      position:absolute; left:16px; top:50%; transform:translateY(-50%);
+      color:#2a3a50; font-size:0.9rem; transition:color 0.3s;
+      pointer-events:none;
+    }
+    .form-input {
+      width:100%; padding:14px 16px 14px 46px;
+      background:var(--input-bg); border:1px solid var(--border);
+      border-radius:12px; color:var(--fg);
+      font-family:inherit; font-size:0.92rem;
+      outline:none; transition:all 0.3s;
+    }
+    .form-input::placeholder { color:#1e2d42; }
+    .form-input:focus {
+      border-color:rgba(0,232,157,0.4);
+      box-shadow:0 0 0 4px rgba(0,232,157,0.06);
+    }
+    .form-input:focus ~ i.field-icon,
+    .form-input:focus + i.field-icon { color:var(--accent); }
+    .form-input.error {
+      border-color:rgba(248,113,113,0.5);
+      box-shadow:0 0 0 4px rgba(248,113,113,0.06);
+    }
+    .form-input.success {
+      border-color:rgba(0,232,157,0.3);
+    }
+
+    .toggle-pw {
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:#2a3a50;
+      cursor:pointer; padding:4px; font-size:0.9rem;
+      transition:color 0.3s;
+    }
+    .toggle-pw:hover { color:var(--muted); }
+
+    .error-msg {
+      display:none; font-size:0.78rem; color:#f87171;
+      margin-top:6px; padding-left:2px;
+      align-items:center; gap:6px;
+    }
+    .error-msg.show { display:flex; }
+    .error-msg i { font-size:0.7rem; }
+
+    /* === PASSWORD STRENGTH === */
+    .pw-strength {
+      display:flex; gap:4px; margin-top:10px; height:3px;
+    }
+    .pw-bar {
+      flex:1; border-radius:2px; background:var(--border);
+      transition:background 0.4s;
+    }
+    .pw-bar.weak { background:#f87171; }
+    .pw-bar.medium { background:#fbbf24; }
+    .pw-bar.strong { background:var(--accent); }
+    .pw-label {
+      font-size:0.72rem; margin-top:6px; color:var(--muted);
+      transition:color 0.3s;
+    }
+
+    /* === BUTTON === */
+    .btn-register {
+      width:100%; margin-top:28px; padding:15px;
+      border:none; border-radius:14px;
+      background:linear-gradient(135deg,var(--accent),#00c4a0);
+      color:#060a10; font-family:inherit;
+      font-size:0.95rem; font-weight:700;
+      cursor:pointer; transition:all 0.3s;
+      position:relative; overflow:hidden;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .btn-register:hover {
+      box-shadow:0 0 30px rgba(0,232,157,0.25);
+      transform:translateY(-2px);
+    }
+    .btn-register:active { transform:scale(0.98); }
+    .btn-register:disabled {
+      opacity:0.5; cursor:not-allowed;
+      transform:none!important; box-shadow:none!important;
+    }
+    .btn-register .spinner {
+      display:none; width:18px; height:18px;
+      border:2px solid rgba(6,10,16,0.3);
+      border-top-color:#060a10; border-radius:50%;
+      animation:spin 0.6s linear infinite;
+    }
+    .btn-register.loading .spinner { display:block; }
+    .btn-register.loading .btn-text { display:none; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* === DIVIDER === */
+    .auth-divider {
+      display:flex; align-items:center; gap:16px;
+      margin-top:28px; color:#1e2d42; font-size:0.78rem;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content:''; flex:1; height:1px; background:var(--border);
+    }
+
+    /* === FOOTER LINK === */
+    .auth-footer {
+      text-align:center; margin-top:24px;
+      font-size:0.85rem; color:var(--muted);
+    }
+    .auth-footer a {
+      color:var(--accent); text-decoration:none;
+      font-weight:500; transition:opacity 0.3s;
+    }
+    .auth-footer a:hover { opacity:0.8; }
+
+    /* === TOAST === */
+    .toast-container {
+      position:fixed; top:24px; right:24px;
+      z-index:9999; display:flex; flex-direction:column; gap:10px;
+    }
+    .toast {
+      padding:14px 20px; border-radius:14px;
+      font-size:0.85rem; min-width:280px; max-width:380px;
+      backdrop-filter:blur(12px);
+      box-shadow:0 10px 40px rgba(0,0,0,0.5);
+      animation:toastIn 0.4s cubic-bezier(0.4,0,0.2,1) both;
+      display:flex; align-items:center; gap:10px;
+    }
+    .toast.success {
+      background:rgba(0,232,157,0.12);
+      border:1px solid rgba(0,232,157,0.25);
+      color:var(--accent);
+    }
+    .toast.error {
+      background:rgba(248,113,113,0.12);
+      border:1px solid rgba(248,113,113,0.25);
+      color:#f87171;
+    }
+    .toast.removing {
+      animation:toastOut 0.3s ease-in both;
+    }
+    @keyframes toastIn {
+      from { opacity:0; transform:translateX(40px) scale(0.95); }
+      to { opacity:1; transform:translateX(0) scale(1); }
+    }
+    @keyframes toastOut {
+      to { opacity:0; transform:translateX(40px) scale(0.95); }
+    }
+
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+    @media (prefers-reduced-motion:reduce) {
+      *,*::before,*::after {
+        animation-duration:0.01ms!important;
+        transition-duration:0.01ms!important;
+      }
+    }
+    @media (max-width:480px) {
+      .auth-card { padding:32px 24px; border-radius:20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="mouse-glow" id="mouseGlow"></div>
+
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-card-glow"></div>
+
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <span class="auth-logo-text">HyunkkCloud</span>
+      </div>
+
+      <!-- Header -->
+      <h2 class="auth-title">Buat Akun Baru</h2>
+      <p class="auth-subtitle">Daftar untuk mengakses semua layanan kami</p>
+
+      <!-- Form -->
+      <form id="regForm" onsubmit="event.preventDefault();">
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <div class="form-input-wrap">
+            <input id="email" type="email" class="form-input" placeholder="nama@email.com" autocomplete="email">
+            <i class="fas fa-envelope field-icon"></i>
+          </div>
+          <div class="error-msg" id="emailError">
+            <i class="fas fa-circle-exclamation"></i>
+            <span></span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="form-input-wrap">
+            <input id="password" type="password" class="form-input" placeholder="Min. 6 karakter" autocomplete="new-password">
+            <i class="fas fa-lock field-icon"></i>
+            <button type="button" class="toggle-pw" onclick="togglePw('password',this)" aria-label="Toggle password visibility">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-msg" id="passwordError">
+            <i class="fas fa-circle-exclamation"></i>
+            <span></span>
+          </div>
+          <div class="pw-strength" id="pwStrength" style="display:none;">
+            <div class="pw-bar" id="pwBar1"></div>
+            <div class="pw-bar" id="pwBar2"></div>
+            <div class="pw-bar" id="pwBar3"></div>
+            <div class="pw-bar" id="pwBar4"></div>
+          </div>
+          <div class="pw-label" id="pwLabel" style="display:none;"></div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label class="form-label" for="confirmPw">Konfirmasi Password</label>
+          <div class="form-input-wrap">
+            <input id="confirmPw" type="password" class="form-input" placeholder="Ulangi password" autocomplete="new-password">
+            <i class="fas fa-lock field-icon"></i>
+            <button type="button" class="toggle-pw" onclick="togglePw('confirmPw',this)" aria-label="Toggle password visibility">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-msg" id="confirmError">
+            <i class="fas fa-circle-exclamation"></i>
+            <span></span>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn-register" id="btnRegister" onclick="registerUser()">
+          <span class="btn-text">Daftar Sekarang</span>
+          <div class="spinner"></div>
+        </button>
+
+      </form>
+
+      <!-- Divider -->
+      <div class="auth-divider">atau</div>
+
+      <!-- Footer -->
+      <p class="auth-footer">
+        Sudah punya akun?
+        <a href="login.html">Login di sini</a>
+      </p>
+
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    /* === PARTICLES === */
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    for(let i=0;i<40;i++){
+      pArr.push({
+        x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+        size:Math.random()*1.2+0.3, speedX:(Math.random()-0.5)*0.2, speedY:(Math.random()-0.5)*0.2,
+        opacity:Math.random()*0.3+0.08
+      });
+    }
+    function animP(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pArr.forEach(p=>{
+        p.x+=p.speedX; p.y+=p.speedY;
+        if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+        if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(0.1,p.size),0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,232,157,${p.opacity})`; ctx.fill();
+      });
+      for(let i=0;i<pArr.length;i++) for(let j=i+1;j<pArr.length;j++){
+        const dx=pArr[i].x-pArr[j].x, dy=pArr[i].y-pArr[j].y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<100){ ctx.beginPath(); ctx.moveTo(pArr[i].x,pArr[i].y); ctx.lineTo(pArr[j].x,pArr[j].y);
+          ctx.strokeStyle=`rgba(0,232,157,${0.03*(1-d/100)})`; ctx.lineWidth=0.5; ctx.stroke(); }
+      }
+      requestAnimationFrame(animP);
+    }
+    animP();
+
+    /* === MOUSE GLOW === */
+    const mg = document.getElementById('mouseGlow');
+    document.addEventListener('mousemove', e => { mg.style.left=e.clientX+'px'; mg.style.top=e.clientY+'px'; });
+
+    /* === TOGGLE PASSWORD === */
+    function togglePw(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if(input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye','fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash','fa-eye');
+      }
+    }
+
+    /* === PASSWORD STRENGTH === */
+    const passwordInput = document.getElementById('password');
+    const pwStrength = document.getElementById('pwStrength');
+    const pwLabel = document.getElementById('pwLabel');
+    const bars = [
+      document.getElementById('pwBar1'),
+      document.getElementById('pwBar2'),
+      document.getElementById('pwBar3'),
+      document.getElementById('pwBar4')
+    ];
+
+    passwordInput.addEventListener('input', () => {
+      const val = passwordInput.value;
+      if(val.length === 0) {
+        pwStrength.style.display = 'none';
+        pwLabel.style.display = 'none';
+        return;
+      }
+      pwStrength.style.display = 'flex';
+      pwLabel.style.display = 'block';
+
+      let score = 0;
+      if(val.length >= 6) score++;
+      if(val.length >= 10) score++;
+      if(/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+      if(/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+
+      const levels = [
+        { cls:'weak', label:'Lemah', color:'#f87171' },
+        { cls:'weak', label:'Lemah', color:'#f87171' },
+        { cls:'medium', label:'Sedang', color:'#fbbf24' },
+        { cls:'strong', label:'Kuat', color:'var(--accent)' },
+        { cls:'strong', label:'Sangat Kuat', color:'var(--accent)' }
+      ];
+
+      const level = levels[score];
+      bars.forEach((bar, i) => {
+        bar.className = 'pw-bar';
+        if(i < score) bar.classList.add(level.cls);
+      });
+      pwLabel.textContent = level.label;
+      pwLabel.style.color = level.color;
+
+      // Juga cek konfirmasi password jika sudah diisi
+      checkConfirm();
+    });
+
+    /* === CONFIRM PASSWORD CHECK === */
+    const confirmInput = document.getElementById('confirmPw');
+    confirmInput.addEventListener('input', checkConfirm);
+
+    function checkConfirm() {
+      const pw = passwordInput.value;
+      const cpw = confirmInput.value;
+      if(cpw.length === 0) {
+        confirmInput.classList.remove('error','success');
+        hideError('confirmError');
+        return;
+      }
+      if(pw !== cpw) {
+        confirmInput.classList.add('error');
+        confirmInput.classList.remove('success');
+        showError('confirmError','Password tidak cocok');
+      } else {
+        confirmInput.classList.remove('error');
+        confirmInput.classList.add('success');
+        hideError('confirmError');
+      }
+    }
+
+    /* === ERROR HELPERS === */
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.querySelector('span').textContent = msg;
+      el.classList.add('show');
+    }
+    function hideError(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+    function clearAllErrors() {
+      document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('show'));
+      document.querySelectorAll('.form-input').forEach(e => e.classList.remove('error','success'));
+      pwStrength.style.display = 'none';
+      pwLabel.style.display = 'none';
+      bars.forEach(b => b.className = 'pw-bar');
+    }
+
+    /* === VALIDATE === */
+    function validate() {
+      let valid = true;
+      clearAllErrors();
+
+      const email = document.getElementById('email').value.trim();
+      const pw = document.getElementById('password').value;
+      const cpw = document.getElementById('confirmPw').value;
+
+      // Email
+      if(!email) {
+        showError('emailError','Email wajib diisi');
+        document.getElementById('email').classList.add('error');
+        valid = false;
+      } else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('emailError','Format email tidak valid');
+        document.getElementById('email').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('email').classList.add('success');
+      }
+
+      // Password
+      if(!pw) {
+        showError('passwordError','Password wajib diisi');
+        document.getElementById('password').classList.add('error');
+        valid = false;
+      } else if(pw.length < 6) {
+        showError('passwordError','Password minimal 6 karakter');
+        document.getElementById('password').classList.add('error');
+        valid = false;
+      } else {
+        document.getElementById('password').classList.add('success');
+      }
+
+      // Confirm
+      if(!cpw) {
+        showError('confirmError','Konfirmasi password wajib diisi');
+        document.getElementById('confirmPw').classList.add('error');
+        valid = false;
+      } else if(pw !== cpw) {
+        showError('confirmError','Password tidak cocok');
+        document.getElementById('confirmPw').classList.add('error');
+        valid = false;
+      }
+
+      return valid;
+    }
+
+    /* === TOAST === */
+    function showToast(msg, type) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+      toast.innerHTML = `<i class="fas ${icon}"></i><span>${msg}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('removing');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* === REGISTER (dipanggil oleh Firebase module) === */
+    window.handleRegisterSuccess = () => {
+      document.getElementById('btnRegister').classList.remove('loading');
+      showToast('Akun berhasil dibuat! Mengalihkan ke login...','success');
+      setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+    };
+
+    window.handleRegisterError = (code) => {
+      document.getElementById('btnRegister').classList.remove('loading');
+      const messages = {
+        'auth/email-already-in-use': 'Email sudah terdaftar. Silakan login.',
+        'auth/invalid-email': 'Format email tidak valid.',
+        'auth/weak-password': 'Password terlalu lemah. Minimal 6 karakter.',
+        'auth/operation-not-allowed': 'Registrasi dinonaktifkan. Hubungi admin.',
+        'auth/network-request-failed': 'Koneksi gagal. Periksa internet kamu.'
+      };
+      const msg = messages[code] || 'Gagal mendaftar. Coba lagi nanti.';
+      showToast(msg, 'error');
+    };
+
+    window.registerUser = () => {
+      if(!validate()) return;
+
+      const btn = document.getElementById('btnRegister');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      // Firebase akan handle ini via module
+      if(window._doRegister) window._doRegister();
+    };
+  </script>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+      authDomain: "loginpage-2e5aa.firebaseapp.com",
+      projectId: "loginpage-2e5aa",
+      appId: "1:676993662276:web:d8e12ca898fb4c0364eb11"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window._doRegister = () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          window.handleRegisterSuccess();
+        })
+        .catch((error) => {
+          window.handleRegisterError(error.code);
+        });
+    };
+  </script>
+
+</body>
+</html>

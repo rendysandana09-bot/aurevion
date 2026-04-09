@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery - HyunkkCloud</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{--bg:#060a10;--bg-card:#0c1220;--fg:#e8ecf2;--muted:#5a6a80;--accent:#00e89d;--accent2:#00c4ff;--border:#152035;--green:#00e89d;--cyan:#00c4ff;--purple:#a78bfa;--amber:#fbbf24;--red:#f87171;--pink:#f472b6;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,196,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,255,0.02) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orbFloat 14s ease-in-out infinite alternate;}
+    .orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(0,196,255,0.1),transparent 70%);top:-130px;left:-100px;}
+    .orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(167,139,250,0.08),transparent 70%);bottom:5%;right:-80px;animation-delay:-5s;}
+    .orb-3{width:200px;height:200px;background:radial-gradient(circle,rgba(0,232,157,0.07),transparent 70%);top:50%;left:40%;animation-delay:-9s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}50%{transform:translate(25px,-35px) scale(1.08);}100%{transform:translate(-15px,20px) scale(0.95);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,255,0.05),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .35s ease-out,top .35s ease-out;}
+
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.82);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover,.nav-link.active{color:var(--accent2);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent2);transition:width .3s;}
+    .nav-link:hover::after,.nav-link.active::after{width:100%;}
+    .btn-logout{border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:.82rem;padding:7px 16px;border-radius:10px;background:none;cursor:pointer;font-family:inherit;transition:all .3s;}
+    .btn-logout:hover{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.5);}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover,.mobile-menu a.active{color:var(--accent2);}
+
+    /* Gallery Grid */
+    .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    .gallery-item{position:relative;border-radius:16px;overflow:hidden;cursor:pointer;border:1px solid var(--border);transition:all .4s cubic-bezier(.4,0,.2,1);background:var(--bg-card);}
+    .gallery-item:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.4),0 0 30px rgba(0,196,255,0.06);border-color:rgba(0,196,255,0.15);}
+    .gallery-item.landscape{grid-column:span 2;}
+    .gallery-item .img-wrap{width:100%;height:100%;overflow:hidden;position:relative;}
+    .gallery-item.portrait .img-wrap{height:360px;}
+    .gallery-item.landscape .img-wrap{height:300px;}
+    .gallery-item.small .img-wrap{height:240px;}
+    .gallery-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.4,0,.2,1);}
+    .gallery-item:hover img{transform:scale(1.06);}
+    .gallery-item .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,10,16,0.7) 0%,transparent 50%);opacity:0;transition:opacity .4s;display:flex;align-items:flex-end;padding:16px;}
+    .gallery-item:hover .overlay{opacity:1;}
+    .gallery-item .overlay span{font-size:.78rem;color:rgba(255,255,255,0.8);font-weight:500;display:flex;align-items:center;gap:6px;}
+    .gallery-item .img-num{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:8px;background:rgba(6,10,16,0.6);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);opacity:0;transition:opacity .3s;border:1px solid rgba(255,255,255,0.05);}
+    .gallery-item:hover .img-num{opacity:1;}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;z-index:1000;background:rgba(3,5,8,0.92);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .35s;}
+    .lightbox.open{opacity:1;visibility:visible;}
+    .lightbox-img{max-width:85vw;max-height:85vh;border-radius:16px;object-fit:contain;transform:scale(0.9);transition:transform .4s cubic-bezier(.4,0,.2,1);box-shadow:0 30px 80px rgba(0,0,0,0.6);}
+    .lightbox.open .lightbox-img{transform:scale(1);}
+    .lightbox-close{position:absolute;top:24px;right:24px;width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:1.1rem;transition:all .3s;}
+    .lightbox-close:hover{background:rgba(248,113,113,0.15);border-color:rgba(248,113,113,0.3);color:var(--red);}
+    .lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:1rem;transition:all .3s;}
+    .lightbox-nav:hover{background:rgba(0,196,255,0.1);border-color:rgba(0,196,255,0.25);color:var(--cyan);}
+    .lightbox-prev{left:24px;}
+    .lightbox-next{right:24px;}
+    .lightbox-counter{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);background:rgba(6,10,16,0.6);backdrop-filter:blur(8px);padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.05);}
+
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;text-transform:uppercase;letter-spacing:.15em;color:var(--accent2);display:flex;align-items:center;gap:10px;}
+    .section-tag::before{content:'';width:24px;height:1px;background:var(--accent2);}
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent2);}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.vis{opacity:1;transform:translateY(0);}
+
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:900px){
+      .gallery-grid{grid-template-columns:repeat(2,1fr)!important;}
+      .gallery-item.landscape{grid-column:span 1;}
+    }
+    @media(max-width:540px){
+      .gallery-grid{grid-template-columns:1fr!important;gap:12px!important;}
+      .gallery-item.portrait .img-wrap{height:300px;}
+      .gallery-item.landscape .img-wrap{height:220px;}
+      .gallery-item.small .img-wrap{height:200px;}
+      .lightbox-nav{width:40px;height:40px;border-radius:10px;}
+      .lightbox-prev{left:12px;}
+      .lightbox-next{right:12px;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;border-radius:10px;overflow:hidden;"><img src="images/icon.png" style="width:100%;height:100%;object-fit:cover;"></div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkStore</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="hidden md:flex items-center gap-7">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="store.html" class="nav-link">Store</a>
+        <a href="support.html" class="nav-link">Support</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="cv.html" class="nav-link">CV</a>
+        <a href="gallery.html" class="nav-link active"><i class="fas fa-images" style="margin-right:4px;font-size:.75rem;"></i>Gallery</a>
+      </div>
+      <button id="logoutBtn" class="btn-logout hidden md:inline-flex"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+      <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+        <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+        <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="store.html">Store</a>
+    <a href="support.html">Support</a>
+    <a href="contact.html">Contact</a>
+    <a href="cv.html">CV</a>
+    <a href="gallery.html" class="active"><i class="fas fa-images" style="margin-right:6px;font-size:.8rem;"></i>Gallery</a>
+    <button id="logoutBtnMobile" class="btn-logout" style="width:100%;margin-top:8px;text-align:left;"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <!-- Header -->
+  <section style="padding:140px 24px 20px;text-align:center;">
+    <div class="reveal">
+      <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(0,196,255,0.25);background:rgba(0,196,255,0.05);font-size:.8rem;color:var(--cyan);font-weight:600;">
+        <i class="fas fa-images" style="font-size:.7rem;"></i> Photo Gallery
+      </div>
+      <h1 style="font-size:clamp(2.2rem,5vw,3.5rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;margin-top:24px;">
+        <span style="background:linear-gradient(135deg,var(--accent2),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Gallery</span> Foto
+      </h1>
+      <p style="color:var(--muted);margin-top:14px;max-width:420px;line-height:1.7;font-size:1rem;margin-left:auto;margin-right:auto;">
+        Kumpulan foto dokumentasi — klik untuk memperbesar.
+      </p>
+    </div>
+  </section>
+
+  <!-- Back Link -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 28px;">
+    <div class="reveal">
+      <a href="cv.html" style="display:inline-flex;align-items:center;gap:8px;color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--muted)'">
+        <i class="fas fa-arrow-left" style="font-size:.75rem;"></i> Kembali ke CV
+      </a>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal gallery-grid" id="galleryGrid">
+      <!-- Diisi oleh JavaScript -->
+    </div>
+  </section>
+
+</main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lbClose" aria-label="Tutup"><i class="fas fa-xmark"></i></button>
+  <button class="lightbox-nav lightbox-prev" id="lbPrev" aria-label="Sebelumnya"><i class="fas fa-chevron-left"></i></button>
+  <img class="lightbox-img" id="lbImg" src="" alt="Photo">
+  <button class="lightbox-nav lightbox-next" id="lbNext" aria-label="Selanjutnya"><i class="fas fa-chevron-right"></i></button>
+  <div class="lightbox-counter" id="lbCounter">1 / 12</div>
+</div>
+
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.92);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">HyunkStore</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:300px;">Hosting modern dengan performa tinggi dan support aktif 24/7.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Menu</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="cv.html" class="footer-link">CV</a>
+        <a href="gallery.html" class="footer-link" style="color:var(--accent2);">Gallery</a>
+        <a href="support.html" class="footer-link">Support</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fas fa-envelope" style="width:16px;color:var(--accent2);font-size:.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent2);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent2);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:.78rem;color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.68rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* === PHOTO DATA === */
+  var photos = [
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614322927997061/1775276309731.jpg?ex=69d85597&is=69d70417&hm=cd80a0660c9a43ff7c288107b919d506c0f2c10b587d099ff232fd208f37547b&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614323435372725/20260406_194717.jpg?ex=69d85597&is=69d70417&hm=d874a7e4931cec06ddbed6a292d3efeb8cb1abcfef835c4b93dbbefd6c4f6bb0&', type: 'landscape' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614323850870824/Screenshot_20260321_115002_Donghub.jpg?ex=69d85597&is=69d70417&hm=9b29410ae297f70c36d4b1a150f0dfcb4d3e9350d76d32c0c8f48c678d2c7f5b&', type: 'landscape' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614324165447690/IMG-20260309-WA0028.jpg?ex=69d85597&is=69d70417&hm=885ca961d0033d1f36111224083ec75dd40a37b7588ed22ee2599b748e8153da&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614324471496814/825056ca456d96165568edfcbfcbfc41.jpg?ex=69d85597&is=69d70417&hm=73957f4011b41ae44418628235ed322ac49fdc000e4ddf9d42a8416e86ff8d6a&', type: 'small' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614324781748234/Screenshot_20260223_210010_Drive.jpg?ex=69d85597&is=69d70417&hm=d6380c8de8a6adeba9454b621a702435cbec61bde78e4fca8f9e5db1da2bd46b&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614325545107476/59686225dba24636062a421593effdb4fe136bbfd67b11c621fe92ed36a65734.webp?ex=69d85598&is=69d70418&hm=480876171522aabfddfa7c50e74fe4b2751d1dba30810ae6acc77ef817974e4b&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614325914210375/0ecbb5d2a07564d0590262510666900a.png?ex=69d85598&is=69d70418&hm=7eaf3915069dbd0123e25af56b0b2abb5fa467f9fda4177fe55a29e1f43cd07c&', type: 'landscape' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614326300217385/20251228_115141.jpg?ex=69d85598&is=69d70418&hm=98c43bb7cefa07ba6eb31a08744fc6c99cac250eff5a171ec50b517598ffae46&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614326648471612/20251228_110045.jpg?ex=69d85598&is=69d70418&hm=53892f20caba5e70d738d8d58c586d5e5ff1447ac9c10c6b4e35e9349f5274a1&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614742521843824/20251225_104501.jpg?ex=69d855fb&is=69d7047b&hm=1d0b8a06ff8481843a1d26cfe19e551f45c5283827f4577901792428c2baa14a&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614743092531390/IMG_2025-12-11-19-26-07-017.jpg?ex=69d855fb&is=69d7047b&hm=5c6cc15366e19cbd2ee7a9c29a4c21f8af9a22b88ee406b05bb51eb58e096ec9&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614743918805172/Screenshot_20251114_121725_WhatsApp.jpg?ex=69d855fb&is=69d7047b&hm=21511310e6a0c7ecf08744bcee14fd3ff6ab3b0162c94a22a671758ea9197d40&', type: 'small' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614744648355950/2025-10-29_17.05.01.png?ex=69d855fb&is=69d7047b&hm=4a731d851212434bcc3799695bf12cd16f931709a77bd398b81609935b0418ad&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614745294405672/retouch_2025102219361766.jpg?ex=69d855fc&is=69d7047c&hm=3066bcc5b2655d18b4e663f45836c14335916a01151d05f51882922dad791cf6&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614747131379852/IMG_20251010_071926_960.webp?ex=69d855fc&is=69d7047c&hm=3d6037e773867395f32ea362720b11b7a4cbfac47a2706396e2df337257c9ef7&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614745902448720/IMG-20240924-WA00141.jpg?ex=69d855fc&is=69d7047c&hm=5d5f2d57e8b732e0c1f340340f428364930cbc5b0c3125e40881b0b5f1e90890&', type: 'small' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614748016378097/20251009_175637.jpg?ex=69d855fc&is=69d7047c&hm=b5011e65eb18707c98788874325ffabe7daeff4cbb9aa5fa4e4a22eb5bb656c7&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614748016378097/20251009_175637.jpg?ex=69d855fc&is=69d7047c&hm=b5011e65eb18707c98788874325ffabe7daeff4cbb9aa5fa4e4a22eb5bb656c7&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614746489917481/IMG20231007105157_01.jpg?ex=69d855fc&is=69d7047c&hm=ccbe0b9daf12474aa5d888e2ee33752da32210aee8e698f5af469194465c2927&', type: 'landscape' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491614748742127766/20240907_1823352.jpg?ex=69d855fc&is=69d7047c&hm=81e02add05621a91f0339fbf70e3cec6efb92cdef39f62c84b9db8a35ed8cdaa&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615072370298961/IMG_0368.jpg?ex=69d8564a&is=69d704ca&hm=417553ddbd0db2b52f14ab8c2dfae2b0a0566318793c8132afc38b05b7e37997&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615073335120023/IMG_0365.jpg?ex=69d8564a&is=69d704ca&hm=99d5dc78ff1b8b7708e699988935501aea1534fa100a85d31b5f7168cfc27f2f&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615074044084365/IMG_0210.jpg?ex=69d8564a&is=69d704ca&hm=c31ef6dba63a054964a2523cf8b53965401c7bc88a6bb16d873bcd0f77b70133&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615076661203144/IMG_2025-09-20-17-45-58-817.jpg?ex=69d8564b&is=69d704cb&hm=94a780921f6ced8d19098130986b92a74a1d10a6f10fa36f402a1b6d7755d349&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615076161949797/IMG_2025-09-20-17-49-31-982.jpg?ex=69d8564b&is=69d704cb&hm=86d0f5bf02ce202b836a6635ba4efa5a933240d2691e90baa8bf901da6723b2a&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615075671343134/20250920_181116.jpg?ex=69d8564a&is=69d704ca&hm=52015c713015f2cf9592c1e2da50a511601c3fc6ed27c85023b9a8aa5caa13cd&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615077135024238/IMG_20250907_195558_012.webp?ex=69d8564b&is=69d704cb&hm=12d39f76e1a15277ac7b5cf738d0d93d3658c72eba698c5aeb27755f4b0786d1&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615077583818862/IMG_2025-09-05-18-07-11-256.jpg?ex=69d8564b&is=69d704cb&hm=b5fc8a3fdb8275aa6099eb03f1cdfe45a9fddfc33e7502964d56ad13ddbedae7&', type: 'landscape' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615352843407411/20250810_204239.jpg?ex=69d8568c&is=69d7050c&hm=ed268a95ba79883d2d3c8d9a49ca7c0eb2387591ea6bbf7178e0fa037c164266&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615353531269213/20250810_203306.jpg?ex=69d8568d&is=69d7050d&hm=a77326ee3d2a42df9c2e01426c6459c914fc2ea2a3cc589052b2b93019218642&', type: 'samll' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615355901182112/IMG-20250730-WA0019.jpg?ex=69d8568d&is=69d7050d&hm=2fb595ada2055e94ba2ac7b98a7673be841b42bf7708eb394ca651fc53ea553f&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615354953273434/20250810_183153.jpg?ex=69d8568d&is=69d7050d&hm=1a942f32e7363efb9d6000c0e17fb91688e6784b683f29d451cb54e799b38b88&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615601926340638/20250607_173954.jpg?ex=69d856c8&is=69d70548&hm=f7401302590849939e4015e84f23008024e7d34c88ef95ebee4a82029b26c227&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615601473360104/20250607_174045.jpg?ex=69d856c8&is=69d70548&hm=fce97e705d05ad2fab235042c8e5ec234e2954878b62b95453b1bb5b12f1e466&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615602413146132/20250607_173956.jpg?ex=69d856c8&is=69d70548&hm=5c648bc746c11a7da2f188fe84398b548e3276e56d0eedd4ec3725188e824509&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615603406934188/20250607_164243.jpg?ex=69d856c8&is=69d70548&hm=9e6ba0012e65bc579c6005928ac0c375141ba1668270b1d2b85098c9d3686649&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615604539527338/IMG_2025-06-02-12-21-43-054.jpg?ex=69d856c9&is=69d70549&hm=6251d60ace31e7ea76b95171695c78403478e9f43f018809fe18728bf5dad39d&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615604069761126/230b0a76b2443e93225ed5418d61a88b.jpg?ex=69d856c8&is=69d70548&hm=571e52bdbf8766b1bba77e08e8a31ae6dbd0c6e974482763bd5daa6d1223fdaf&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615770461995018/IMG_2025-06-02-12-20-41-484.jpg?ex=69d856f0&is=69d70570&hm=cc707abf14986d865e8c77f22ac300e37df03744b14ad9389edab074a86daca3&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615771019968613/IMG_2025-06-02-12-20-25-569.jpg?ex=69d856f0&is=69d70570&hm=bb97921edff5c2e228c2192f15c998497c84679d8b71078301803e03e600622c&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615773293281400/20250519_125610.jpg?ex=69d856f1&is=69d70571&hm=c08537b471be522e7a5dfe9062c7bfa9761bbe580cbbaf4643eb04f28e6c3d9f&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616071793381478/20250517_213743.jpg?ex=69d85738&is=69d705b8&hm=9d631dd2de2093ea7ddcc5b525f01a10977cf497ca39a3de62b1d94d03feb70a&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616075018932366/31d2e647d24668d9883cd4296ade20b5.jpg?ex=69d85739&is=69d705b9&hm=98372b5b652c45050ed2d60814a09c1a4bdf746f18f840eaf2606ad2af5010eb&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616076763627721/94881e8915e506a577003c10c85f72c5.jpg?ex=69d85739&is=69d705b9&hm=53ccd5e361be396edeae51ca72db346e907516b6069b92c5659579960be89819&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616217989906542/ssstik.io_1744393746243.jpg?ex=69d8575b&is=69d705db&hm=29f51155a4cfc263ed7e41dba17cd3ec3fb602734e9b7f599731d89225807e6d&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616218363203735/ssstik.io_1744393862076.jpg?ex=69d8575b&is=69d705db&hm=73620c84fe8410de2d1f2962eb5cef6a5833a4b7e14c5f6073e86f88520dc15a&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616218665324554/ssstik.io_1744393868655.jpg?ex=69d8575b&is=69d705db&hm=de7aba3706b5e920473c6525b1a4466ce7de953ce64eeda469797fe859f9684c&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616218983956611/bf30b772fe1f9551b01961f84d996c79.jpg?ex=69d8575b&is=69d705db&hm=c044ab0ca82f04ad8253641f6e8f48df01f26f2570e327ccde61238d086650a4&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616219235745812/de51d4fe054989f44a9d40b14a47c9be.jpg?ex=69d8575b&is=69d705db&hm=598ff4104ec6332523587f7cac4091c3b2f1857327947e8fd7914851ae0e9a35&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616219542061116/IMG_20250412_205706_717.jpg?ex=69d8575b&is=69d705db&hm=b0ea3d2817ed2cbb2ba470dd8c49ff9eb5e9d1a5c0021259b90bee1eb70794f2&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616219927674900/ssstik.io_1744288576581.jpg?ex=69d8575b&is=69d705db&hm=82ddaac5133535f28beed885da52c720aebd784777844c2c672c2f9280763ebf&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616220322074674/ssstik.io_1744288201136.jpg?ex=69d8575b&is=69d705db&hm=4e9828205ea79c628a5e34932a4ad7902e793fe4431381b55a578fc204e8cf4e&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616220628123668/164331227816255e440047841b51fe99.jpg?ex=69d8575b&is=69d705db&hm=ee65e3967faaf1ddb64058c83abda1a71c155e6c3879a928dfbd41543d0bb242&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616221190295764/9b9be43728f85f9d5c338c0817528a44.jpg?ex=69d8575c&is=69d705dc&hm=0830baf00b657b23787de6fec8f98219923d95d91ee8490988f2fd00068f6044&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491615772542505001/549bfd93d078d7ebd2ded498542435b0.jpg?ex=69d856f1&is=69d70571&hm=e096171b5e5e346f4f2e37e4fffe795a6f5d4a0cde214f989214862a2ac6c2d8&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616995597095063/IMG-20230403-WA0032.jpg?ex=69d85814&is=69d70694&hm=1b9c82436ec29b421dd53fd82603d0f63621c0996e86ccd8dd42ca8e01f1ad8d&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616995932766218/IMG_20240823_130218_461.jpg?ex=69d85814&is=69d70694&hm=adf916f28da875e8d7b05e8432275019c7c0f472b3a42449e35c8d5e26d41b22&', type: 'portrait' },
+    { url: 'https://cdn.discordapp.com/attachments/1442834960791769162/1491616075413192835/IMG_2025-02-22-12-47-32-3541.jpg?ex=69d85739&is=69d705b9&hm=6008277fc4117ef01feca73a93308c3f0a7a11879bdac2fc59639ffe7ac5a44a&', type: 'portrait' },
+  ];
+
+  /* === BUILD GALLERY === */
+  var grid = document.getElementById('galleryGrid');
+  photos.forEach(function(photo, idx) {
+    var item = document.createElement('div');
+    item.className = 'gallery-item ' + photo.type;
+    item.setAttribute('data-index', idx);
+    item.innerHTML =
+      '<div class="img-wrap">' +
+        '<img src="' + photo.url + '" alt="Foto ' + (idx + 1) + '" loading="lazy">' +
+        '<div class="overlay"><span><i class="fas fa-expand" style="font-size:.7rem;"></i> Lihat</span></div>' +
+        '<div class="img-num">' + (idx + 1) + '</div>' +
+      '</div>';
+    item.addEventListener('click', function() { openLightbox(idx); });
+    grid.appendChild(item);
+  });
+
+  /* === LIGHTBOX === */
+  var lightbox = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lbImg');
+  var lbCounter = document.getElementById('lbCounter');
+  var currentIndex = 0;
+
+  function openLightbox(idx) {
+    currentIndex = idx;
+    updateLightbox();
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function updateLightbox() {
+    lbImg.src = photos[currentIndex].url;
+    lbImg.alt = 'Foto ' + (currentIndex + 1);
+    lbCounter.textContent = (currentIndex + 1) + ' / ' + photos.length;
+  }
+
+  function prevPhoto() {
+    currentIndex = (currentIndex - 1 + photos.length) % photos.length;
+    updateLightbox();
+  }
+
+  function nextPhoto() {
+    currentIndex = (currentIndex + 1) % photos.length;
+    updateLightbox();
+  }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click', prevPhoto);
+  document.getElementById('lbNext').addEventListener('click', nextPhoto);
+
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') prevPhoto();
+    if (e.key === 'ArrowRight') nextPhoto();
+  });
+
+  /* Touch swipe support */
+  var touchStartX = 0;
+  var touchEndX = 0;
+  lightbox.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  lightbox.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    var diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextPhoto();
+      else prevPhoto();
+    }
+  }, { passive: true });
+
+  /* === PARTICLES === */
+  var canvas = document.getElementById('particles');
+  var ctx = canvas.getContext('2d');
+  var pArr = [];
+  function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  for (var i = 0; i < 40; i++) {
+    pArr.push({
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+      size: Math.random() * 1.2 + 0.3, speedX: (Math.random() - 0.5) * 0.2,
+      speedY: (Math.random() - 0.5) * 0.2, opacity: Math.random() * 0.3 + 0.08
+    });
+  }
+  function animP() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < pArr.length; i++) {
+      var p = pArr[i];
+      p.x += p.speedX; p.y += p.speedY;
+      if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.1, p.size), 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,196,255,' + p.opacity + ')';
+      ctx.fill();
+    }
+    for (var i = 0; i < pArr.length; i++) {
+      for (var j = i + 1; j < pArr.length; j++) {
+        var dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 100) {
+          ctx.beginPath();
+          ctx.moveTo(pArr[i].x, pArr[i].y);
+          ctx.lineTo(pArr[j].x, pArr[j].y);
+          ctx.strokeStyle = 'rgba(0,196,255,' + (0.03 * (1 - d / 100)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animP);
+  }
+  animP();
+
+  /* === MOUSE GLOW === */
+  var mg = document.getElementById('mouseGlow');
+  document.addEventListener('mousemove', function(e) { mg.style.left = e.clientX + 'px'; mg.style.top = e.clientY + 'px'; });
+
+  /* === NAVBAR === */
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() { navbar.classList.toggle('scrolled', window.scrollY > 50); });
+
+  /* === MOBILE MENU === */
+  var menuBtn = document.getElementById('menuBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var mOpen = document.getElementById('menuIconOpen');
+  var mClose = document.getElementById('menuIconClose');
+  menuBtn.addEventListener('click', function() {
+    var o = mobileMenu.classList.toggle('open');
+    mOpen.style.display = o ? 'none' : 'inline';
+    mClose.style.display = o ? 'inline' : 'none';
+  });
+  mobileMenu.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      mobileMenu.classList.remove('open');
+      mOpen.style.display = 'inline';
+      mClose.style.display = 'none';
+    });
+  });
+
+  /* === REVEAL === */
+  var rObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(en) { if (en.isIntersecting) en.target.classList.add('vis'); });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.reveal').forEach(function(el) { rObs.observe(el); });
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  const firebaseConfig = { apiKey: "AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4", authDomain: "loginpage-2e5aa.firebaseapp.com", projectId: "loginpage-2e5aa", appId: "1:676993662276:web:d8e12ca898fb4c0364eb11" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  onAuthStateChanged(auth, function(user) { if (!user) window.location.href = "login.html"; });
+  function handleLogout() { signOut(auth).then(function() { window.location.href = "login.html"; }).catch(function() {}); }
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+  document.getElementById('logoutBtnMobile').addEventListener('click', handleLogout);
+</script>
+
+</body>
+</html>

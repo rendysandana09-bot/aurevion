@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HYUNK STORE - STORE</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #060a10;
+      --bg-card: #0c1220;
+      --fg: #e8ecf2;
+      --muted: #5a6a80;
+      --accent: #00e89d;
+      --accent2: #00c4ff;
+      --border: #152035;
+      --glow: rgba(0,232,157,0.15);
+      --green: #00e89d;
+      --cyan: #00c4ff;
+      --purple: #a78bfa;
+      --pink: #f472b6;
+      --amber: #fbbf24;
+      --red: #f87171;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg); color: var(--fg);
+      overflow-x: hidden;
+    }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    .grid-bg {
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(rgba(0,232,157,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,232,157,0.025) 1px, transparent 1px);
+      background-size:60px 60px; z-index:0; pointer-events:none;
+    }
+    .scanline {
+      position:fixed; inset:0; z-index:1; pointer-events:none;
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);
+    }
+    .orb {
+      position:fixed; border-radius:50%; filter:blur(90px);
+      pointer-events:none; z-index:0;
+      animation: orbFloat 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width:420px; height:420px; background:radial-gradient(circle,rgba(0,232,157,0.1),transparent 70%); top:-120px; left:-100px; }
+    .orb-2 { width:380px; height:380px; background:radial-gradient(circle,rgba(0,196,255,0.08),transparent 70%); bottom:5%; right:-100px; animation-delay:-5s; }
+    .orb-3 { width:220px; height:220px; background:radial-gradient(circle,rgba(167,139,250,0.07),transparent 70%); top:45%; left:30%; animation-delay:-9s; }
+    @keyframes orbFloat {
+      0% { transform:translate(0,0) scale(1); }
+      50% { transform:translate(25px,-35px) scale(1.08); }
+      100% { transform:translate(-15px,20px) scale(0.95); }
+    }
+    #particles { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    .mouse-glow {
+      position:fixed; width:450px; height:450px; border-radius:50%;
+      background:radial-gradient(circle,rgba(0,232,157,0.05),transparent 60%);
+      pointer-events:none; z-index:1; transform:translate(-50%,-50%);
+      transition:left 0.35s ease-out, top 0.35s ease-out;
+    }
+
+    /* === NAVBAR === */
+    .navbar {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      backdrop-filter:blur(20px); background:rgba(6,10,16,0.82);
+      border-bottom:1px solid var(--border); transition:box-shadow 0.3s;
+    }
+    .navbar.scrolled { box-shadow:0 4px 30px rgba(0,0,0,0.5); }
+    .nav-link {
+      position:relative; color:var(--muted); transition:color 0.3s;
+      text-decoration:none; font-size:0.9rem;
+    }
+    .nav-link:hover,.nav-link.active { color:var(--accent); }
+    .nav-link::after {
+      content:''; position:absolute; bottom:-4px; left:0;
+      width:0; height:2px; background:var(--accent); transition:width 0.3s;
+    }
+    .nav-link:hover::after,.nav-link.active::after { width:100%; }
+
+    /* === HERO === */
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 16px; border-radius:999px;
+      border:1px solid rgba(0,232,157,0.2);
+      background:rgba(0,232,157,0.05);
+      font-size:0.8rem; color:var(--accent);
+    }
+    .hero-badge .dot {
+      width:6px; height:6px; border-radius:50%; background:var(--accent);
+      animation:pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.3; transform:scale(0.6); }
+    }
+    .hero-title {
+      font-size:clamp(2.2rem,5vw,3.8rem);
+      font-weight:700; line-height:1.1; letter-spacing:-0.03em;
+    }
+    .hero-title .accent-text {
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
+
+    /* === LIVE STATUS BAR === */
+    .status-bar {
+      display:flex; align-items:center; justify-content:center;
+      gap:24px; padding:12px 24px; flex-wrap:wrap;
+    }
+    .status-item {
+      display:flex; align-items:center; gap:8px;
+      font-size:0.78rem; color:var(--muted);
+    }
+    .status-dot-live {
+      width:7px; height:7px; border-radius:50%;
+      animation:pulse-dot 2s ease-in-out infinite;
+    }
+
+    /* === STATS === */
+    .stats-bar {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:1px; background:var(--border);
+      border:1px solid var(--border); border-radius:16px; overflow:hidden;
+    }
+    .stat-item {
+      background:var(--bg-card); padding:24px 16px;
+      text-align:center; transition:background 0.3s;
+    }
+    .stat-item:hover { background:rgba(0,232,157,0.03); }
+    .stat-number {
+      font-family:'JetBrains Mono',monospace;
+      font-size:1.6rem; font-weight:700; color:var(--accent);
+    }
+    .stat-label {
+      font-size:0.72rem; color:var(--muted); margin-top:4px;
+      text-transform:uppercase; letter-spacing:0.06em;
+    }
+
+    /* === STORE CARDS === */
+    .store-card {
+      position:relative; background:var(--bg-card);
+      border:1px solid var(--border); border-radius:20px;
+      overflow:hidden; transition:all 0.45s cubic-bezier(0.4,0,0.2,1);
+      text-decoration:none; color:inherit; display:block;
+    }
+    .store-card::before {
+      content:''; position:absolute; inset:0; border-radius:20px;
+      padding:1px;
+      background:linear-gradient(160deg,transparent 30%,var(--card-accent,rgba(0,232,157,0.2)) 100%);
+      -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude;
+      opacity:0; transition:opacity 0.45s;
+    }
+    .store-card:hover::before { opacity:1; }
+    .store-card:hover {
+      transform:translateY(-10px);
+      box-shadow:0 24px 60px rgba(0,0,0,0.4),0 0 50px var(--card-glow,rgba(0,232,157,0.08));
+    }
+    .card-accent-bar {
+      height:3px; width:100%;
+      background:var(--card-bar,linear-gradient(90deg,var(--green),var(--cyan)));
+      transform:scaleX(0); transform-origin:left;
+      transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .store-card:hover .card-accent-bar { transform:scaleX(1); }
+    .card-bg-pattern {
+      position:absolute; inset:0; opacity:0;
+      transition:opacity 0.5s; pointer-events:none;
+    }
+    .store-card:hover .card-bg-pattern { opacity:1; }
+    .card-icon-wrap {
+      width:56px; height:56px; border-radius:16px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem; transition:all 0.35s;
+    }
+    .store-card:hover .card-icon-wrap { transform:scale(1.08); }
+    .card-arrow {
+      display:inline-flex; align-items:center; gap:8px;
+      font-weight:600; font-size:0.9rem; transition:gap 0.3s;
+    }
+    .store-card:hover .card-arrow { gap:14px; }
+    .card-badge {
+      position:absolute; top:20px; right:20px;
+      padding:4px 14px; border-radius:999px;
+      font-size:0.68rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:0.08em;
+      backdrop-filter:blur(8px);
+    }
+    .card-tags {
+      display:flex; flex-wrap:wrap; gap:6px; margin-top:16px;
+    }
+    .card-tag {
+      padding:4px 10px; border-radius:6px; font-size:0.72rem;
+      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05);
+      color:var(--muted);
+    }
+    .card-price-hint {
+      margin-top:18px; padding-top:16px;
+      border-top:1px solid rgba(255,255,255,0.04);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .card-price-hint .label { font-size:0.75rem; color:var(--muted); }
+    .card-price-hint .price {
+      font-family:'JetBrains Mono',monospace;
+      font-size:0.95rem; font-weight:700;
+    }
+
+    /* === HOW IT WORKS === */
+    .step-card {
+      position:relative; background:var(--bg-card);
+      border:1px solid var(--border); border-radius:16px;
+      padding:28px; text-align:center; transition:all 0.35s;
+    }
+    .step-card:hover {
+      border-color:rgba(0,232,157,0.15);
+      transform:translateY(-4px);
+      box-shadow:0 12px 30px rgba(0,0,0,0.25);
+    }
+    .step-number {
+      width:40px; height:40px; border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#060a10; font-family:'JetBrains Mono',monospace;
+      font-weight:700; font-size:0.9rem;
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 16px;
+    }
+    .step-connector {
+      position:absolute; top:50%; right:-24px;
+      color:var(--border); font-size:1.2rem; z-index:2;
+    }
+
+    /* === TESTIMONIALS === */
+    .testi-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:28px; transition:all 0.35s;
+      position:relative;
+    }
+    .testi-card:hover {
+      border-color:rgba(255,255,255,0.08);
+      transform:translateY(-3px);
+    }
+    .testi-quote {
+      position:absolute; top:20px; right:24px;
+      font-size:2rem; color:rgba(0,232,157,0.08);
+      font-family:Georgia,serif; line-height:1;
+    }
+    .testi-stars { display:flex; gap:3px; margin-bottom:12px; }
+    .testi-stars i { font-size:0.7rem; color:var(--amber); }
+    .testi-text {
+      font-size:0.88rem; color:#8a96a8; line-height:1.7;
+      margin-bottom:16px; font-style:italic;
+    }
+    .testi-author {
+      display:flex; align-items:center; gap:12px;
+    }
+    .testi-avatar {
+      width:36px; height:36px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:0.8rem; color:#060a10;
+    }
+    .testi-name { font-size:0.85rem; font-weight:600; }
+    .testi-role { font-size:0.72rem; color:var(--muted); }
+
+    /* === FEATURES === */
+    .feature-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:28px; transition:all 0.35s;
+      text-align:center;
+    }
+    .feature-card:hover {
+      transform:translateY(-6px);
+      box-shadow:0 16px 40px rgba(0,0,0,0.3);
+    }
+    .feature-icon {
+      width:52px; height:52px; border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; margin:0 auto 16px; transition:transform 0.3s;
+    }
+    .feature-card:hover .feature-icon { transform:scale(1.1) rotate(-3deg); }
+
+    /* === TRUST CARDS === */
+    .trust-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:28px;
+      display:flex; align-items:center; gap:20px;
+      transition:all 0.35s;
+    }
+    .trust-card:hover {
+      transform:translateY(-3px);
+      box-shadow:0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    /* === FAQ === */
+    .faq-item {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:14px; overflow:hidden; transition:all 0.35s;
+    }
+    .faq-item:hover { border-color:rgba(255,255,255,0.08); }
+    .faq-item.open { border-color:rgba(0,232,157,0.2); }
+    .faq-btn {
+      width:100%; text-align:left; padding:18px 22px;
+      display:flex; justify-content:space-between; align-items:center;
+      background:none; border:none; color:var(--fg);
+      font-family:inherit; font-size:0.92rem; font-weight:500;
+      cursor:pointer; transition:background 0.3s;
+    }
+    .faq-btn:hover { background:rgba(255,255,255,0.015); }
+    .faq-btn .chevron {
+      color:var(--muted); font-size:0.75rem;
+      transition:transform 0.3s; flex-shrink:0;
+    }
+    .faq-item.open .chevron { transform:rotate(180deg); }
+    .faq-answer {
+      max-height:0; overflow:hidden;
+      transition:max-height 0.4s ease, padding 0.4s;
+      padding:0 22px; font-size:0.88rem; color:var(--muted); line-height:1.75;
+    }
+    .faq-item.open .faq-answer { max-height:200px; padding:0 22px 20px; }
+    .faq-answer strong { color:var(--fg); }
+
+    .section-tag {
+      font-family:'JetBrains Mono',monospace;
+      font-size:0.72rem; text-transform:uppercase;
+      letter-spacing:0.12em; color:var(--accent);
+      display:flex; align-items:center; gap:8px;
+    }
+    .section-tag::before {
+      content:''; width:20px; height:1px; background:var(--accent);
+    }
+
+    .footer-link {
+      color:var(--muted); text-decoration:none; font-size:0.85rem;
+      transition:color 0.3s; display:block; padding:3px 0;
+    }
+    .footer-link:hover { color:var(--accent); }
+
+    .mobile-menu {
+      display:none; padding:0 24px 16px;
+      border-top:1px solid var(--border);
+    }
+    .mobile-menu.open { display:block; }
+    .mobile-menu a {
+      display:block; padding:10px 0; color:var(--muted);
+      text-decoration:none; font-size:0.9rem; transition:color 0.3s;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .mobile-menu a:last-child { border-bottom:none; }
+    .mobile-menu a:hover,.mobile-menu a.active { color:var(--accent); }
+
+    .reveal {
+      opacity:0; transform:translateY(28px);
+      transition:opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+    .reveal.vis { opacity:1; transform:translateY(0); }
+
+    .stagger > * {
+      opacity:0; transform:translateY(20px);
+      transition:opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    .stagger.vis > *:nth-child(1) { transition-delay:0s; opacity:1; transform:translateY(0); }
+    .stagger.vis > *:nth-child(2) { transition-delay:0.1s; opacity:1; transform:translateY(0); }
+    .stagger.vis > *:nth-child(3) { transition-delay:0.2s; opacity:1; transform:translateY(0); }
+    .stagger.vis > *:nth-child(4) { transition-delay:0.3s; opacity:1; transform:translateY(0); }
+
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+    ::-webkit-scrollbar-thumb:hover { background:var(--muted); }
+
+    @media (prefers-reduced-motion:reduce) {
+      *,*::before,*::after {
+        animation-duration:0.01ms!important;
+        transition-duration:0.01ms!important;
+      }
+    }
+    @media (max-width:768px) {
+      .stats-bar { grid-template-columns:repeat(3,1fr); }
+      .store-grid { grid-template-columns:1fr!important; }
+      .features-grid { grid-template-columns:repeat(2,1fr)!important; }
+      .steps-grid { grid-template-columns:1fr!important; }
+      .step-connector { display:none!important; }
+      .testi-grid { grid-template-columns:1fr!important; }
+      .trust-grid { grid-template-columns:1fr!important; }
+      .footer-grid { grid-template-columns:1fr!important; gap:24px!important; }
+      .feature-card:last-child { grid-column:span 2; }
+    }
+    @media (max-width:480px) {
+      .features-grid { grid-template-columns:1fr!important; }
+      .feature-card:last-child { grid-column:span 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="mouse-glow" id="mouseGlow"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div style="max-width:1200px; margin:0 auto; padding:16px 24px; display:flex; justify-content:space-between; align-items:center;">
+      <a href="index.html" style="text-decoration:none; display:flex; align-items:center; gap:10px;">
+        <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+        <span style="font-weight:700; font-size:1.05rem; color:var(--fg);">HyunkStore</span>
+      </a>
+      <div style="display:flex; align-items:center; gap:28px;">
+        <div class="hidden md:flex items-center gap-7">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="store.html" class="nav-link active">Store</a>
+          <a href="support.html" class="nav-link">Support</a>
+          <a href="contact.html" class="nav-link">Contact</a>
+        </div>
+        <button id="menuBtn" class="md:hidden" style="background:none; border:none; color:var(--muted); cursor:pointer; padding:4px;" aria-label="Toggle menu">
+          <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+          <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem; display:none;"></i>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="index.html">Home</a>
+      <a href="store.html" class="active">Store</a>
+      <a href="support.html">Support</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <main style="position:relative; z-index:2;">
+
+    <!-- Hero -->
+    <section style="padding:140px 24px 20px; text-align:center;">
+      <div class="reveal" style="display:inline-flex; flex-direction:column; align-items:center;">
+        <div class="hero-badge" style="margin-bottom:24px;">
+          <span class="dot"></span>
+          4 Kategori Layanan
+        </div>
+        <h1 class="hero-title">
+          Pilih <span class="accent-text">Layanan</span> Kamu
+        </h1>
+        <p style="color:var(--muted); margin-top:16px; max-width:480px; line-height:1.7; font-size:1.05rem;">
+          Temukan solusi yang tepat untuk kebutuhan server, hosting, domain, dan digital kamu.
+        </p>
+      </div>
+    </section>
+
+    <!-- Live Status -->
+    <section style="padding:24px 24px 0;">
+      <div class="status-bar reveal">
+        <div class="status-item">
+          <span class="status-dot-live" style="background:var(--green);"></span>
+          <span>Semua sistem <strong style="color:var(--green);">operasional</strong></span>
+        </div>
+        <div class="status-item" style="color:#2a3a4e;">|</div>
+        <div class="status-item">
+          <i class="fas fa-server" style="font-size:0.7rem; color:var(--cyan);"></i>
+          <span>SG Server: <strong style="color:var(--cyan);">12ms</strong></span>
+        </div>
+        <div class="status-item" style="color:#2a3a4e;">|</div>
+        <div class="status-item">
+          <i class="fas fa-server" style="font-size:0.7rem; color:var(--green);"></i>
+          <span>ID Server: <strong style="color:var(--green);">8ms</strong></span>
+        </div>
+        <div class="status-item" style="color:#2a3a4e;">|</div>
+        <div class="status-item">
+          <i class="fas fa-clock" style="font-size:0.7rem; color:var(--amber);"></i>
+          <span>Update: <span id="liveTime" class="font-mono" style="font-size:0.75rem;">--:--:--</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section style="max-width:640px; margin:0 auto; padding:28px 24px 56px;">
+      <div class="stats-bar reveal">
+        <div class="stat-item">
+          <div class="stat-number" data-target="99" data-suffix=".9%">0</div>
+          <div class="stat-label">Uptime</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="24" data-suffix="/7">0</div>
+          <div class="stat-label">Support</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="500" data-suffix="+">0</div>
+          <div class="stat-label">User Aktif</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Store Cards -->
+    <section style="max-width:1100px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="margin-bottom:40px;">
+        <div class="section-tag">Kategori</div>
+        <h2 style="font-size:1.8rem; font-weight:700; margin-top:8px;">Layanan Tersedia</h2>
+      </div>
+
+      <div class="store-grid stagger reveal" style="display:grid; grid-template-columns:repeat(2,1fr); gap:24px;">
+
+        <!-- Minecraft Hosting -->
+        <a href="store-hosting.html" class="store-card"
+           style="--card-accent:rgba(0,232,157,0.25); --card-glow:rgba(0,232,157,0.1); --card-bar:linear-gradient(90deg,#00e89d,#34d399);">
+          <div class="card-accent-bar"></div>
+          <div class="card-bg-pattern">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="opacity:0.04;">
+              <defs><pattern id="mc" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#00e89d"/><rect x="16" y="16" width="16" height="16" fill="#00e89d"/></pattern></defs>
+              <rect width="100%" height="100%" fill="url(#mc)"/>
+            </svg>
+          </div>
+          <div style="position:relative; padding:32px 28px 28px;">
+            <div class="card-icon-wrap" style="background:rgba(0,232,157,0.1); color:var(--green);">
+              <i class="fas fa-cube"></i>
+            </div>
+            <h3 style="font-size:1.3rem; font-weight:700; margin-top:20px;">Minecraft Hosting</h3>
+            <p style="color:var(--muted); font-size:0.85rem; line-height:1.7; margin-top:10px;">
+              Server MC siap pakai dengan panel Pterodactyl. Support Java & Bedrock, performa tinggi tanpa lag.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">Java</span>
+              <span class="card-tag">Bedrock</span>
+              <span class="card-tag">Pterodactyl</span>
+              <span class="card-tag">DDoS Guard</span>
+            </div>
+            <div class="card-price-hint">
+              <span class="label">Mulai dari</span>
+              <span class="price" style="color:var(--green);">Rp15.000<span style="font-size:0.7rem; color:var(--muted); font-weight:400;">/bln</span></span>
+            </div>
+            <div style="margin-top:18px;">
+              <span class="card-arrow" style="color:var(--green);">
+                Lihat 6 Paket <i class="fas fa-arrow-right" style="font-size:0.8rem;"></i>
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- VPS Server -->
+        <a href="store-vps.html" class="store-card"
+           style="--card-accent:rgba(0,196,255,0.25); --card-glow:rgba(0,196,255,0.1); --card-bar:linear-gradient(90deg,#00c4ff,#38bdf8);">
+          <div class="card-accent-bar"></div>
+          <div class="card-bg-pattern">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="opacity:0.03;">
+              <defs><pattern id="vps" width="40" height="40" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="1" fill="#00c4ff"/></pattern></defs>
+              <rect width="100%" height="100%" fill="url(#vps)"/>
+            </svg>
+          </div>
+          <div class="card-badge" style="background:rgba(0,196,255,0.12); color:var(--cyan); border:1px solid rgba(0,196,255,0.25);">
+            <i class="fas fa-fire" style="margin-right:4px;"></i> Populer
+          </div>
+          <div style="position:relative; padding:32px 28px 28px;">
+            <div class="card-icon-wrap" style="background:rgba(0,196,255,0.1); color:var(--cyan);">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3 style="font-size:1.3rem; font-weight:700; margin-top:20px;">VPS Server</h3>
+            <p style="color:var(--muted); font-size:0.85rem; line-height:1.7; margin-top:10px;">
+              AMD EPYC performa tinggi dengan full root access, SSD NVMe, dan jaringan Singapore stabil.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">Full Root</span>
+              <span class="card-tag">SSD NVMe</span>
+              <span class="card-tag">Singapore</span>
+              <span class="card-tag">1Gbps</span>
+            </div>
+            <div class="card-price-hint">
+              <span class="label">Mulai dari</span>
+              <span class="price" style="color:var(--cyan);">Rp55.000<span style="font-size:0.7rem; color:var(--muted); font-weight:400;">/bln</span></span>
+            </div>
+            <div style="margin-top:18px;">
+              <span class="card-arrow" style="color:var(--cyan);">
+                Lihat 3 Paket <i class="fas fa-arrow-right" style="font-size:0.8rem;"></i>
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Aplikasi Premium -->
+        <a href="store-aplikasipremium.html" class="store-card"
+           style="--card-accent:rgba(167,139,250,0.25); --card-glow:rgba(167,139,250,0.1); --card-bar:linear-gradient(90deg,#a78bfa,#f472b6);">
+          <div class="card-accent-bar"></div>
+          <div class="card-bg-pattern">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="opacity:0.03;">
+              <defs><pattern id="app" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M24 0L48 24L24 48L0 24Z" fill="none" stroke="#a78bfa" stroke-width="0.5"/></pattern></defs>
+              <rect width="100%" height="100%" fill="url(#app)"/>
+            </svg>
+          </div>
+          <div style="position:relative; padding:32px 28px 28px;">
+            <div class="card-icon-wrap" style="background:rgba(167,139,250,0.1); color:var(--purple);">
+              <i class="fas fa-gem"></i>
+            </div>
+            <h3 style="font-size:1.3rem; font-weight:700; margin-top:20px;">Aplikasi Premium</h3>
+            <p style="color:var(--muted); font-size:0.85rem; line-height:1.7; margin-top:10px;">
+              Akun premium original untuk berbagai layanan. Streaming, desain, hingga antivirus dan game pass.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">MC Account</span>
+              <span class="card-tag">GamePass</span>
+              <span class="card-tag">Cape</span>
+              <span class="card-tag">McAfee</span>
+            </div>
+            <div class="card-price-hint">
+              <span class="label">Mulai dari</span>
+              <span class="price" style="color:var(--purple);">Rp1.000<span style="font-size:0.7rem; color:var(--muted); font-weight:400;">/akun</span></span>
+            </div>
+            <div style="margin-top:18px;">
+              <span class="card-arrow" style="color:var(--purple);">
+                Lihat Semua <i class="fas fa-arrow-right" style="font-size:0.8rem;"></i>
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Domain -->
+        <a href="store-domain.html" class="store-card"
+           style="--card-accent:rgba(251,191,36,0.25); --card-glow:rgba(251,191,36,0.1); --card-bar:linear-gradient(90deg,#fbbf24,#f59e0b);">
+          <div class="card-accent-bar"></div>
+          <div class="card-bg-pattern">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="opacity:0.03;">
+              <defs><pattern id="dmn" width="60" height="60" patternUnits="userSpaceOnUse"><circle cx="30" cy="30" r="12" fill="none" stroke="#fbbf24" stroke-width="0.5"/><circle cx="30" cy="30" r="3" fill="#fbbf24" opacity="0.3"/></pattern></defs>
+              <rect width="100%" height="100%" fill="url(#dmn)"/>
+            </svg>
+          </div>
+          <div class="card-badge" style="background:rgba(251,191,36,0.12); color:var(--amber); border:1px solid rgba(251,191,36,0.25);">
+            <i class="fas fa-sparkles" style="margin-right:4px;"></i> Baru
+          </div>
+          <div style="position:relative; padding:32px 28px 28px;">
+            <div class="card-icon-wrap" style="background:rgba(251,191,36,0.1); color:var(--amber);">
+              <i class="fas fa-globe"></i>
+            </div>
+            <h3 style="font-size:1.3rem; font-weight:700; margin-top:20px;">Domain</h3>
+            <p style="color:var(--muted); font-size:0.85rem; line-height:1.7; margin-top:10px;">
+              Domain aktif 1 tahun penuh dengan custom IP, akses Cloudflare, dan siap untuk hosting website.
+            </p>
+            <div class="card-tags">
+              <span class="card-tag">.com</span>
+              <span class="card-tag">.id</span>
+              <span class="card-tag">.net</span>
+              <span class="card-tag">.xyz</span>
+              <span class="card-tag">+6 lainnya</span>
+            </div>
+            <div class="card-price-hint">
+              <span class="label">Mulai dari</span>
+              <span class="price" style="color:var(--amber);">Rp15.000<span style="font-size:0.7rem; color:var(--muted); font-weight:400;">/tahun</span></span>
+            </div>
+            <div style="margin-top:18px;">
+              <span class="card-arrow" style="color:var(--amber);">
+                Lihat 10 Domain <i class="fas fa-arrow-right" style="font-size:0.8rem;"></i>
+              </span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section style="max-width:900px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; margin-bottom:40px;">
+        <div class="section-tag" style="justify-content:center;">Cara Order</div>
+        <h2 style="font-size:1.8rem; font-weight:700; margin-top:8px;">3 Langkah Mudah</h2>
+      </div>
+      <div class="steps-grid stagger reveal" style="display:grid; grid-template-columns:repeat(3,1fr); gap:20px;">
+        <div class="step-card">
+          <span class="step-connector hidden md:block"><i class="fas fa-chevron-right"></i></span>
+          <div class="step-number">1</div>
+          <div style="font-size:1.6rem; margin-bottom:12px;">
+            <i class="fas fa-hand-pointer" style="color:var(--cyan);"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Pilih Paket</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Browse kategori dan pilih paket yang sesuai kebutuhanmu.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-connector hidden md:block"><i class="fas fa-chevron-right"></i></span>
+          <div class="step-number">2</div>
+          <div style="font-size:1.6rem; margin-bottom:12px;">
+            <i class="fab fa-whatsapp" style="color:var(--green);"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Konfirmasi & Bayar</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Klik beli, konfirmasi via WhatsApp, dan lakukan pembayaran.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div style="font-size:1.6rem; margin-bottom:12px;">
+            <i class="fas fa-rocket" style="color:var(--purple);"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Langsung Pakai</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Server aktif otomatis. Detail login dikirim langsung ke WhatsApp.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section style="max-width:1100px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; margin-bottom:40px;">
+        <div class="section-tag" style="justify-content:center;">Testimoni</div>
+        <h2 style="font-size:1.8rem; font-weight:700; margin-top:8px;">Kata Mereka</h2>
+      </div>
+      <div class="testi-grid stagger reveal" style="display:grid; grid-template-columns:repeat(3,1fr); gap:18px;">
+
+        <div class="testi-card">
+          <div class="testi-quote">"</div>
+          <div class="testi-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <p class="testi-text">Server MC-nya lancar banget, 40 player main bareng tetap stabilized. Panel Pterodactyl juga gampang dipakai.</p>
+          <div class="testi-author">
+            <div class="testi-avatar" style="background:linear-gradient(135deg,var(--green),#34d399);">RZ</div>
+            <div>
+              <div class="testi-name">Rizky Z.</div>
+              <div class="testi-role">Minecraft Server Owner</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-quote">"</div>
+          <div class="testi-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+          </div>
+          <p class="testi-text">VPS 4GB cukup buat jalanin 3 bot sekaligus. Supportnya responsif, pernah error jam 2 pagi langsung dibantu.</p>
+          <div class="testi-author">
+            <div class="testi-avatar" style="background:linear-gradient(135deg,var(--cyan),#38bdf8);">DA</div>
+            <div>
+              <div class="testi-name">Dimas A.</div>
+              <div class="testi-role">Bot Developer</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-card">
+          <div class="testi-quote">"</div>
+          <div class="testi-stars">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-stroke"></i>
+          </div>
+          <p class="testi-text">Beli domain .com cuma 165k, langsung aktif dan bisa dikonekin ke Cloudflare. Harga paling murah yang pernah aku temuin.</p>
+          <div class="testi-author">
+            <div class="testi-avatar" style="background:linear-gradient(135deg,var(--amber),#f59e0b);">FN</div>
+            <div>
+              <div class="testi-name">Farel N.</div>
+              <div class="testi-role">Web Developer</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section style="max-width:1100px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="margin-bottom:40px; text-align:center;">
+        <div class="section-tag" style="justify-content:center;">Keunggulan</div>
+        <h2 style="font-size:1.8rem; font-weight:700; margin-top:8px;">Kenapa HyunkkCloud?</h2>
+      </div>
+      <div class="features-grid stagger reveal" style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px;">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(0,196,255,0.1); color:var(--cyan);">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Performa Tinggi</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">CPU AMD EPYC dan SSD NVMe generasi terkini untuk kecepatan maksimal.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(0,232,157,0.1); color:var(--green);">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">DDoS Protection</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Lindungi server dari serangan hingga 1Tbps, aktif 24 jam tanpa henti.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(251,191,36,0.1); color:var(--amber);">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Support Cepat</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Respon rata-rata kurang dari 5 menit via WhatsApp dan Discord.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(167,139,250,0.1); color:var(--purple);">
+            <i class="fas fa-tags"></i>
+          </div>
+          <h4 style="font-weight:600; font-size:0.95rem; margin-bottom:6px;">Harga Terjangkau</h4>
+          <p style="font-size:0.8rem; color:var(--muted); line-height:1.6;">Mulai dari Rp1.000/akun hingga domain .com hanya Rp165.000/tahun.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Indicators -->
+    <section style="max-width:1100px; margin:0 auto; padding:0 24px 80px;">
+      <div class="trust-grid stagger reveal" style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+        <div class="trust-card" style="border-color:var(--border);"
+             onmouseover="this.style.borderColor='rgba(0,232,157,0.2)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+          <div style="width:48px; height:48px; border-radius:12px; background:rgba(0,232,157,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <i class="fas fa-rotate-left" style="color:var(--green);"></i>
+          </div>
+          <div>
+            <h4 style="font-weight:600; font-size:0.95rem;">Garansi 3 Hari</h4>
+            <p style="font-size:0.8rem; color:var(--muted); margin-top:2px;">Tidak puas? Refund 100% tanpa syarat rumit.</p>
+          </div>
+        </div>
+        <div class="trust-card" style="border-color:var(--border);"
+             onmouseover="this.style.borderColor='rgba(0,196,255,0.2)'"
+             onmouseout="this.style.borderColor='var(--border)'">
+          <div style="width:48px; height:48px; border-radius:12px; background:rgba(0,196,255,0.1); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <i class="fas fa-rocket" style="color:var(--cyan);"></i>
+          </div>
+          <div>
+            <h4 style="font-weight:600; font-size:0.95rem;">Instant Deploy</h4>
+            <p style="font-size:0.8rem; color:var(--muted); margin-top:2px;">Server aktif otomatis kurang dari 60 detik.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section style="max-width:720px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; margin-bottom:36px;">
+        <div class="section-tag" style="justify-content:center;">FAQ</div>
+        <h2 style="font-size:1.5rem; font-weight:700; margin-top:8px;">Pertanyaan Umum</h2>
+      </div>
+      <div class="reveal" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Bisa bayar pakai apa saja?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Kami menerima pembayaran via <strong>QRIS, GoPay, OVO, Dana, ShopeePay</strong>, transfer bank (BCA, BRI, Mandiri, BNI), dan pulsa (dengan rate tertentu).
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Berapa lama proses aktifasi?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Otomatis aktif setelah pembayaran dikonfirmasi. Biasanya <strong>kurang dari 1 menit</strong>. Pada peak time maksimal 30 menit.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Domain bisa diperpanjang?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Domain yang kami jual <strong>aktif 1 tahun penuh dan tidak bisa diperpanjang</strong>. Setelah masa aktif habis, kamu bisa beli domain baru atau migrasi ke registrar lain.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Ada garansi uang kembali?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Ya, kami memberikan garansi <strong>3 hari</strong> setelah aktifasi. Jika tidak puas, hubungi support untuk refund 100%.
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-btn" onclick="toggleFaq(this)">
+            <span>Bisa request spesifikasi khusus?</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="faq-answer">
+            Bisa! Hubungi kami via <strong>WhatsApp</strong>, sebutkan spesifikasi yang dibutuhkan, dan kami akan buatkan paket custom sesuai kebutuhan kamu.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="max-width:900px; margin:0 auto; padding:0 24px 80px;">
+      <div class="reveal" style="text-align:center; padding:56px 40px; border-radius:24px; border:1px solid var(--border); background:var(--bg-card); position:relative; overflow:hidden;">
+        <div style="position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:300px; height:200px; background:radial-gradient(circle,rgba(0,232,157,0.06),transparent 70%); border-radius:50%; pointer-events:none;"></div>
+        <div style="position:relative;">
+          <h2 style="font-size:1.8rem; font-weight:700; margin-bottom:10px;">Bingung Pilih Paket?</h2>
+          <p style="color:var(--muted); max-width:420px; margin:0 auto 28px; line-height:1.7; font-size:0.95rem;">
+            Konsultasikan kebutuhanmu dengan tim kami. Kami bantu pilihkan yang paling pas dan efisien.
+          </p>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20butuh%20rekomendasi%20paket" target="_blank"
+             style="display:inline-flex; align-items:center; gap:10px; padding:16px 32px; border-radius:14px; background:linear-gradient(135deg,var(--accent),#00c4a0); color:#060a10; font-weight:700; font-size:0.95rem; text-decoration:none; transition:all 0.3s;"
+             onmouseover="this.style.boxShadow='0 0 35px rgba(0,232,157,0.3)'; this.style.transform='translateY(-3px)'"
+             onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0)'">
+            <i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Konsultasi Gratis
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer style="position:relative; z-index:2; border-top:1px solid var(--border); background:rgba(6,10,16,0.92);">
+    <div style="max-width:1200px; margin:0 auto; padding:48px 24px 32px;">
+      <div class="footer-grid" style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:40px;">
+        <div>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+            <div style="width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--accent2)); display:flex; align-items:center; justify-content:center; font-weight:800; color:#060a10; font-size:0.75rem;">H</div>
+            <span style="font-weight:700;">HyunkkCloud</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--muted); line-height:1.7; max-width:300px;">Hosting modern dengan performa tinggi dan support aktif 24/7.</p>
+        </div>
+        <div>
+          <h4 style="font-weight:600; margin-bottom:14px; font-size:0.9rem;">Menu</h4>
+          <a href="store.html" class="footer-link">Store</a>
+          <a href="support.html" class="footer-link">Support</a>
+          <a href="contact.html" class="footer-link">Contact</a>
+        </div>
+        <div>
+          <h4 style="font-weight:600; margin-bottom:14px; font-size:0.9rem;">Kontak</h4>
+          <p style="font-size:0.85rem; color:var(--muted); line-height:2;">
+            <i class="fas fa-envelope" style="width:16px; color:var(--accent); font-size:0.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+            <i class="fab fa-whatsapp" style="width:16px; color:var(--accent); font-size:0.75rem;"></i> 082189822272<br>
+            <i class="fas fa-map-marker-alt" style="width:16px; color:var(--accent); font-size:0.75rem;"></i> Indonesia
+          </p>
+        </div>
+      </div>
+      <div style="margin-top:36px; padding-top:20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <span style="font-size:0.78rem; color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+        <span class="font-mono" style="font-size:0.68rem; color:rgba(90,106,128,0.5);">v2.0.0</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* === PARTICLES === */
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    for(let i=0;i<55;i++){
+      pArr.push({
+        x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+        size:Math.random()*1.3+0.4, speedX:(Math.random()-0.5)*0.25, speedY:(Math.random()-0.5)*0.25,
+        opacity:Math.random()*0.4+0.1
+      });
+    }
+    function animP(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pArr.forEach(p=>{
+        p.x+=p.speedX; p.y+=p.speedY;
+        if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+        if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(0.1,p.size),0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,232,157,${p.opacity})`; ctx.fill();
+      });
+      for(let i=0;i<pArr.length;i++) for(let j=i+1;j<pArr.length;j++){
+        const dx=pArr[i].x-pArr[j].x, dy=pArr[i].y-pArr[j].y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<115){ ctx.beginPath(); ctx.moveTo(pArr[i].x,pArr[i].y); ctx.lineTo(pArr[j].x,pArr[j].y);
+          ctx.strokeStyle=`rgba(0,232,157,${0.035*(1-d/115)})`; ctx.lineWidth=0.5; ctx.stroke(); }
+      }
+      requestAnimationFrame(animP);
+    }
+    animP();
+
+    /* === MOUSE GLOW === */
+    const mg=document.getElementById('mouseGlow');
+    document.addEventListener('mousemove',e=>{ mg.style.left=e.clientX+'px'; mg.style.top=e.clientY+'px'; });
+
+    /* === NAVBAR === */
+    const navbar=document.getElementById('navbar');
+    window.addEventListener('scroll',()=>navbar.classList.toggle('scrolled',window.scrollY>50));
+
+    /* === MOBILE MENU === */
+    const menuBtn=document.getElementById('menuBtn');
+    const mobileMenu=document.getElementById('mobileMenu');
+    const mOpen=document.getElementById('menuIconOpen');
+    const mClose=document.getElementById('menuIconClose');
+    menuBtn.addEventListener('click',()=>{
+      const open=mobileMenu.classList.toggle('open');
+      mOpen.style.display=open?'none':'inline';
+      mClose.style.display=open?'inline':'none';
+    });
+
+    /* === LIVE TIME === */
+    function updateLiveTime(){
+      const now=new Date();
+      const h=String(now.getHours()).padStart(2,'0');
+      const m=String(now.getMinutes()).padStart(2,'0');
+      const s=String(now.getSeconds()).padStart(2,'0');
+      document.getElementById('liveTime').textContent=h+':'+m+':'+s;
+    }
+    updateLiveTime();
+    setInterval(updateLiveTime,1000);
+
+    /* === SIMULATED LATENCY === */
+    function simulateLatency(){
+      const sg=document.querySelectorAll('.status-item strong');
+      if(sg.length>=3){
+        const sgLat=(10+Math.random()*6).toFixed(0);
+        const idLat=(5+Math.random()*8).toFixed(0);
+        sg[1].textContent=sgLat+'ms';
+        sg[2].textContent=idLat+'ms';
+      }
+    }
+    setInterval(simulateLatency,3000);
+
+    /* === SCROLL REVEAL === */
+    const rObs=new IntersectionObserver(e=>e.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('vis'); }),{threshold:0.08});
+    document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+    /* === COUNTER === */
+    let cDone=false;
+    const cObs=new IntersectionObserver(e=>e.forEach(en=>{
+      if(en.isIntersecting&&!cDone){
+        cDone=true;
+        document.querySelectorAll('.stat-number').forEach(el=>{
+          const t=parseInt(el.dataset.target), s=el.dataset.suffix||'';
+          let c=0; const step=Math.ceil(t/35);
+          const timer=setInterval(()=>{ c+=step; if(c>=t){c=t;clearInterval(timer);} el.textContent=c+s; },30);
+        });
+      }
+    }),{threshold:0.5});
+    const sb=document.querySelector('.stats-bar');
+    if(sb) cObs.observe(sb);
+
+    /* === FAQ === */
+    function toggleFaq(btn){
+      const item=btn.parentElement, wasOpen=item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    }
+
+    /* === SMOOTH SCROLL === */
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click',e=>{ e.preventDefault(); const t=document.querySelector(a.getAttribute('href')); if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); });
+    });
+  </script>
+
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+    const firebaseConfig = {
+      apiKey:"AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+      authDomain:"loginpage-2e5aa.firebaseapp.com",
+      projectId:"loginpage-2e5aa",
+      appId:"1:676993662276:web:d8e12ca898fb4c0364eb11"
+    };
+    const app=initializeApp(firebaseConfig);
+    const auth=getAuth(app);
+    onAuthStateChanged(auth,(user)=>{ if(!user) window.location.href="login.html"; });
+  </script>
+
+</body>
+</html>

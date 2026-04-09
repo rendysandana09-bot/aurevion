@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tips Optimasi Server - HyunkkCloud</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg:#060a10;--bg-card:#0c1220;--fg:#e8ecf2;--muted:#5a6a80;
+      --accent:#00c4ff;--accent2:#00e89d;--border:#152035;
+      --cyan:#00c4ff;--green:#00e89d;--purple:#a78bfa;
+      --amber:#fbbf24;--red:#f87171;--pink:#f472b6;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,196,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orbFloat 14s ease-in-out infinite alternate;}
+    .orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(0,196,255,0.12),transparent 70%);top:-130px;right:-100px;}
+    .orb-2{width:300px;height:300px;background:radial-gradient(circle,rgba(0,232,157,0.07),transparent 70%);bottom:10%;left:-80px;animation-delay:-5s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-30px) scale(1.06);}100%{transform:translate(-10px,15px) scale(0.96);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,255,0.05),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .35s ease-out,top .35s ease-out;}
+
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.82);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover{color:var(--accent);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s;}
+    .nav-link:hover::after{width:100%;}
+    .btn-logout{border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:.82rem;padding:7px 16px;border-radius:10px;background:none;cursor:pointer;font-family:inherit;transition:all .3s;}
+    .btn-logout:hover{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.5);}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover{color:var(--accent);}
+
+    .blog-hero{position:relative;padding:140px 24px 40px;text-align:center;overflow:hidden;}
+    .blog-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center top,rgba(0,196,255,0.06) 0%,transparent 60%);pointer-events:none;}
+    .blog-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(0,196,255,0.2);background:rgba(0,196,255,0.05);font-size:.8rem;color:var(--accent);}
+    .blog-tag i{font-size:.7rem;}
+    .blog-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;letter-spacing:-0.03em;margin-top:24px;position:relative;}
+    .blog-title .accent{background:linear-gradient(135deg,var(--amber),#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .blog-meta{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:20px;flex-wrap:wrap;color:var(--muted);font-size:.85rem;}
+    .blog-meta span{display:flex;align-items:center;gap:6px;}
+    .blog-meta i{font-size:.75rem;}
+
+    .reading-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--amber),#fb923c);z-index:200;width:0;transition:width .1s linear;}
+
+    .toc{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;position:sticky;top:100px;}
+    .toc-title{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+    .toc-title i{font-size:.75rem;}
+    .toc-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:.85rem;color:var(--muted);text-decoration:none;transition:all .25s;border-left:2px solid transparent;}
+    .toc-link:hover{color:var(--fg);background:rgba(0,196,255,0.04);border-left-color:var(--accent);}
+    .toc-link.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,196,255,0.06);}
+    .toc-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#2a3a4e;min-width:18px;}
+
+    .article-body{font-size:1rem;line-height:1.85;color:#a0aec0;}
+    .article-body p{margin-bottom:24px;}
+    .article-body h2{font-size:1.5rem;font-weight:700;color:var(--fg);margin-top:48px;margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+    .article-body h2 .num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:rgba(251,191,36,0.1);color:var(--amber);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;flex-shrink:0;}
+    .article-body strong{color:var(--fg);font-weight:600;}
+
+    .highlight-box{background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.15);border-radius:14px;padding:24px;margin:28px 0;}
+    .highlight-box p{color:var(--fg);margin-bottom:0!important;font-size:.95rem;line-height:1.7;}
+    .highlight-box i{color:var(--amber);margin-right:8px;}
+
+    .code-block{background:#080d15;border:1px solid var(--border);border-radius:14px;margin:24px 0;overflow:hidden;}
+    .code-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);}
+    .code-dots{display:flex;gap:6px;}
+    .code-dots span{width:10px;height:10px;border-radius:50%;}
+    .code-dots span:nth-child(1){background:#f87171;}
+    .code-dots span:nth-child(2){background:#fbbf24;}
+    .code-dots span:nth-child(3){background:#34d399;}
+    .code-lang{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+    .code-copy{background:none;border:1px solid var(--border);color:var(--muted);font-size:.75rem;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .3s;display:flex;align-items:center;gap:5px;}
+    .code-copy:hover{border-color:rgba(0,196,255,0.3);color:var(--accent);}
+    .code-copy.copied{border-color:rgba(0,232,157,0.3);color:var(--green);}
+    .code-body{padding:20px;overflow-x:auto;}
+    .code-body pre{margin:0;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.7;color:#a0aec0;}
+    .code-body .cmd{color:var(--accent);}
+    .code-body .flag{color:var(--green);}
+    .code-body .val{color:var(--amber);}
+    .code-body .file{color:var(--pink);}
+
+    .tip-card{display:flex;align-items:flex-start;gap:14px;padding:20px;border-radius:14px;background:var(--bg-card);border:1px solid var(--border);margin-bottom:16px;transition:all .35s;}
+    .tip-card:hover{border-color:rgba(255,255,255,0.06);transform:translateX(4px);}
+    .tip-card:last-child{margin-bottom:0;}
+    .tip-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.95rem;}
+    .tip-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+    .tip-title{font-size:1rem;font-weight:600;color:var(--fg);margin-bottom:4px;}
+    .tip-desc{font-size:.85rem;color:#8a96a8;line-height:1.6;}
+
+    .takeaway{display:flex;align-items:flex-start;gap:14px;padding:18px;border-radius:12px;background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.1);margin-bottom:12px;}
+    .takeaway:last-child{margin-bottom:0;}
+    .takeaway-num{width:28px;height:28px;border-radius:8px;background:rgba(251,191,36,0.15);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--amber);flex-shrink:0;font-weight:700;}
+    .takeaway-text{font-size:.9rem;color:#a0aec0;line-height:1.6;}
+    .takeaway-text strong{color:var(--fg);}
+
+    .related-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .4s;text-decoration:none;color:inherit;display:block;}
+    .related-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.08);}
+    .related-card:hover .related-img img{transform:scale(1.05);}
+    .related-img{height:160px;overflow:hidden;}
+    .related-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+    .related-tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+    .related-title{font-size:1rem;font-weight:600;margin-bottom:6px;}
+    .related-desc{font-size:.82rem;color:var(--muted);line-height:1.6;}
+
+    .cta-box{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border);background:var(--bg-card);}
+    .cta-box::before{content:'';position:absolute;inset:0;background:linear-gradient(170deg,rgba(251,191,36,0.04) 0%,transparent 50%,rgba(0,196,255,0.03) 100%);pointer-events:none;}
+
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);display:flex;align-items:center;gap:8px;}
+    .section-tag::before{content:'';width:20px;height:1px;background:var(--accent);}
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent);}
+
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.vis{opacity:1;transform:translateY(0);}
+
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:1024px){.blog-layout{grid-template-columns:1fr!important;}.toc{position:static!important;order:-1;}}
+    @media(max-width:768px){
+      .related-grid{grid-template-columns:1fr!important;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+<div class="reading-progress" id="readProgress"></div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.85rem;">H</div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkkCloud</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="hidden md:flex items-center gap-7">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="store.html" class="nav-link">Store</a>
+        <a href="support.html" class="nav-link">Support</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <button id="logoutBtn" class="btn-logout hidden md:inline-flex"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+      <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+        <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+        <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="store.html">Store</a>
+    <a href="support.html">Support</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <!-- Blog Hero -->
+  <section class="blog-hero">
+    <div class="reveal">
+      <div class="blog-tag" style="border-color:rgba(251,191,36,0.2);background:rgba(251,191,36,0.05);color:var(--amber);"><i class="fas fa-gauge-high"></i> Optimasi</div>
+      <h1 class="blog-title">Tips Optimasi<br><span class="accent">Server Kamu</span></h1>
+      <div class="blog-meta">
+        <span><i class="fas fa-user"></i> Hyunk</span>
+        <span style="color:#1e2d42;">|</span>
+        <span><i class="fas fa-calendar"></i> 18 Jan 2025</span>
+        <span style="color:#1e2d42;">|</span>
+        <span><i class="fas fa-clock"></i> 6 menit baca</span>
+        <span style="color:#1e2d42;">|</span>
+        <span><i class="fas fa-folder"></i> Optimasi</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 72px;">
+    <div class="blog-layout reveal" style="display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start;">
+
+      <!-- TOC -->
+      <aside class="toc" id="toc">
+        <div class="toc-title"><i class="fas fa-list"></i> Daftar Isi</div>
+        <a href="#pendahuluan" class="toc-link" data-section="pendahuluan"><span class="toc-num">01</span>Pendahuluan</a>
+        <a href="#software" class="toc-link" data-section="software"><span class="toc-num">02</span>Software Ringan</a>
+        <a href="#plugin" class="toc-link" data-section="plugin"><span class="toc-num">03</span>Batasi Plugin</a>
+        <a href="#viewdistance" class="toc-link" data-section="viewdistance"><span class="toc-num">04</span>View Distance</a>
+        <a href="#ssd" class="toc-link" data-section="ssd"><span class="toc-num">05</span>Gunakan SSD</a>
+        <a href="#ram" class="toc-link" data-section="ram"><span class="toc-num">06</span>Optimasi RAM</a>
+        <a href="#vps" class="toc-link" data-section="vps"><span class="toc-num">07</span>VPS Berkualitas</a>
+        <a href="#kesimpulan" class="toc-link" data-section="kesimpulan"><span class="toc-num">08</span>Kesimpulan</a>
+      </aside>
+
+      <!-- Article -->
+      <article id="article">
+        <div class="article-body">
+
+          <p id="pendahuluan">
+            Server yang lambat bisa membuat pengalaman pengguna menjadi buruk — lag spike, chunk loading lama, bahkan crash. Untungnya, ada beberapa cara sederhana untuk meningkatkan performa server tanpa harus langsung upgrade mahal. Berikut 6 tips yang benar-benar berdampak.
+          </p>
+
+          <div class="highlight-box">
+            <p><i class="fas fa-lightbulb"></i><strong>Prinsip utama:</strong> Optimasi bukan soal memberikan resource sebanyak-banyaknya, tapi menggunakan resource yang ada seefisien mungkin. Server yang teroptimasi dengan 2GB RAM bisa lebih kencang dari server asal dengan 8GB.</p>
+          </div>
+
+          <h2 id="software"><span class="num">01</span>Gunakan Software yang Ringan</h2>
+          <p>
+            Untuk server Minecraft, <strong>Vanilla bukan pilihan terbaik untuk performa</strong>. Gunakan Paper atau Purpur yang sudah dioptimasi secara signifikan. Paper mengurangi beban CPU hingga 30-40% dibanding Vanilla pada skenario yang sama.
+          </p>
+          <p>
+            Kalau server kamu untuk versi lama (<strong>1.8.x</strong>), pertimbangkan juga menggunakan <strong>Akarin</strong> yang optimasi lebih agresif. Untuk server proxy, gunakan <strong>Velocity</strong> bukan BungeeCord — jauh lebih ringan dan cepat.
+          </p>
+
+          <h2 id="plugin"><span class="num">02</span>Batasi Plugin</h2>
+          <p>
+            Setiap plugin menambah beban ke server. Terlalu banyak plugin = lebih banyak event handler, lebih banyak task yang berjalan, lebih banyak memory yang dipakai. <strong>Gunakan hanya plugin yang benar-benar dibutuhkan.</strong>
+          </p>
+          <p>
+            Beberapa langkah praktis: hapus plugin yang tidak terpakai, ganti plugin berat dengan alternatif ringan (misal EssentialsX punya module system, aktifkan hanya yang dipakai), dan gunakan <strong>/spark profiler</strong> untuk identifikasi plugin mana yang paling berat.
+          </p>
+
+          <h2 id="viewdistance"><span class="num">03</span>Atur View Distance</h2>
+          <p>
+            View distance menentukan seberapa jauh chunk di-load di sekitar player. Nilai default 10 itu terlalu tinggi untuk kebanyakan server. <strong>Turunkan ke 6–8 chunk</strong> untuk performa lebih stabil.
+          </p>
+          <p>
+            Setiap kenaikan 1 chunk view distance = load yang meningkat secara eksponensial (luas area = π × r²). Dari 8 ke 10 chunk, beban meningkat sekitar <strong>56%</strong> — itu sangat signifikan. Untuk server dengan 20+ player, view distance 6-7 sudah cukup.
+          </p>
+
+          <h2 id="ssd"><span class="num">04</span>Gunakan SSD</h2>
+          <p>
+            Storage type sangat berpengaruh pada performa. <strong>SSD NVMe</strong> bisa 10-50x lebih cepat dibanding HDD untuk operasi baca/tulis acak — dan server game itu melakukan banyak operasi random I/O saat load/save chunk.
+          </p>
+          <p>
+            Kalau server kamu masih di HDD, migrasi ke SSD NVMe bisa jadi upgrade paling berdampak yang pernah kamu lakukan. Loading world lebih cepat, chunk save tidak bottleneck, dan overall TPS lebih stabil.
+          </p>
+
+          <h2 id="ram"><span class="num">05</span>Optimasi RAM</h2>
+          <p>
+            Jangan asal kasih RAM besar. Lebih banyak RAM bukan berarti lebih cepat — malah bisa sebaliknya kalau JVM tidak bisa manage garbage collection dengan efisien. <strong>Gunakan konfigurasi yang sesuai:</strong>
+          </p>
+
+          <div class="code-block reveal">
+            <div class="code-header">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div class="code-dots"><span></span><span></span><span></span></div>
+                <span class="code-lang">bash</span>
+              </div>
+              <button class="code-copy" onclick="copyCode(this)"><i class="fas fa-copy"></i> Copy</button>
+            </div>
+            <div class="code-body">
+              <pre><span class="cmd">java</span> <span class="flag">-Xms2G</span> <span class="flag">-Xmx2G</span> <span class="flag">-XX:+UseG1GC</span> <span class="flag">-XX:+ParallelRefProcEnabled</span> <span class="flag">-XX:MaxGCPauseMillis=200</span> <span class="flag">-jar</span> <span class="file">paper.jar</span> <span class="val">nogui</span></pre>
+            </div>
+          </div>
+
+          <p>
+            <strong>Aturan penting:</strong> set `-Xms` dan `-Xmx` ke nilai yang sama (misalnya keduanya 2G). Ini mencegah JVM melakukan resize heap secara terus-menerus yang justru bikin lag. Gunakan G1GC untuk server modern — lebih efisien untuk workload game.
+          </p>
+
+          <h2 id="vps"><span class="num">06</span>Gunakan VPS Berkualitas</h2>
+          <p>
+            Semua optimasi di atas tidak akan berguna kalau hardware dasarnya sudah buruk. Performa server sangat bergantung pada: <strong>CPU single-core speed</strong> (bukan core count), <strong>lokasi server</strong> (dekat dengan pemain = latency rendah), dan <strong>kualitas jaringan</strong> (bandwidth, peering, DDoS protection).
+          </p>
+
+          <div class="reveal" style="display:flex;flex-direction:column;gap:16px;margin:28px 0;">
+            <div class="tip-card">
+              <div class="tip-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-microchip"></i></div>
+              <div>
+                <div class="tip-label">Hardware</div>
+                <div class="tip-title">CPU Single-Core Speed</div>
+                <div class="tip-desc">Minecraft sangat bergantung pada single-thread performance. CPU 4 core 4.5GHz lebih baik dari 8 core 2.5GHz untuk MC server.</div>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon" style="background:rgba(0,232,157,0.1);color:var(--green);"><i class="fas fa-globe"></i></div>
+              <div>
+                <div class="tip-label">Lokasi</div>
+                <div class="tip-title">Pilih Server Terdekat</div>
+                <div class="tip-desc">Pemain dari Indonesia? Pilih server Singapore. Jarak jaringan = latency. Singapore ke Indonesia sekitar 20-40ms, jauh lebih baik dari US (200ms+).</div>
+              </div>
+            </div>
+            <div class="tip-card">
+              <div class="tip-icon" style="background:rgba(251,191,36,0.1);color:var(--amber);"><i class="fas fa-shield-halved"></i></div>
+              <div>
+                <div class="tip-label">Keamanan</div>
+                <div class="tip-title">DDoS Protection</div>
+                <div class="tip-desc">Server game jadi target sering. Pastikan VPS punya DDoS protection built-in agar server tidak down saat diserang.</div>
+              </div>
+            </div>
+          </div>
+
+          <h2 id="kesimpulan"><span class="num">07</span>Kesimpulan</h2>
+          <p>
+            Optimasi server tidak selalu harus mahal. Dengan pengaturan yang tepat dan penggunaan resource yang efisien, kamu bisa mendapatkan performa maksimal dari hardware yang ada. <strong>Mulai dari software, lalu konfigurasi, baru pertimbangkan upgrade hardware.</strong>
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:28px;">
+            <div class="takeaway"><span class="takeaway-num">1</span><div class="takeaway-text"><strong>Paper/Purpur > Vanilla</strong> — upgrade software dulu sebelum upgrade hardware</div></div>
+            <div class="takeaway"><span class="takeaway-num">2</span><div class="takeaway-text"><strong>Batasi plugin</strong> — gunakan spark profiler untuk identifikasi plugin berat</div></div>
+            <div class="takeaway"><span class="takeaway-num">3</span><div class="takeaway-text"><strong>View distance 6-8</strong> — bedanya dari 10 itu sangat signifikan</div></div>
+            <div class="takeaway"><span class="takeaway-num">4</span><div class="takeaway-text"><strong>Xms = Xmx</strong> dengan G1GC — jangan asal kasih RAM besar tanpa konfigurasi</div></div>
+            <div class="takeaway"><span class="takeaway-num">!</span><div class="takeaway-text">Semua optimasi di atas <strong>gratis</strong> — tidak ada alasan untuk tidak melakukannya</div></div>
+          </div>
+
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Related Articles -->
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 72px;">
+    <div class="reveal" style="margin-bottom:32px;">
+      <div class="section-tag">Artikel Terkait</div>
+      <h2 style="font-size:1.5rem;font-weight:700;margin-top:8px;">Baca Juga</h2>
+    </div>
+    <div class="related-grid reveal" style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">
+
+      <a href="blog-vps.html" class="related-card">
+        <div class="related-img"><img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=80" alt="VPS" loading="lazy"></div>
+        <div style="padding:20px;">
+          <span class="related-tag" style="background:rgba(0,196,255,0.1);color:var(--accent);">VPS</span>
+          <h3 class="related-title">Kenapa VPS Lebih Kencang?</h3>
+          <p class="related-desc">6 alasan teknis kenapa VPS memberikan performa lebih baik.</p>
+        </div>
+      </a>
+
+      <a href="blog-minecraft.html" class="related-card">
+        <div class="related-img"><img src="https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/redeemheroa/Redeem-Hero_Mobile_576x324.png" alt="Minecraft" loading="lazy"></div>
+        <div style="padding:20px;">
+          <span class="related-tag" style="background:rgba(0,232,157,0.1);color:var(--green);">Minecraft</span>
+          <h3 class="related-title">Cara Setup Server Minecraft</h3>
+          <p class="related-desc">Panduan lengkap dari nol sampai server siap pakai.</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="max-width:900px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal cta-box" style="text-align:center;padding:56px 40px;">
+      <div style="position:relative;">
+        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:10px;">Server masih lemot?</h2>
+        <p style="color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.7;font-size:.95rem;">
+          VPS HyunkkCloud sudah pakai SSD NVMe dan CPU high-frequency. Mulai dari Rp55.000/bulan.
+        </p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a href="store-vps.html" style="display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:14px;background:linear-gradient(135deg,var(--amber),#d97706);color:#060a10;font-weight:700;font-size:.95rem;text-decoration:none;transition:all .3s;"
+             onmouseover="this.style.boxShadow='0 0 35px rgba(251,191,36,0.3)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+            <i class="fas fa-server" style="font-size:.85rem;"></i> Lihat Paket VPS
+          </a>
+          <a href="contact.html" style="display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:14px;background:transparent;border:1px solid var(--border);color:var(--fg);font-weight:600;font-size:.95rem;text-decoration:none;transition:all .3s;"
+             onmouseover="this.style.borderColor='rgba(0,196,255,0.3)';this.style.background='rgba(0,196,255,0.04)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
+            <i class="fab fa-whatsapp" style="color:var(--green);"></i> Konsultasi
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.92);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">HyunkkCloud</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:300px;">Hosting modern dengan performa tinggi dan support aktif 24/7.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Menu</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="support.html" class="footer-link">Support</a>
+        <a href="contact.html" class="footer-link">Contact</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fas fa-envelope" style="width:16px;color:var(--accent);font-size:.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:.78rem;color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.68rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* === PARTICLES === */
+  var canvas = document.getElementById('particles');
+  var ctx = canvas.getContext('2d');
+  var pArr = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  for (var i = 0; i < 40; i++) {
+    pArr.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.1 + 0.3,
+      speedX: (Math.random() - 0.5) * 0.18,
+      speedY: (Math.random() - 0.5) * 0.18,
+      opacity: Math.random() * 0.25 + 0.06
+    });
+  }
+
+  function animP() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < pArr.length; i++) {
+      var p = pArr[i];
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.1, p.size), 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,196,255,' + p.opacity + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(animP);
+  }
+  animP();
+
+  /* === MOUSE GLOW === */
+  var mg = document.getElementById('mouseGlow');
+  document.addEventListener('mousemove', function(e) {
+    mg.style.left = e.clientX + 'px';
+    mg.style.top = e.clientY + 'px';
+  });
+
+  /* === NAVBAR SCROLL === */
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  /* === MOBILE MENU === */
+  var menuBtn = document.getElementById('menuBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var mOpen = document.getElementById('menuIconOpen');
+  var mClose = document.getElementById('menuIconClose');
+
+  menuBtn.addEventListener('click', function() {
+    var isOpen = mobileMenu.classList.toggle('open');
+    mOpen.style.display = isOpen ? 'none' : 'inline';
+    mClose.style.display = isOpen ? 'inline' : 'none';
+  });
+
+  /* === READING PROGRESS === */
+  var readProgress = document.getElementById('readProgress');
+  window.addEventListener('scroll', function() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var s = window.scrollY;
+    var p = h > 0 ? (s / h) * 100 : 0;
+    readProgress.style.width = p + '%';
+  });
+
+  /* === TOC ACTIVE STATE === */
+  var sectionIds = ['pendahuluan', 'software', 'plugin', 'viewdistance', 'ssd', 'ram', 'vps', 'kesimpulan'];
+  var sectionEls = [];
+  for (var i = 0; i < sectionIds.length; i++) {
+    var el = document.getElementById(sectionIds[i]);
+    if (el) sectionEls.push(el);
+  }
+  var tocLinks = document.querySelectorAll('.toc-link');
+
+  var tocObs = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        var id = entries[i].target.id;
+        for (var j = 0; j < tocLinks.length; j++) {
+          if (tocLinks[j].dataset.section === id) {
+            tocLinks[j].classList.add('active');
+          } else {
+            tocLinks[j].classList.remove('active');
+          }
+        }
+      }
+    }
+  }, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+  for (var i = 0; i < sectionEls.length; i++) {
+    tocObs.observe(sectionEls[i]);
+  }
+
+  /* === SMOOTH SCROLL FOR TOC === */
+  for (var i = 0; i < tocLinks.length; i++) {
+    (function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.getElementById(link.dataset.section);
+        if (target) {
+          var y = target.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
+    })(tocLinks[i]);
+  }
+
+  /* === SCROLL REVEAL === */
+  var reveals = document.querySelectorAll('.reveal');
+  var rObs = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        entries[i].target.classList.add('vis');
+      }
+    }
+  }, { threshold: 0.08 });
+
+  for (var i = 0; i < reveals.length; i++) {
+    rObs.observe(reveals[i]);
+  }
+
+  /* === CODE COPY === */
+  function copyCode(btn) {
+    var pre = btn.closest('.code-block').querySelector('pre');
+    var text = pre.textContent || pre.innerText;
+    navigator.clipboard.writeText(text).then(function() {
+      btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(function() {
+      /* Fallback for older browsers */
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch(e) {}
+      document.body.removeChild(ta);
+      btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+    authDomain: "loginpage-2e5aa.firebaseapp.com",
+    projectId: "loginpage-2e5aa",
+    appId: "1:676993662276:web:d8e12ca898fb4c0364eb11"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, function(user) {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+
+  function handleLogout() {
+    signOut(auth).then(function() {
+      window.location.href = "login.html";
+    }).catch(function() {});
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - HyunkkCloud</title>
+  <link rel="icon" type="images/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg:#060a10;--bg-card:#0c1220;--fg:#e8ecf2;--muted:#5a6a80;
+      --accent:#34d399;--accent2:#00c4ff;--border:#152035;
+      --green:#34d399;--cyan:#00c4ff;--purple:#a78bfa;
+      --amber:#fbbf24;--red:#f87171;--pink:#f472b6;
+      --input-bg:#080d16;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(52,211,153,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(52,211,153,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orbFloat 14s ease-in-out infinite alternate;}
+    .orb-1{width:420px;height:420px;background:radial-gradient(circle,rgba(52,211,153,0.12),transparent 70%);top:-130px;left:-100px;}
+    .orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(0,232,157,0.08),transparent 70%);bottom:8%;right:-80px;animation-delay:-5s;}
+    .orb-3{width:200px;height:200px;background:radial-gradient(circle,rgba(0,196,255,0.07),transparent 70%);top:55%;left:35%;animation-delay:-9s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}50%{transform:translate(25px,-35px) scale(1.08);}100%{transform:translate(-15px,20px) scale(0.95);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(52,211,153,0.05),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .35s ease-out,top .35s ease-out;}
+
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.82);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover,.nav-link.active{color:var(--accent);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s;}
+    .nav-link:hover::after,.nav-link.active::after{width:100%;}
+    .btn-logout{border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:.82rem;padding:7px 16px;border-radius:10px;background:none;cursor:pointer;font-family:inherit;transition:all .3s;}
+    .btn-logout:hover{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.5);}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover,.mobile-menu a.active{color:var(--accent);}
+
+    /* HERO */
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(52,211,153,0.2);background:rgba(52,211,153,0.05);font-size:.8rem;color:var(--accent);}
+    .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s ease-in-out infinite;}
+    @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.6);}}
+    .hero-title{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;}
+    .hero-title .accent-text{background:linear-gradient(135deg,var(--green),#00e89d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+    /* RESPONSE TIME */
+    .response-bar{display:flex;align-items:center;justify-content:center;gap:24px;padding:16px 24px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;flex-wrap:wrap;}
+    .response-item{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);}
+    .response-dot{width:8px;height:8px;border-radius:50%;}
+    .response-item strong{color:var(--fg);}
+
+    /* FORM */
+    .form-card{background:var(--bg-card);border:1px solid var(--border);border-radius:24px;padding:40px 36px;position:relative;overflow:hidden;}
+    .form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),var(--cyan),transparent);opacity:0.5;}
+    .form-group{margin-top:22px;position:relative;}
+    .form-label{display:block;font-size:.78rem;font-weight:500;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em;}
+    .form-input-wrap{position:relative;}
+    .form-input-wrap i.field-icon{position:absolute;left:16px;top:16px;color:#1e2d42;font-size:.9rem;transition:color .3s;pointer-events:none;}
+    .form-input{width:100%;padding:15px 16px 15px 46px;background:var(--input-bg);border:1px solid var(--border);border-radius:12px;color:var(--fg);font-family:inherit;font-size:.92rem;outline:none;transition:all .3s;resize:vertical;}
+    .form-input::placeholder{color:#1a2535;}
+    .form-input:focus{border-color:rgba(52,211,153,0.4);box-shadow:0 0 0 4px rgba(52,211,153,0.06);}
+    .form-input:focus ~ i.field-icon{color:var(--accent);}
+    .form-input.error{border-color:rgba(248,113,113,0.5);box-shadow:0 0 0 4px rgba(248,113,113,0.06);}
+    .char-count{position:absolute;bottom:12px;right:14px;font-size:.7rem;color:#1e2d42;font-family:'JetBrains Mono',monospace;}
+    .error-msg{display:none;font-size:.78rem;color:#f87171;margin-top:6px;align-items:center;gap:6px;}
+    .error-msg.show{display:flex;}
+    .error-msg i{font-size:.7rem;}
+    .btn-submit{width:100%;margin-top:28px;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--green),#00e89d);color:#060a10;font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;}
+    .btn-submit:hover{box-shadow:0 0 30px rgba(52,211,153,0.25);transform:translateY(-2px);}
+    .btn-submit:active{transform:scale(.98);}
+    .btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+    .btn-submit .spinner{display:none;width:18px;height:18px;border:2px solid rgba(6,10,16,0.3);border-top-color:#060a10;border-radius:50%;animation:spin .6s linear infinite;}
+    .btn-submit.loading .spinner{display:block;}
+    .btn-submit.loading .btn-text{display:none;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* CONTACT CARDS */
+    .contact-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;transition:all .4s;cursor:pointer;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden;}
+    .contact-card::after{content:'';position:absolute;inset:0;border-radius:20px;padding:1px;background:linear-gradient(160deg,transparent 40%,var(--cc,rgba(52,211,153,0.2)) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .4s;}
+    .contact-card:hover::after{opacity:1;}
+    .contact-card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,0.3);}
+    .contact-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin:0 auto 16px;transition:transform .3s;}
+    .contact-card:hover .contact-icon{transform:scale(1.08);}
+    .contact-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+    .contact-value{font-size:.95rem;font-weight:600;margin-top:6px;line-height:1.4;}
+    .contact-hint{font-size:.72rem;color:#2a3a4e;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.03);}
+
+    /* FAQ */
+    .faq-item{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .35s;}
+    .faq-item:hover{border-color:rgba(255,255,255,0.08);}
+    .faq-item.open{border-color:rgba(52,211,153,0.2);}
+    .faq-btn{width:100%;text-align:left;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;background:none;border:none;color:var(--fg);font-family:inherit;font-size:.92rem;font-weight:500;cursor:pointer;transition:background .3s;}
+    .faq-btn:hover{background:rgba(255,255,255,0.015);}
+    .faq-btn .chevron{color:var(--muted);font-size:.75rem;transition:transform .3s;flex-shrink:0;}
+    .faq-item.open .chevron{transform:rotate(180deg);}
+    .faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s;padding:0 22px;font-size:.88rem;color:var(--muted);line-height:1.75;}
+    .faq-item.open .faq-answer{max-height:200px;padding:0 22px 20px;}
+    .faq-answer strong{color:var(--fg);}
+
+    /* SECTION TAG */
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);display:flex;align-items:center;gap:8px;}
+    .section-tag::before{content:'';width:20px;height:1px;background:var(--accent);}
+
+    /* CTA */
+    .cta-box{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border);background:var(--bg-card);}
+    .cta-box::before{content:'';position:absolute;inset:0;background:linear-gradient(170deg,rgba(52,211,153,0.04) 0%,transparent 50%,rgba(0,196,255,0.03) 100%);pointer-events:none;}
+
+    /* HOURS */
+    .hours-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .hours-row:last-child{border-bottom:none;}
+    .hours-day{font-size:.88rem;font-weight:500;}
+    .hours-time{font-size:.85rem;color:var(--muted);}
+    .hours-open{color:var(--green);font-weight:600;}
+
+    /* FOOTER */
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent);}
+
+    /* TOAST */
+    .toast-container{position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;}
+    .toast{padding:14px 20px;border-radius:14px;font-size:.85rem;min-width:280px;max-width:380px;backdrop-filter:blur(12px);box-shadow:0 10px 40px rgba(0,0,0,0.5);animation:toastIn .4s cubic-bezier(.4,0,.2,1) both;display:flex;align-items:center;gap:10px;}
+    .toast.success{background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.25);color:var(--accent);}
+    .toast.error{background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.25);color:#f87171;}
+    .toast.removing{animation:toastOut .3s ease-in both;}
+    @keyframes toastIn{from{opacity:0;transform:translateX(40px) scale(.95);}to{opacity:1;transform:translateX(0) scale(1);}}
+    @keyframes toastOut{to{opacity:0;transform:translateX(40px) scale(.95);}}
+
+    /* REVEAL */
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.vis{opacity:1;transform:translateY(0);}
+    .stagger>*{opacity:0;transform:translateY(20px);transition:opacity .5s ease-out,transform .5s ease-out;}
+    .stagger.vis>*:nth-child(1){transition-delay:0s;opacity:1;transform:translateY(0);}
+    .stagger.vis>*:nth-child(2){transition-delay:.1s;opacity:1;transform:translateY(0);}
+    .stagger.vis>*:nth-child(3){transition-delay:.2s;opacity:1;transform:translateY(0);}
+
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:768px){
+      .contact-grid{grid-template-columns:1fr!important;}
+      .form-card{padding:28px 22px;}
+      .hours-grid{grid-template-columns:1fr!important;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkkCloud</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="hidden md:flex items-center gap-7">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="store.html" class="nav-link">Store</a>
+        <a href="support.html" class="nav-link">Support</a>
+        <a href="contact.html" class="nav-link active">Contact</a>
+      </div>
+      <button id="logoutBtn" class="btn-logout hidden md:inline-flex"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+      <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+        <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+        <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="store.html">Store</a>
+    <a href="support.html">Support</a>
+    <a href="contact.html" class="active">Contact</a>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <!-- Hero -->
+  <section style="padding:140px 24px 24px;text-align:center;">
+    <div class="reveal" style="display:inline-flex;flex-direction:column;align-items:center;">
+      <div class="hero-badge" style="margin-bottom:24px;">
+        <span class="dot"></span>
+        Respons Cepat
+      </div>
+      <h1 class="hero-title">
+        <span class="accent-text">Hubungi</span> Kami
+      </h1>
+      <p style="color:var(--muted);margin-top:16px;max-width:460px;line-height:1.7;font-size:1.05rem;">
+        Ada pertanyaan, mau order, atau butuh bantuan? Tim kami siap merespon dengan cepat.
+      </p>
+    </div>
+  </section>
+
+  <!-- Response Time Bar -->
+  <section style="max-width:700px;margin:0 auto;padding:12px 24px 48px;">
+    <div class="response-bar reveal">
+      <div class="response-item">
+        <span class="response-dot" style="background:var(--green);animation:pulse-dot 2s ease-in-out infinite;"></span>
+        <span>WhatsApp: <strong style="color:var(--green);">Online</strong></span>
+      </div>
+      <div class="response-item" style="color:#1e2d42;">|</div>
+      <div class="response-item">
+        <i class="fas fa-bolt" style="font-size:.7rem;color:var(--amber);"></i>
+        <span>Rata-rata respon: <strong>&lt;10 menit</strong></span>
+      </div>
+      <div class="response-item" style="color:#1e2d42;">|</div>
+      <div class="response-item">
+        <i class="fas fa-clock" style="font-size:.7rem;color:var(--cyan);"></i>
+        <span id="liveTime" class="font-mono" style="font-size:.73rem;">--:--:--</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Cards -->
+  <section style="max-width:900px;margin:0 auto;padding:0 24px 56px;">
+    <div class="reveal" style="margin-bottom:40px;">
+      <div class="section-tag">Kanal</div>
+      <h2 style="font-size:1.8rem;font-weight:700;margin-top:8px;">Pilih Cara Menghubungi</h2>
+    </div>
+    <div class="contact-grid stagger reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;">
+
+      <a href="https://wa.me/6282189822272" target="_blank" class="contact-card" style="--cc:rgba(52,211,153,0.2);">
+        <div class="contact-icon" style="background:rgba(52,211,153,0.1);color:var(--green);"><i class="fab fa-whatsapp"></i></div>
+        <div class="contact-label">WhatsApp</div>
+        <div class="contact-value">082189822272</div>
+        <div class="contact-hint">Respon tercepat</div>
+      </a>
+
+      <a href="mailto:cahyobagaskoro03@gmail.com" class="contact-card" style="--cc:rgba(0,196,255,0.2);">
+        <div class="contact-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-envelope"></i></div>
+        <div class="contact-label">Email</div>
+        <div class="contact-value" style="font-size:.85rem;">cahyobagaskoro03@gmail.com</div>
+        <div class="contact-hint">Untuk detail teknis</div>
+      </a>
+
+      <a href="http://discordapp.com/users/1274924147948126219" target="_blank" class="contact-card" style="--cc:rgba(88,101,242,0.2);">
+        <div class="contact-icon" style="background:rgba(88,101,242,0.1);color:#7c85f5;"><i class="fab fa-discord"></i></div>
+        <div class="contact-label">Discord</div>
+        <div class="contact-value">HyunkkCloud</div>
+        <div class="contact-hint">Komunitas & support</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Form + Info Grid -->
+  <section style="max-width:1000px;margin:0 auto;padding:0 24px 72px;">
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:24px;" class="reveal" id="formGrid">
+
+      <!-- Contact Form -->
+      <div class="form-card">
+        <div class="section-label">Kirim Pesan</div>
+        <h2 style="font-size:1.3rem;font-weight:700;margin-bottom:4px;">Formulir Kontak</h2>
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:8px;">Isi form di bawah, pesan akan dikirim via WhatsApp.</p>
+
+        <form id="contactForm" onsubmit="event.preventDefault();">
+
+          <div class="form-group">
+            <label class="form-label" for="nama">Nama</label>
+            <div class="form-input-wrap">
+              <input id="nama" type="text" class="form-input" placeholder="Nama lengkap kamu" autocomplete="name">
+              <i class="fas fa-user field-icon"></i>
+            </div>
+            <div class="error-msg" id="namaError"><i class="fas fa-circle-exclamation"></i><span></span></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <div class="form-input-wrap">
+              <input id="email" type="email" class="form-input" placeholder="nama@email.com" autocomplete="email">
+              <i class="fas fa-envelope field-icon"></i>
+            </div>
+            <div class="error-msg" id="emailError"><i class="fas fa-circle-exclamation"></i><span></span></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="subjek">Subjek</label>
+            <div class="form-input-wrap">
+              <input id="subjek" type="text" class="form-input" placeholder="Contoh: Pemesanan VPS 4GB">
+              <i class="fas fa-tag field-icon"></i>
+            </div>
+            <div class="error-msg" id="subjekError"><i class="fas fa-circle-exclamation"></i><span></span></div>
+          </div>
+
+          <div class="form-group" style="position:relative;">
+            <label class="form-label" for="pesan">Pesan</label>
+            <div class="form-input-wrap">
+              <textarea id="pesan" class="form-input" placeholder="Jelaskan kebutuhan atau pertanyaanmu..." rows="5" style="min-height:120px;"></textarea>
+              <i class="fas fa-comment-dots field-icon"></i>
+            </div>
+            <span class="char-count" id="charCount">0/500</span>
+            <div class="error-msg" id="pesanError"><i class="fas fa-circle-exclamation"></i><span></span></div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btnSubmit" onclick="kirimPesan()">
+            <i class="fab fa-whatsapp" style="font-size:1.05rem;"></i>
+            <span class="btn-text">Kirim via WhatsApp</span>
+            <div class="spinner"></div>
+          </button>
+
+        </form>
+      </div>
+
+      <!-- Side Info -->
+      <div style="display:flex;flex-direction:column;gap:18px;">
+
+        <!-- Quick Info -->
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--green),#00e89d);display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-bolt" style="color:#060a10;font-size:1rem;"></i>
+            </div>
+            <div>
+              <h4 style="font-weight:600;font-size:.95rem;">Fast Response</h4>
+              <p style="font-size:.78rem;color:var(--muted);">Rata-rata &lt;5 menit</p>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,232,157,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-check" style="color:var(--accent);font-size:.75rem;"></i>
+              </div>
+              <div>
+                <p style="font-size:.83rem;font-weight:500;">Tidak perlu daftar</p>
+                <p style="font-size:.72rem;color:var(--muted);">Langsung chat via WhatsApp</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,196,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-check" style="color:var(--cyan);font-size:.75rem;"></i>
+              </div>
+              <div>
+                <p style="font-size:.83rem;font-weight:500;">Konsultasi gratis</p>
+                <p style="font-size:.72rem;color:var(--muted);">Bantu pilih paket yang tepat</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(167,139,250,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-check" style="color:var(--purple);font-size:.75rem;"></i>
+              </div>
+              <div>
+                <p style="font-size:.83rem;font-weight:500;">Support 24/7</p>
+                <p style="font-size:.72rem;color:var(--muted);">Termasuk weekend & hari libur</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operating Hours -->
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div class="section-label" style="margin-bottom:16px;">Jam Operasional</div>
+          <div>
+            <div class="hours-row">
+              <span class="hours-day">Senin - Jumat</span>
+              <span class="hours-time hours-open">08:00 - 22:00 WITA</span>
+            </div>
+            <div class="hours-row">
+              <span class="hours-day">Sabtu - Minggu</span>
+              <span class="hours-time hours-open">09:00 - 22:00 WITA</span>
+            </div>
+            <div class="hours-row">
+              <span class="hours-day">Hari Libur Nasional</span>
+              <span class="hours-time" style="color:var(--amber);">8:00 - 20:00 WIB</span>
+            </div>
+          </div>
+          <p style="font-size:.72rem;color:#2a3a4e;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.03);">
+            <i class="fas fa-circle-info" style="margin-right:4px;"></i> Di luar jam operasional, tetap bisa chat — respon mungkin akan lebih lama.
+          </p>
+        </div>
+
+        <!-- Location -->
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;">
+          <div class="section-label" style="margin-bottom:16px;">Lokasi Server</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(0,196,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-server" style="color:var(--cyan);font-size:.8rem;"></i>
+              </div>
+              <div>
+                <p style="font-size:.85rem;font-weight:500;">Singapore</p>
+                <p style="font-size:.72rem;color:var(--muted);">Asia Pacific • Low latency</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:36px;height:36px;border-radius:10px;background:rgba(52,211,153,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas fa-server" style="color:var(--green);font-size:.8rem;"></i>
+              </div>
+              <div>
+                <p style="font-size:.85rem;font-weight:500;">Jakarta, Indonesia</p>
+                <p style="font-size:.72rem;color:var(--muted);">Local access • Domestic route</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section style="max-width:720px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal" style="text-align:center;margin-bottom:36px;">
+      <div class="section-tag" style="justify-content:center;">FAQ</div>
+      <h2 style="font-size:1.5rem;font-weight:700;margin-top:8px;">Pertanyaan Seputar Kontak</h2>
+    </div>
+    <div class="reveal" style="display:flex;flex-direction:column;gap:10px;">
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">
+          <span>Berapa lama respon dari tim support?</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="faq-answer">
+          Rata-rata kami merespon dalam <strong>kurang dari 15 menit</strong> via WhatsApp pada jam operasional. Di luar jam operasional, respon bisa memakan waktu lebih lama.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">
+          <span>Bisa konsultasi dulu sebelum order?</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="faq-answer">
+          Tentu! Kami siap membantu kamu memilih paket yang paling sesuai kebutuhan dan budget. <strong>Tanpa biaya</strong>, tanpa kewajiban order.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">
+          <span>Apa bedanya kontak via WhatsApp dan Email?</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="faq-answer">
+          <strong>WhatsApp</strong> untuk respon tercepat, cocok untuk order, pertanyaan cepat, dan koordinasi. <strong>Email</strong> untuk diskusi detail teknis, pengiriman dokumen, atau komunikasi formal.
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">
+          <span>Saya dari luar Indonesia, bisa order?</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="faq-answer">
+          Bisa! Kami melayani customer dari seluruh dunia. Pembayaran bisa via PayPal. Hubungi kami via WhatsApp untuk informasi lebih lanjut.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="max-width:900px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal cta-box" style="text-align:center;padding:56px 40px;">
+      <div style="position:relative;">
+        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:10px;">Langsung Chat Sekarang</h2>
+        <p style="color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.7;font-size:.95rem;">
+          Tidak perlu isi form — klik tombol di bawah untuk langsung terhubung ke tim kami via WhatsApp.
+        </p>
+        <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20ingin%20bertanya%20tentang%20layanan%20HyunkkCloud" target="_blank"
+           style="display:inline-flex;align-items:center;gap:10px;padding:16px 32px;border-radius:14px;background:linear-gradient(135deg,var(--green),#00e89d);color:#060a10;font-weight:700;font-size:.95rem;text-decoration:none;transition:all .3s;"
+           onmouseover="this.style.boxShadow='0 0 35px rgba(52,211,153,0.3)';this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+          <i class="fab fa-whatsapp" style="font-size:1.1rem;"></i> Chat Langsung
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.92);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">HyunkkCloud</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:300px;">Hosting modern dengan performa tinggi dan support aktif 24/7.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Menu</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="support.html" class="footer-link">Support</a>
+        <a href="cv.html" class="footer-link">CV</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fas fa-envelope" style="width:16px;color:var(--accent);font-size:.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:.78rem;color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.68rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  /* === PARTICLES === */
+  const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+  let pArr=[];
+  function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  resizeCanvas();
+  window.addEventListener('resize',resizeCanvas);
+  for(let i=0;i<45;i++){pArr.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()*1.2+0.3,speedX:(Math.random()-0.5)*0.2,speedY:(Math.random()-0.5)*0.2,opacity:Math.random()*0.3+0.08});}
+  function animP(){ctx.clearRect(0,0,canvas.width,canvas.height);pArr.forEach(p=>{p.x+=p.speedX;p.y+=p.speedY;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.1,p.size),0,Math.PI*2);ctx.fillStyle=`rgba(52,211,153,${p.opacity})`;ctx.fill();});for(let i=0;i<pArr.length;i++)for(let j=i+1;j<pArr.length;j++){const dx=pArr[i].x-pArr[j].x,dy=pArr[i].y-pArr[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<100){ctx.beginPath();ctx.moveTo(pArr[i].x,pArr[i].y);ctx.lineTo(pArr[j].x,pArr[j].y);ctx.strokeStyle=`rgba(52,211,153,${0.03*(1-d/100)})`;ctx.lineWidth=0.5;ctx.stroke();}}requestAnimationFrame(animP);}
+  animP();
+
+  /* === MOUSE GLOW === */
+  const mg=document.getElementById('mouseGlow');
+  document.addEventListener('mousemove',e=>{mg.style.left=e.clientX+'px';mg.style.top=e.clientY+'px';});
+
+  /* === NAVBAR === */
+  const navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',()=>navbar.classList.toggle('scrolled',window.scrollY>50));
+
+  /* === MOBILE MENU === */
+  const menuBtn=document.getElementById('menuBtn'),mobileMenu=document.getElementById('mobileMenu'),mOpen=document.getElementById('menuIconOpen'),mClose=document.getElementById('menuIconClose');
+  menuBtn.addEventListener('click',()=>{const o=mobileMenu.classList.toggle('open');mOpen.style.display=o?'none':'inline';mClose.style.display=o?'inline':'none';});
+
+  /* === LIVE TIME === */
+  function updateLiveTime(){const n=new Date();document.getElementById('liveTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
+  updateLiveTime();setInterval(updateLiveTime,1000);
+
+  /* === SCROLL REVEAL === */
+  const rObs=new IntersectionObserver(e=>e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');}),{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(el=>rObs.observe(el));
+
+  /* === CHAR COUNT === */
+  const pesanInput=document.getElementById('pesan');
+  const charCount=document.getElementById('charCount');
+  pesanInput.addEventListener('input',()=>{
+    const len=pesanInput.value.length;
+    charCount.textContent=len+'/500';
+    charCount.style.color=len>450?'var(--amber)':len>500?'var(--red)':'#1e2d42';
+  });
+
+  /* === ERROR HELPERS === */
+  function showError(id,msg){const el=document.getElementById(id);el.querySelector('span').textContent=msg;el.classList.add('show');}
+  function hideError(id){document.getElementById(id).classList.remove('show');}
+  function clearErrors(){document.querySelectorAll('.error-msg').forEach(e=>e.classList.remove('show'));document.querySelectorAll('.form-input').forEach(e=>e.classList.remove('error'));}
+
+  /* === VALIDATE === */
+  function validate(){
+    let valid=true;clearErrors();
+    const nama=document.getElementById('nama').value.trim();
+    const email=document.getElementById('email').value.trim();
+    const subjek=document.getElementById('subjek').value.trim();
+    const pesan=document.getElementById('pesan').value.trim();
+
+    if(!nama){showError('namaError','Nama wajib diisi');document.getElementById('nama').classList.add('error');valid=false;}
+    if(!email){showError('emailError','Email wajib diisi');document.getElementById('email').classList.add('error');valid=false;}
+    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showError('emailError','Format email tidak valid');document.getElementById('email').classList.add('error');valid=false;}
+    if(!subjek){showError('subjekError','Subjek wajib diisi');document.getElementById('subjek').classList.add('error');valid=false;}
+    if(!pesan){showError('pesanError','Pesan wajib diisi');document.getElementById('pesan').classList.add('error');valid=false;}
+    else if(pesan.length>500){showError('pesanError','Pesan maksimal 500 karakter');document.getElementById('pesan').classList.add('error');valid=false;}
+
+    return valid;
+  }
+
+  /* === TOAST === */
+  function showToast(msg,type){
+    const c=document.getElementById('toastContainer');
+    const t=document.createElement('div');
+    t.className=`toast ${type}`;
+    const icon=type==='success'?'fa-circle-check':'fa-circle-xmark';
+    t.innerHTML=`<i class="fas ${icon}"></i><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(()=>{t.classList.add('removing');setTimeout(()=>t.remove(),300);},3500);
+  }
+
+  /* === FAQ === */
+  function toggleFaq(btn){
+    const item=btn.parentElement,wasOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i=>i.classList.remove('open'));
+    if(!wasOpen)item.classList.add('open');
+  }
+
+  /* === KIRIM PESAN === */
+  window.kirimPesan=()=>{
+    if(!validate())return;
+
+    const btn=document.getElementById('btnSubmit');
+    btn.classList.add('loading');btn.disabled=true;
+
+    const nama=document.getElementById('nama').value.trim();
+    const email=document.getElementById('email').value.trim();
+    const subjek=document.getElementById('subjek').value.trim();
+    const pesan=document.getElementById('pesan').value.trim();
+    const nomor='6282189822272';
+
+    const text=`Halo, saya ${nama}%0AEmail: ${email}%0ASubjek: ${subjek}%0A%0APesan:%0A${pesan}`;
+
+    setTimeout(()=>{
+      btn.classList.remove('loading');btn.disabled=false;
+      showToast('Mengarahkan ke WhatsApp...','success');
+      setTimeout(()=>{window.open(`https://wa.me/${nomor}?text=${encodeURIComponent(text)}`,'_blank');},500);
+    },800);
+  };
+
+  /* === RESPONSIVE FORM GRID === */
+  function handleResize(){
+    const g=document.getElementById('formGrid');
+    if(window.innerWidth<768){g.style.gridTemplateColumns='1fr';}
+    else{g.style.gridTemplateColumns='1.2fr 1fr';}
+  }
+  handleResize();
+  window.addEventListener('resize',handleResize);
+</script>
+
+<!-- Firebase Auth -->
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  const firebaseConfig={apiKey:"AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",authDomain:"loginpage-2e5aa.firebaseapp.com",projectId:"loginpage-2e5aa",appId:"1:676993662276:web:d8e12ca898fb4c0364eb11"};
+  const app=initializeApp(firebaseConfig),auth=getAuth(app);
+  onAuthStateChanged(auth,(user)=>{if(!user)window.location.href="login.html";});
+  function handleLogout(){signOut(auth).then(()=>{window.location.href="login.html";}).catch(()=>{});}
+  document.getElementById('logoutBtn').addEventListener('click',handleLogout);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kenapa VPS Lebih Kencang? - HyunkkCloud</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg:#060a10;--bg-card:#0c1220;--fg:#e8ecf2;--muted:#5a6a80;
+      --accent:#00c4ff;--accent2:#00e89d;--border:#152035;
+      --cyan:#00c4ff;--green:#00e89d;--purple:#a78bfa;
+      --amber:#fbbf24;--red:#f87171;--pink:#f472b6;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,196,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,255,0.025) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;animation:orbFloat 14s ease-in-out infinite alternate;}
+    .orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(0,196,255,0.12),transparent 70%);top:-130px;right:-100px;}
+    .orb-2{width:300px;height:300px;background:radial-gradient(circle,rgba(0,232,157,0.07),transparent 70%);bottom:10%;left:-80px;animation-delay:-5s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-30px) scale(1.06);}100%{transform:translate(-10px,15px) scale(0.96);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:450px;height:450px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,255,0.05),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .35s ease-out,top .35s ease-out;}
+
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.82);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover{color:var(--accent);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s;}
+    .nav-link:hover::after{width:100%;}
+    .btn-logout{border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:.82rem;padding:7px 16px;border-radius:10px;background:none;cursor:pointer;font-family:inherit;transition:all .3s;}
+    .btn-logout:hover{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.5);}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover{color:var(--accent);}
+
+    .blog-hero{position:relative;padding:140px 24px 40px;text-align:center;overflow:hidden;}
+    .blog-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center top,rgba(0,196,255,0.06) 0%,transparent 60%);pointer-events:none;}
+    .blog-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;border:1px solid rgba(0,196,255,0.2);background:rgba(0,196,255,0.05);font-size:.8rem;color:var(--accent);}
+    .blog-tag i{font-size:.7rem;}
+    .blog-title{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;letter-spacing:-0.03em;margin-top:24px;position:relative;}
+    .blog-title .accent{background:linear-gradient(135deg,var(--accent),#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .blog-meta{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:20px;flex-wrap:wrap;color:var(--muted);font-size:.85rem;}
+    .blog-meta span{display:flex;align-items:center;gap:6px;}
+    .blog-meta i{font-size:.75rem;}
+
+    .reading-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:200;width:0;transition:width .1s linear;}
+
+    .toc{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;position:sticky;top:100px;}
+    .toc-title{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+    .toc-title i{font-size:.75rem;}
+    .toc-link{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:.85rem;color:var(--muted);text-decoration:none;transition:all .25s;border-left:2px solid transparent;}
+    .toc-link:hover{color:var(--fg);background:rgba(0,196,255,0.04);border-left-color:var(--accent);}
+    .toc-link.active{color:var(--accent);border-left-color:var(--accent);background:rgba(0,196,255,0.06);}
+    .toc-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:#2a3a4e;min-width:18px;}
+
+    .article-body{font-size:1rem;line-height:1.85;color:#a0aec0;}
+    .article-body p{margin-bottom:24px;}
+    .article-body h2{font-size:1.5rem;font-weight:700;color:var(--fg);margin-top:48px;margin-bottom:16px;display:flex;align-items:center;gap:14px;}
+    .article-body h2 .num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:rgba(0,196,255,0.1);color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:700;flex-shrink:0;}
+    .article-body strong{color:var(--fg);font-weight:600;}
+
+    .highlight-box{background:rgba(0,196,255,0.05);border:1px solid rgba(0,196,255,0.15);border-radius:14px;padding:24px;margin:28px 0;}
+    .highlight-box p{color:var(--fg);margin-bottom:0!important;font-size:.95rem;line-height:1.7;}
+    .highlight-box i{color:var(--accent);margin-right:8px;}
+
+    .comp-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin:32px 0;}
+    .comp-table thead th{padding:16px 18px;font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);text-align:left;}
+    .comp-table thead th:not(:first-child){text-align:center;}
+    .comp-table thead th:first-child{width:40%;}
+    .comp-table tbody td{padding:14px 18px;font-size:.88rem;color:#8a96a8;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .comp-table tbody td:not(:first-child){text-align:center;}
+    .comp-table tbody tr:last-child td{border-bottom:none;}
+    .comp-table tbody tr:hover{background:rgba(0,196,255,0.02);}
+    .comp-table .aspect{font-weight:600;color:var(--fg);}
+    .comp-table .check{color:var(--accent);}
+    .comp-table .cross{color:var(--red);}
+    .comp-table .partial{color:var(--amber);}
+    .comp-table .win{background:rgba(0,196,255,0.04);}
+
+    .diagram{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:32px 0;}
+    .diag-box{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center;transition:all .35s;position:relative;overflow:hidden;}
+    .diag-box:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.25);}
+    .diag-box.vps{border-color:rgba(0,196,255,0.2);}
+    .diag-box.vps::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),#38bdf8);}
+    .diag-box.shared{border-color:rgba(248,113,113,0.15);}
+    .diag-box.shared::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#f87171,#fb923c);}
+    .diag-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto 16px;}
+    .diag-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;}
+    .diag-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;}
+    .diag-meters{display:flex;flex-direction:column;gap:12px;}
+    .diag-meter{display:flex;align-items:center;gap:12px;}
+    .diag-meter-label{font-size:.8rem;color:var(--muted);min-width:80px;text-align:right;}
+    .diag-meter-bar{flex:1;height:8px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;}
+    .diag-meter-fill{height:100%;border-radius:4px;transition:width 1.2s ease-out;width:0;}
+    .diag-meter-val{font-family:'JetBrains Mono',monospace;font-size:.78rem;min-width:38px;text-align:right;}
+
+    .takeaway{display:flex;align-items:flex-start;gap:14px;padding:18px;border-radius:12px;background:rgba(0,196,255,0.04);border:1px solid rgba(0,196,255,0.1);margin-bottom:12px;}
+    .takeaway:last-child{margin-bottom:0;}
+    .takeaway-num{width:28px;height:28px;border-radius:8px;background:rgba(0,196,255,0.15);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--accent);flex-shrink:0;font-weight:700;}
+    .takeaway-text{font-size:.9rem;color:#a0aec0;line-height:1.6;}
+    .takeaway-text strong{color:var(--fg);}
+
+    .related-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .4s;text-decoration:none;color:inherit;display:block;}
+    .related-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.08);}
+    .related-card:hover .related-img img{transform:scale(1.05);}
+    .related-img{height:160px;overflow:hidden;}
+    .related-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;}
+    .related-tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+    .related-title{font-size:1rem;font-weight:600;margin-bottom:6px;}
+    .related-desc{font-size:.82rem;color:var(--muted);line-height:1.6;}
+
+    .cta-box{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--border);background:var(--bg-card);}
+    .cta-box::before{content:'';position:absolute;inset:0;background:linear-gradient(170deg,rgba(0,196,255,0.04) 0%,transparent 50%,rgba(0,232,157,0.03) 100%);pointer-events:none;}
+
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);display:flex;align-items:center;gap:8px;}
+    .section-tag::before{content:'';width:20px;height:1px;background:var(--accent);}
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent);}
+
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.vis{opacity:1;transform:translateY(0);}
+
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:1024px){.blog-layout{grid-template-columns:1fr!important;}.toc{position:static!important;order:-1;}}
+    @media(max-width:768px){
+      .diagram{grid-template-columns:1fr!important;}
+      .comp-wrap{overflow-x:auto;}
+      .related-grid{grid-template-columns:1fr!important;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+<div class="reading-progress" id="readProgress"></div>
+
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.85rem;">H</div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkkCloud</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="hidden md:flex items-center gap-7">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="store.html" class="nav-link">Store</a>
+        <a href="support.html" class="nav-link">Support</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <button id="logoutBtn" class="btn-logout hidden md:inline-flex"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+      <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+        <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+        <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="store.html">Store</a>
+    <a href="support.html">Support</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <section class="blog-hero">
+    <div class="reveal">
+      <div class="blog-tag"><i class="fas fa-bolt"></i> VPS Guide</div>
+      <h1 class="blog-title">Kenapa VPS<br><span class="accent">Lebih Kencang?</span></h1>
+      <div class="blog-meta">
+        <span><i class="fas fa-user"></i> Hyunk</span>
+        <span style="color:#1e2d42;">|</span>
+        <span><i class="fas fa-calendar"></i> 15 Jan 2025</span>
+        <span style="color:#1e2d42;">|</span>
+        <span><i class="fas fa-clock"></i> 5 menit baca</span>
+        <span style="color:#1e2d42;">|</span>
+        <span><i class="fas fa-folder"></i> VPS</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 72px;">
+    <div class="blog-layout reveal" style="display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start;">
+
+      <aside class="toc" id="toc">
+        <div class="toc-title"><i class="fas fa-list"></i> Daftar Isi</div>
+        <a href="#pendahuluan" class="toc-link" data-section="pendahuluan"><span class="toc-num">01</span>Pendahuluan</a>
+        <a href="#dedicated" class="toc-link" data-section="dedicated"><span class="toc-num">02</span>Resource Dedicated</a>
+        <a href="#stabil" class="toc-link" data-section="stabil"><span class="toc-num">03</span>Performa Stabil</a>
+        <a href="#root" class="toc-link" data-section="root"><span class="toc-num">04</span>Akses Root Penuh</a>
+        <a href="#fleksibel" class="toc-link" data-section="fleksibel"><span class="toc-num">05</span>Lebih Fleksibel</a>
+        <a href="#skalabilitas" class="toc-link" data-section="skalabilitas"><span class="toc-num">06</span>Skalabilitas</a>
+        <a href="#perbandingan" class="toc-link" data-section="perbandingan"><span class="toc-num">07</span>Perbandingan</a>
+        <a href="#kesimpulan" class="toc-link" data-section="kesimpulan"><span class="toc-num">08</span>Kesimpulan</a>
+      </aside>
+
+      <article id="article">
+        <div class="article-body">
+
+          <p id="pendahuluan">
+            Banyak orang bertanya kenapa VPS terasa lebih cepat dibanding shared hosting. Jawabannya bukan magic — ada alasan teknis yang sangat jelas di baliknya. Di artikel ini, kita akan membahas 6 alasan utama kenapa VPS memberikan performa yang lebih baik, dilengkapi data perbandingan dan penjelasan visual.
+          </p>
+
+          <div class="highlight-box">
+            <p><i class="fas fa-lightbulb"></i><strong>Intinya:</strong> VPS memberikan resource yang tidak dibagi secara sembarangan dengan pengguna lain, sehingga performa lebih konsisten dan bisa diprediksi — krusial untuk server game dan aplikasi serius.</p>
+          </div>
+
+          <h2 id="dedicated"><span class="num">01</span>Resource Dedicated</h2>
+          <p>
+            Di shared hosting, kamu berbagi satu server dengan ratusan bahkan ribuan pengguna lain. CPU, RAM, dan I/O disk semuanya dipakai bersama. Saat salah satu user mendapat lonjakan traffic, semua pengguna lain terkena dampaknya.
+          </p>
+          <p>
+            <strong>VPS mengubah ini completely.</strong> Kamu mendapatkan alokasi CPU core dan RAM yang dijamin untuk kamu sendiri. Tidak ada "tetangga" yang tiba-tiba mengambil resource kamu. Ini berarti performa server kamu <strong>prediktabilitas dan konsisten</strong>, bukan naik-turun secara tidak terduga.
+          </p>
+
+          <h2 id="stabil"><span class="num">02</span>Performa Lebih Stabil</h2>
+          <p>
+            Karena resource tidak dibagi, VPS memberikan latency yang lebih rendah dan throughput yang lebih tinggi secara konsisten. Ini sangat penting untuk server Minecraft yang butuh tick rate stabil, atau aplikasi yang butuh response time cepat.
+          </p>
+          <p>
+            Di shared hosting, saat peak hour, response time bisa melonjak dari 200ms ke 2000ms+. Di VPS, response time cenderung <strong>flat dan stabil</strong> karena resource kamu terisolasi.
+          </p>
+
+          <h2 id="root"><span class="num">03</span>Akses Root Penuh</h2>
+          <p>
+            Shared hosting tidak memberikan akses root — kamu terbatas pada apa yang disediakan panel hosting. Tidak bisa install custom software, tidak bisa optimasi kernel, tidak bisa ubah konfigurasi mendalam.
+          </p>
+          <p>
+            Dengan <strong>akses root penuh</strong>, kamu bisa: install software apapun, optimasi kernel parameters, setup custom firewall rules, konfigurasi swap, tune database, dan banyak lagi. Kontrol penuh atas servermu.
+          </p>
+
+          <h2 id="fleksibel"><span class="num">04</span>Lebih Fleksibel</h2>
+          <p>
+            VPS bisa digunakan untuk <strong>apa saja</strong> — tidak dibatasi oleh jenis layanan hosting tertentu. Beberapa use case populer:
+          </p>
+          <p>
+            Hosting website, server game (Minecraft, FiveM, Valheim), bot Discord/Telegram, VPN personal, development environment, panel hosting (Pterodactyl), database server, API backend, monitoring tools, dan masih banyak lagi. <strong>Satu VPS, unlimited kemungkinan.</strong>
+          </p>
+
+          <h2 id="skalabilitas"><span class="num">05</span>Skalabilitas</h2>
+          <p>
+            Butuh resource lebih? Di VPS, kamu bisa upgrade CPU, RAM, dan storage tanpa harus migrasi data atau ganti server. Cukup kontak support, dan dalam hitungan menit resource kamu sudah dinaikkan. <strong>Tidak ada downtime, tidak ada migrasi manual.</strong>
+          </p>
+          <p>
+            Di shared hosting, upgrade sering berarti pindah ke paket yang lebih mahal secara keseluruhan — dan proses migrasi bisa memakan waktu berjam-jam dengan risiko data hilang.
+          </p>
+
+          <div class="diagram reveal">
+            <div class="diag-box vps">
+              <div class="diag-label">VPS Server</div>
+              <div class="diag-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-server"></i></div>
+              <div class="diag-title">Resource Terisolasi</div>
+              <div class="diag-meters">
+                <div class="diag-meter">
+                  <span class="diag-meter-label">CPU</span>
+                  <div class="diag-meter-bar"><div class="diag-meter-fill" data-width="92" style="background:linear-gradient(90deg,var(--accent),#38bdf8);"></div></div>
+                  <span class="diag-meter-val" style="color:var(--cyan);">92%</span>
+                </div>
+                <div class="diag-meter">
+                  <span class="diag-meter-label">RAM</span>
+                  <div class="diag-meter-bar"><div class="diag-meter-fill" data-width="88" style="background:linear-gradient(90deg,var(--accent),#38bdf8);"></div></div>
+                  <span class="diag-meter-val" style="color:var(--cyan);">88%</span>
+                </div>
+                <div class="diag-meter">
+                  <span class="diag-meter-label">I/O</span>
+                  <div class="diag-meter-bar"><div class="diag-meter-fill" data-width="95" style="background:linear-gradient(90deg,var(--accent),#38bdf8);"></div></div>
+                  <span class="diag-meter-val" style="color:var(--cyan);">95%</span>
+                </div>
+              </div>
+            </div>
+            <div class="diag-box shared">
+              <div class="diag-label">Shared Hosting</div>
+              <div class="diag-icon" style="background:rgba(248,113,113,0.1);color:var(--red);"><i class="fas fa-users"></i></div>
+              <div class="diag-title">Resource Terbagi</div>
+              <div class="diag-meters">
+                <div class="diag-meter">
+                  <span class="diag-meter-label">CPU</span>
+                  <div class="diag-meter-bar"><div class="diag-meter-fill" data-width="45" style="background:linear-gradient(90deg,#f87171,#fb923c);"></div></div>
+                  <span class="diag-meter-val" style="color:var(--red);">45%</span>
+                </div>
+                <div class="diag-meter">
+                  <span class="diag-meter-label">RAM</span>
+                  <div class="diag-meter-bar"><div class="diag-meter-fill" data-width="38" style="background:linear-gradient(90deg,#f87171,#fb923c);"></div></div>
+                  <span class="diag-meter-val" style="color:var(--red);">38%</span>
+                </div>
+                <div class="diag-meter">
+                  <span class="diag-meter-label">I/O</span>
+                  <div class="diag-meter-bar"><div class="diag-meter-fill" data-width="30" style="background:linear-gradient(90deg,#f87171,#fb923c);"></div></div>
+                  <span class="diag-meter-val" style="color:var(--red);">30%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 id="perbandingan"><span class="num">07</span>Perbandingan Lengkap</h2>
+          <div class="comp-wrap">
+            <table class="comp-table">
+              <thead>
+                <tr>
+                  <th>Aspek</th>
+                  <th>VPS</th>
+                  <th>Shared Hosting</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="aspect">CPU</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Dedicated core</td>
+                  <td><span class="partial"><i class="fas fa-minus"></i></span> Dibagi ratusan user</td>
+                </tr>
+                <tr>
+                  <td class="aspect">RAM</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Dedicated allocation</td>
+                  <td><span class="cross"><i class="fas fa-xmark"></i></span> Bisa diambil user lain</td>
+                </tr>
+                <tr>
+                  <td class="aspect">Storage I/O</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> NVMe, tidak terganggu</td>
+                  <td><span class="cross"><i class="fas fa-xmark"></i></span> I/O bottleneck saat ramai</td>
+                </tr>
+                <tr>
+                  <td class="aspect">Akses Root</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Full root access</td>
+                  <td><span class="cross"><i class="fas fa-xmark"></i></span> Terbatas panel</td>
+                </tr>
+                <tr>
+                  <td class="aspect">Custom Software</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Install apa saja</td>
+                  <td><span class="cross"><i class="fas fa-xmark"></i></span> Hanya yang disediakan</td>
+                </tr>
+                <tr>
+                  <td class="aspect">Isolasi Keamanan</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Tidak terpengaruh user lain</td>
+                  <td><span class="cross"><i class="fas fa-xmark"></i></span> Shared environment</td>
+                </tr>
+                <tr>
+                  <td class="aspect">Upgrade</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Tanpa migrasi</td>
+                  <td><span class="partial"><i class="fas fa-minus"></i></span> Migrasi manual</td>
+                </tr>
+                <tr>
+                  <td class="aspect">Performa</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Konsisten & prediktabilitas</td>
+                  <td><span class="cross"><i class="fas fa-xmark"></i></span> Naik-turun tidak stabil</td>
+                </tr>
+                <tr>
+                  <td class="aspect">Harga</td>
+                  <td><span class="partial"><i class="fas fa-minus"></i></span> Lebih mahal</td>
+                  <td class="win"><span class="check"><i class="fas fa-check"></i></span> Lebih murah</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="kesimpulan"><span class="num">08</span>Kesimpulan</h2>
+          <p>
+            VPS lebih kencang karena memberikan resource yang <strong>terisolasi dan dijamin</strong>, bukan dibagi secara sembarangan. Trade-off-nya adalah harga yang lebih tinggi — tapi untuk server game, aplikasi produksi, atau proyek serius, <strong>VPS bukan kemewahan — itu kebutuhan</strong>.
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:28px;">
+            <div class="takeaway"><span class="takeaway-num">1</span><div class="takeaway-text"><strong>Resource dedicated</strong> = performa konsisten tanpa gangguan user lain</div></div>
+            <div class="takeaway"><span class="takeaway-num">2</span><div class="takeaway-text"><strong>Akses root penuh</strong> = kontrol total atas servermu</div></div>
+            <div class="takeaway"><span class="takeaway-num">3</span><div class="takeaway-text"><strong>Skalabilitas tanpa migrasi</strong> = upgrade kapan saja tanpa downtime</div></div>
+            <div class="takeaway"><span class="takeaway-num">!</span><div class="takeaway-text">Untuk <strong>MC server dengan 20+ player</strong>, VPS sudah menjadi kebutuhan, bukan opsi</div></div>
+          </div>
+
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section style="max-width:1100px;margin:0 auto;padding:0 24px 72px;">
+    <div class="reveal" style="margin-bottom:32px;">
+      <div class="section-tag">Artikel Terkait</div>
+      <h2 style="font-size:1.5rem;font-weight:700;margin-top:8px;">Baca Juga</h2>
+    </div>
+    <div class="related-grid reveal" style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">
+      <a href="blog-minecraft.html" class="related-card">
+        <div class="related-img"><img src="https://www.minecraft.net/content/dam/minecraftnet/franchise/component-library/redeemheroa/Redeem-Hero_Mobile_576x324.png" alt="Minecraft" loading="lazy"></div>
+        <div style="padding:20px;">
+          <span class="related-tag" style="background:rgba(0,232,157,0.1);color:var(--green);">Minecraft</span>
+          <h3 class="related-title">Cara Setup Server Minecraft</h3>
+          <p class="related-desc">Panduan lengkap dari nol sampai server siap pakai.</p>
+        </div>
+      </a>
+      <a href="blog-optimasi.html" class="related-card">
+        <div class="related-img"><img src="https://i.pinimg.com/736x/62/3d/82/623d829e13c1bff04bad5943533baab2.jpg" alt="Optimasi" loading="lazy"></div>
+        <div style="padding:20px;">
+          <span class="related-tag" style="background:rgba(251,191,36,0.1);color:var(--amber);">Optimasi</span>
+          <h3 class="related-title">Tips Optimasi Server</h3>
+          <p class="related-desc">Tingkatkan performa tanpa harus upgrade mahal.</p>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section style="max-width:900px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal cta-box" style="text-align:center;padding:56px 40px;">
+      <div style="position:relative;">
+        <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:10px;">Siap Naik ke VPS?</h2>
+        <p style="color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.7;font-size:.95rem;">
+          Mulai dari Rp55.000/bulan. Server aktif dalam 60 detik. Full root access dan SSD NVMe.
+        </p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a href="store-vps.html" style="display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#0090d4);color:#060a10;font-weight:700;font-size:.95rem;text-decoration:none;transition:all .3s;"
+             onmouseover="this.style.boxShadow='0 0 35px rgba(0,196,255,0.3)';this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.boxShadow='none';this.style.transform='translateY(0)'">
+            <i class="fas fa-server" style="font-size:.85rem;"></i> Lihat Paket VPS
+          </a>
+          <a href="contact.html" style="display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:14px;background:transparent;border:1px solid var(--border);color:var(--fg);font-weight:600;font-size:.95rem;text-decoration:none;transition:all .3s;"
+             onmouseover="this.style.borderColor='rgba(0,196,255,0.3)';this.style.background='rgba(0,196,255,0.04)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
+            <i class="fab fa-whatsapp" style="color:var(--green);"></i> Konsultasi
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.92);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">HyunkkCloud</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:300px;">Hosting modern dengan performa tinggi dan support aktif 24/7.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Menu</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="support.html" class="footer-link">Support</a>
+        <a href="contact.html" class="footer-link">Contact</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fas fa-envelope" style="width:16px;color:var(--accent);font-size:.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:.78rem;color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.68rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* === PARTICLES === */
+  var canvas = document.getElementById('particles');
+  var ctx = canvas.getContext('2d');
+  var pArr = [];
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  for (var i = 0; i < 40; i++) {
+    pArr.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.1 + 0.3,
+      speedX: (Math.random() - 0.5) * 0.18,
+      speedY: (Math.random() - 0.5) * 0.18,
+      opacity: Math.random() * 0.25 + 0.06
+    });
+  }
+
+  function animP() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < pArr.length; i++) {
+      var p = pArr[i];
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.1, p.size), 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,196,255,' + p.opacity + ')';
+      ctx.fill();
+    }
+    requestAnimationFrame(animP);
+  }
+  animP();
+
+  /* === MOUSE GLOW === */
+  var mg = document.getElementById('mouseGlow');
+  document.addEventListener('mousemove', function(e) {
+    mg.style.left = e.clientX + 'px';
+    mg.style.top = e.clientY + 'px';
+  });
+
+  /* === NAVBAR SCROLL === */
+  var navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 50) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  });
+
+  /* === MOBILE MENU === */
+  var menuBtn = document.getElementById('menuBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  var mOpen = document.getElementById('menuIconOpen');
+  var mClose = document.getElementById('menuIconClose');
+
+  menuBtn.addEventListener('click', function() {
+    var isOpen = mobileMenu.classList.toggle('open');
+    mOpen.style.display = isOpen ? 'none' : 'inline';
+    mClose.style.display = isOpen ? 'inline' : 'none';
+  });
+
+  /* === READING PROGRESS === */
+  var readProgress = document.getElementById('readProgress');
+  window.addEventListener('scroll', function() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var s = window.scrollY;
+    var p = h > 0 ? (s / h) * 100 : 0;
+    readProgress.style.width = p + '%';
+  });
+
+  /* === TOC ACTIVE STATE === */
+  var sectionIds = ['pendahuluan', 'dedicated', 'stabil', 'root', 'fleksibel', 'skalabilitas', 'perbandingan', 'kesimpulan'];
+  var sectionEls = [];
+  for (var i = 0; i < sectionIds.length; i++) {
+    var el = document.getElementById(sectionIds[i]);
+    if (el) sectionEls.push(el);
+  }
+  var tocLinks = document.querySelectorAll('.toc-link');
+
+  var tocObs = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        var id = entries[i].target.id;
+        for (var j = 0; j < tocLinks.length; j++) {
+          if (tocLinks[j].dataset.section === id) {
+            tocLinks[j].classList.add('active');
+          } else {
+            tocLinks[j].classList.remove('active');
+          }
+        }
+      }
+    }
+  }, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+  for (var i = 0; i < sectionEls.length; i++) {
+    tocObs.observe(sectionEls[i]);
+  }
+
+  /* === SMOOTH SCROLL FOR TOC === */
+  for (var i = 0; i < tocLinks.length; i++) {
+    (function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var target = document.getElementById(link.dataset.section);
+        if (target) {
+          var y = target.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      });
+    })(tocLinks[i]);
+  }
+
+  /* === DIAGRAM BAR ANIMATION === */
+  var diagrams = document.querySelectorAll('.diagram');
+  var meterObs = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        var fills = entries[i].target.querySelectorAll('.diag-meter-fill');
+        for (var j = 0; j < fills.length; j++) {
+          fills[j].style.width = fills[j].dataset.width + '%';
+        }
+        meterObs.unobserve(entries[i].target);
+      }
+    }
+  }, { threshold: 0.3 });
+
+  for (var i = 0; i < diagrams.length; i++) {
+    meterObs.observe(diagrams[i]);
+  }
+
+  /* === SCROLL REVEAL === */
+  var reveals = document.querySelectorAll('.reveal');
+  var rObs = new IntersectionObserver(function(entries) {
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isIntersecting) {
+        entries[i].target.classList.add('vis');
+      }
+    }
+  }, { threshold: 0.08 });
+
+  for (var i = 0; i < reveals.length; i++) {
+    rObs.observe(reveals[i]);
+  }
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",
+    authDomain: "loginpage-2e5aa.firebaseapp.com",
+    projectId: "loginpage-2e5aa",
+    appId: "1:676993662276:web:d8e12ca898fb4c0364eb11"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  onAuthStateChanged(auth, function(user) {
+    if (!user) {
+      window.location.href = "login.html";
+    }
+  });
+
+  function handleLogout() {
+    signOut(auth).then(function() {
+      window.location.href = "login.html";
+    }).catch(function() {});
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+</script>
+
+</body>
+</html>

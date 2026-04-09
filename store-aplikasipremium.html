@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Store - HyunkkCloud</title>
+  <link rel="icon" type="image/png" href="images/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg:#060a10;--bg-card:#0c1220;--fg:#e8ecf2;--muted:#5a6a80;
+      --accent:#00c4ff;--accent2:#00e89d;--border:#152035;
+      --cyan:#00c4ff;--green:#00e89d;--purple:#a78bfa;
+      --amber:#fbbf24;--red:#f87171;--pink:#f472b6;
+      --gold:#fbbf24;--gold2:#f59e0b;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--fg);overflow-x:hidden;}
+    .font-mono{font-family:'JetBrains Mono',monospace;}
+
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,196,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,196,255,0.02) 1px,transparent 1px);background-size:60px 60px;z-index:0;pointer-events:none;}
+    .scanline{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.02) 2px,rgba(0,0,0,0.02) 4px);}
+    .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0;animation:orbFloat 16s ease-in-out infinite alternate;}
+    .orb-1{width:450px;height:450px;background:radial-gradient(circle,rgba(251,191,36,0.08),transparent 70%);top:-150px;right:-120px;}
+    .orb-2{width:350px;height:350px;background:radial-gradient(circle,rgba(0,196,255,0.06),transparent 70%);bottom:5%;left:-100px;animation-delay:-6s;}
+    .orb-3{width:250px;height:250px;background:radial-gradient(circle,rgba(34,197,94,0.05),transparent 70%);top:45%;right:5%;animation-delay:-10s;}
+    @keyframes orbFloat{0%{transform:translate(0,0) scale(1);}50%{transform:translate(25px,-35px) scale(1.08);}100%{transform:translate(-15px,20px) scale(0.94);}}
+    #particles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .mouse-glow{position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,0.03),transparent 60%);pointer-events:none;z-index:1;transform:translate(-50%,-50%);transition:left .4s ease-out,top .4s ease-out;}
+
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(20px);background:rgba(6,10,16,0.82);border-bottom:1px solid var(--border);transition:box-shadow .3s;}
+    .navbar.scrolled{box-shadow:0 4px 30px rgba(0,0,0,0.5);}
+    .nav-link{position:relative;color:var(--muted);transition:color .3s;text-decoration:none;font-size:.9rem;}
+    .nav-link:hover{color:var(--accent);}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--accent);transition:width .3s;}
+    .nav-link:hover::after{width:100%;}
+    .nav-link.active-link{color:var(--gold);}
+    .nav-link.active-link::after{width:100%;background:var(--gold);}
+    .btn-logout{border:1px solid rgba(248,113,113,0.3);color:var(--red);font-size:.82rem;padding:7px 16px;border-radius:10px;background:none;cursor:pointer;font-family:inherit;transition:all .3s;}
+    .btn-logout:hover{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.5);}
+    .mobile-menu{display:none;padding:0 24px 16px;border-top:1px solid var(--border);}
+    .mobile-menu.open{display:block;}
+    .mobile-menu a{display:block;padding:10px 0;color:var(--muted);text-decoration:none;font-size:.9rem;transition:color .3s;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mobile-menu a:last-child{border-bottom:none;}
+    .mobile-menu a:hover{color:var(--accent);}
+
+    .store-hero{position:relative;padding:160px 24px 50px;text-align:center;overflow:hidden;}
+    .store-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center top,rgba(251,191,36,0.05) 0%,transparent 55%);pointer-events:none;}
+    .premium-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:999px;border:1px solid rgba(251,191,36,0.25);background:rgba(251,191,36,0.06);font-size:.8rem;color:var(--gold);letter-spacing:.04em;font-weight:600;}
+    .hero-title{font-size:clamp(2.2rem,5.5vw,3.6rem);font-weight:700;line-height:1.12;letter-spacing:-0.03em;margin-top:24px;}
+    .hero-title .grad{background:linear-gradient(135deg,var(--gold),#f59e0b,var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .hero-sub{color:var(--muted);font-size:1.05rem;margin-top:16px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7;}
+
+    .warranty-banner{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;padding:18px 24px;margin:0 auto;max-width:960px;}
+    .warranty-item{display:flex;align-items:center;gap:8px;font-size:.82rem;color:#8a96a8;}
+    .warranty-item i{font-size:.78rem;}
+    .warranty-item.ok i{color:var(--green);}
+    .warranty-item.warn i{color:var(--amber);}
+    .warranty-item strong{color:var(--fg);}
+
+    /* Category */
+    .cat-section{max-width:960px;margin:0 auto;padding:0 24px 56px;}
+    .cat-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+    .cat-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .cat-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+    .cat-title{font-size:1.35rem;font-weight:700;}
+
+    /* Product Grid */
+    .pgrid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+    .pgrid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+
+    /* Full Card */
+    .pcard{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:all .4s cubic-bezier(.25,.46,.45,.94);}
+    .pcard:hover{transform:translateY(-5px);box-shadow:0 18px 45px rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.06);}
+    .pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:0;transition:opacity .4s;}
+    .pcard:hover::before{opacity:1;}
+    .pcard.cg::before{background:linear-gradient(90deg,#4ade80,#22c55e);}
+    .pcard.cy::before{background:linear-gradient(90deg,var(--cyan),#38bdf8);}
+    .pcard.ca::before{background:linear-gradient(90deg,var(--amber),#d97706);}
+    .pcard.cp::before{background:linear-gradient(90deg,var(--pink),#db2777);}
+    .pcard.cu::before{background:linear-gradient(90deg,#22d3ee,#0891b2);}
+    .pcard.cr::before{background:linear-gradient(90deg,var(--red),#dc2626);}
+    .pcard.cv::before{background:linear-gradient(90deg,var(--purple),#7c3aed);}
+
+    .pcard-top{padding:24px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;}
+    .pcard-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+    .pcard-badge{padding:4px 10px;border-radius:7px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}
+    .pcard-body{padding:16px 24px 24px;}
+    .pcard-name{font-size:1.05rem;font-weight:700;margin-bottom:5px;}
+    .pcard-desc{font-size:.82rem;color:#6a7a8e;line-height:1.6;margin-bottom:16px;}
+    .pcard-specs{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+    .spec-r{display:flex;align-items:center;gap:9px;font-size:.8rem;color:#7a8a9e;}
+    .spec-r i{width:14px;text-align:center;font-size:.7rem;flex-shrink:0;}
+    .spec-r span{color:var(--fg);font-weight:500;}
+    .pcard-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:18px;border-top:1px solid rgba(255,255,255,0.04);}
+    .pcard-price{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;}
+    .pcard-price .curr{font-size:.75rem;color:var(--muted);font-weight:400;margin-right:2px;}
+    .pcard-price .range{font-size:.75rem;color:var(--muted);font-weight:400;}
+
+    .btn-buy{display:inline-flex;align-items:center;gap:7px;padding:11px 20px;border-radius:11px;font-size:.84rem;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-family:inherit;transition:all .3s;}
+    .btn-buy:hover{transform:translateY(-1px);}
+    .btn-buy:active{transform:translateY(0);}
+    .btn-g{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;}
+    .btn-g:hover{box-shadow:0 0 20px rgba(34,197,94,0.3);}
+    .btn-y{background:linear-gradient(135deg,var(--gold),#d97706);color:#060a10;}
+    .btn-y:hover{box-shadow:0 0 20px rgba(251,191,36,0.3);}
+    .btn-b{background:linear-gradient(135deg,var(--cyan),#0284c7);color:#060a10;}
+    .btn-b:hover{box-shadow:0 0 20px rgba(0,196,255,0.3);}
+    .btn-p{background:linear-gradient(135deg,var(--pink),#db2777);color:#fff;}
+    .btn-p:hover{box-shadow:0 0 20px rgba(244,114,182,0.3);}
+    .btn-r{background:linear-gradient(135deg(var(--red)),#dc2626);color:#fff;}
+    .btn-r:hover{box-shadow:0 0 20px rgba(248,113,113,0.3);}
+    .btn-v{background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;}
+    .btn-v:hover{box-shadow:0 0 20px rgba(167,139,250,0.3);}
+    .btn-c{background:linear-gradient(135deg,#22d3ee,#0891b2);color:#060a10;}
+    .btn-c:hover{box-shadow:0 0 20px rgba(34,211,238,0.3);}
+
+    /* Compact Card */
+    .ccard{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:all .35s;display:flex;flex-direction:column;justify-content:space-between;min-height:180px;}
+    .ccard:hover{transform:translateY(-4px);box-shadow:0 14px 35px rgba(0,0,0,0.25);border-color:rgba(255,255,255,0.06);}
+    .ccard-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .ccard-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .ccard-name{font-size:.92rem;font-weight:700;}
+    .ccard-desc{font-size:.78rem;color:#6a7a8e;line-height:1.55;margin-bottom:16px;flex:1;}
+    .ccard-bottom{display:flex;align-items:center;justify-content:space-between;}
+    .ccard-price{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:#4ade80;}
+    .ccard-price .curr{font-size:.68rem;color:var(--muted);font-weight:400;margin-right:1px;}
+    .ccard-price .range{font-size:.68rem;color:var(--muted);font-weight:400;}
+
+    /* McAfee Table */
+    .mcafee-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+    .mcafee-table thead th{padding:14px 18px;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:rgba(0,0,0,0.3);border-bottom:1px solid var(--border);text-align:left;}
+    .mcafee-table thead th:not(:first-child){text-align:center;}
+    .mcafee-table tbody td{padding:14px 18px;font-size:.88rem;color:#8a96a8;border-bottom:1px solid rgba(255,255,255,0.03);}
+    .mcafee-table tbody td:not(:first-child){text-align:center;}
+    .mcafee-table tbody tr:last-child td{border-bottom:none;}
+    .mcafee-table tbody tr:hover{background:rgba(0,196,255,0.02);}
+    .mcafee-table .plan{font-weight:600;color:var(--fg);}
+    .mcafee-table .price-cell{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--cyan);}
+
+    /* GTA Variants */
+    .variant-row{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+    .variant-chip{display:flex;align-items:center;gap:10px;padding:14px 18px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,0.015);flex:1;min-width:200px;transition:all .3s;}
+    .variant-chip:hover{border-color:rgba(248,113,113,0.2);background:rgba(248,113,113,0.02);}
+    .variant-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px;}
+    .variant-price{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:var(--red);}
+    .variant-price .curr{font-size:.68rem;color:var(--muted);font-weight:400;margin-right:1px;}
+    .variant-price .range{font-size:.68rem;color:var(--muted);font-weight:400;}
+
+    /* Other Apps */
+    .other-card{position:relative;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:40px;text-align:center;overflow:hidden;transition:all .4s;}
+    .other-card:hover{border-color:rgba(167,139,250,0.2);box-shadow:0 16px 40px rgba(0,0,0,0.25);}
+    .other-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),#8b5cf6,var(--pink),var(--amber));}
+    .other-apps-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;}
+    .other-app-chip{padding:7px 14px;border-radius:9px;border:1px solid var(--border);background:rgba(255,255,255,0.02);font-size:.8rem;color:#8a96a8;display:flex;align-items:center;gap:7px;transition:all .3s;}
+    .other-app-chip:hover{border-color:rgba(167,139,250,0.25);color:var(--fg);background:rgba(167,139,250,0.04);}
+    .other-app-chip i{font-size:.72rem;color:var(--purple);}
+
+    /* Terms */
+    .terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .term-card{padding:22px;border-radius:14px;border:1px solid var(--border);background:var(--bg-card);transition:all .3s;}
+    .term-card:hover{border-color:rgba(255,255,255,0.06);}
+    .term-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-bottom:12px;}
+    .term-title{font-size:.9rem;font-weight:600;margin-bottom:6px;}
+    .term-desc{font-size:.82rem;color:#7a8a9e;line-height:1.65;}
+
+    .footer-link{color:var(--muted);text-decoration:none;font-size:.85rem;transition:color .3s;display:block;padding:3px 0;}
+    .footer-link:hover{color:var(--accent);}
+
+    .section-tag{font-family:'JetBrains Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);display:flex;align-items:center;gap:8px;}
+    .section-tag::before{content:'';width:20px;height:1px;background:var(--gold);}
+
+    .reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease-out,transform .7s ease-out;}
+    .reveal.vis{opacity:1;transform:translateY(0);}
+
+    .faq-item{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .3s;}
+    .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:none;border:none;color:var(--fg);font-size:.92rem;font-weight:600;cursor:pointer;font-family:inherit;text-align:left;}
+    .faq-q i{font-size:.7rem;color:var(--muted);transition:transform .3s;}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease-out;}
+    .faq-a p{padding:0 22px 18px;font-size:.85rem;color:#7a8a9e;line-height:1.7;}
+
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:var(--bg);}
+    ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
+    @media(max-width:768px){
+      .pgrid-2{grid-template-columns:1fr!important;}
+      .pgrid-3{grid-template-columns:1fr 1fr!important;}
+      .terms-grid{grid-template-columns:1fr!important;}
+      .variant-row{flex-direction:column;}
+      .warranty-banner{gap:10px;}
+      .footer-grid{grid-template-columns:1fr!important;gap:24px!important;}
+    }
+    @media(max-width:480px){
+      .pgrid-3{grid-template-columns:1fr!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<canvas id="particles"></canvas>
+<div class="scanline"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <div style="max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;">
+    <a href="index.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;">
+      <div style="width:36px; height:36px; border-radius:10px; overflow:hidden;"><img src="images/icon.png" style="width:100%; height:100%; object-fit:cover;"></div>
+      <span style="font-weight:700;font-size:1.05rem;color:var(--fg);">HyunkkCloud</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="hidden md:flex items-center gap-7">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="store.html" class="nav-link">Store</a>
+        <a href="premium.html" class="nav-link active-link">Premium</a>
+        <a href="support.html" class="nav-link">Support</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+      <button id="logoutBtn" class="btn-logout hidden md:inline-flex"><i class="fas fa-right-from-bracket" style="margin-right:6px;font-size:.75rem;"></i>Logout</button>
+      <button id="menuBtn" class="md:hidden" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px;" aria-label="Toggle menu">
+        <i class="fas fa-bars" id="menuIconOpen" style="font-size:1.2rem;"></i>
+        <i class="fas fa-xmark" id="menuIconClose" style="font-size:1.2rem;display:none;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html">Home</a>
+    <a href="store.html">Store</a>
+    <a href="premium.html">Premium</a>
+    <a href="support.html">Support</a>
+    <a href="contact.html">Contact</a>
+  </div>
+</nav>
+
+<main style="position:relative;z-index:2;">
+
+  <!-- Hero -->
+  <section class="store-hero">
+    <div class="reveal">
+      <div class="premium-badge"><i class="fas fa-crown"></i> Premium Digital Store</div>
+      <h1 class="hero-title">Akun Premium<br><span class="grad">Harga Terjangkau</span></h1>
+      <p class="hero-sub">Akun aplikasi original dengan garansi resmi. Semua akun langsung dikirim setelah pembayaran dikonfirmasi.</p>
+    </div>
+  </section>
+
+  <!-- Warranty Banner -->
+  <section class="reveal" style="padding:0 24px 48px;">
+    <div class="warranty-banner">
+      <div class="warranty-item ok"><i class="fas fa-shield-halved"></i> <strong>Garansi 6 bulan</strong> (satuan)</div>
+      <div class="warranty-item warn"><i class="fas fa-triangle-exclamation"></i> <strong>Bulk = tanpa garansi</strong></div>
+      <div class="warranty-item ok"><i class="fas fa-bolt"></i> <strong>Instant delivery</strong></div>
+    </div>
+  </section>
+
+  <!-- ==================== MINECRAFT AKUN & REDEEM ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;"><i class="fas fa-cube"></i></div>
+      <div><div class="cat-label">Minecraft</div><div class="cat-title">Akun & Redeem Code</div></div>
+    </div>
+    <div class="pgrid-2">
+
+      <!-- MC Premium MFA -->
+      <div class="pcard cg">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;"><i class="fas fa-cube"></i></div>
+          <div class="pcard-badge" style="background:rgba(34,197,94,0.1);color:#4ade80;">Full Access</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">Minecraft Premium</h3>
+          <p class="pcard-desc">Akun Minecraft full access dengan MFA aktif. Langsung dari penjual resmi.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>MFA / 2FA aktif</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Full access akun</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Bisa ganti email & password</span></div>
+            <div class="spec-r"><i class="fas fa-envelope" style="color:var(--muted);"></i> Email dari penjual</div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:#4ade80;"><span class="curr">Rp</span>150.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Minecraft%20Premium%20MFA" target="_blank" class="btn-buy btn-g"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- MC Java & Bedrock Redeem -->
+      <div class="pcard cg">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;"><i class="fas fa-ticket"></i></div>
+          <div class="pcard-badge" style="background:rgba(34,197,94,0.1);color:#4ade80;">Redeem Code</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">MC Java & Bedrock Redeem Code</h3>
+          <p class="pcard-desc">Redeem code resmi untuk Minecraft Java Edition & Bedrock Edition. Tanpa perlu VPN.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Java + Bedrock Edition</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Tanpa VPN untuk redeem</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Code resmi dari Mojang</span></div>
+            <div class="spec-r"><i class="fas fa-infinity" style="color:var(--muted);"></i> <span>Akun permanen</span></div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:#4ade80;"><span class="curr">Rp</span>285.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20MC%20Java%20%26%20Bedrock%20Redeem%20Code" target="_blank" class="btn-buy btn-g"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- MC Java & Bedrock Redeem VPN -->
+      <div class="pcard cg">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;"><i class="fas fa-ticket"></i></div>
+          <div class="pcard-badge" style="background:rgba(251,191,36,0.1);color:var(--amber);">VPN Required</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">MC Java & Bedrock Redeem (VPN)</h3>
+          <p class="pcard-desc">Redeem code yang sama tapi butuh VPN saat redeem. Harga lebih murah.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Java + Bedrock Edition</span></div>
+            <div class="spec-r"><i class="fas fa-shield-halved" style="color:var(--amber);"></i> <span>Perlu VPN saat redeem</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Code resmi dari Mojang</span></div>
+            <div class="spec-r"><i class="fas fa-tag" style="color:var(--green);"></i> <span>Lebih murah Rp 10.000</span></div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:#4ade80;"><span class="curr">Rp</span>275.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20MC%20Java%20%26%20Bedrock%20Redeem%20VPN" target="_blank" class="btn-buy btn-g"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- MC For Windows -->
+      <div class="pcard cg">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;"><i class="fab fa-windows"></i></div>
+          <div class="pcard-badge" style="background:rgba(34,197,94,0.1);color:#4ade80;">Windows</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">MC for Windows</h3>
+          <p class="pcard-desc">Akun Minecraft khusus untuk Windows 10/11 Edition. Termasuk di dalamnya.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Windows 10/11 Edition</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Full access akun</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#4ade80;"></i> <span>Langsung main</span></div>
+            <div class="spec-r"><i class="fas fa-envelope" style="color:var(--muted);"></i> Email dari penjual</div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:#4ade80;"><span class="curr">Rp</span>50.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20MC%20for%20Windows" target="_blank" class="btn-buy btn-g"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== MINECRAFT LEGENDS & REALMS ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-gamepad"></i></div>
+      <div><div class="cat-label">Minecraft</div><div class="cat-title">Legends & Realms</div></div>
+    </div>
+    <div class="pgrid-2">
+
+      <div class="pcard cy">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-sword"></i></div>
+          <div class="pcard-badge" style="background:rgba(0,196,255,0.1);color:var(--cyan);">Redeem</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">MC Legends Redeem Code</h3>
+          <p class="pcard-desc">Redeem code untuk Minecraft Legends, game spin-off action-strategy dari Mojang.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Minecraft Legends full game</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Redeem code resmi</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Permanent license</span></div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:var(--cyan);"><span class="curr">Rp</span>40.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20MC%20Legends%20Redeem" target="_blank" class="btn-buy btn-b"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard cy">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-server"></i></div>
+          <div class="pcard-badge" style="background:rgba(0,232,157,0.1);color:var(--green);">Subscription</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">MC Realms</h3>
+          <p class="pcard-desc">Server Minecraft Realms untuk bermain dengan teman-teman. Mudah tanpa setup technical.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Server Realms aktif</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Mudah invite teman</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Tanpa setup VPS</span></div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:var(--cyan);"><span class="curr">Rp</span>35.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20MC%20Realms" target="_blank" class="btn-buy btn-b"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== MINECRAFT CAPES ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(167,139,250,0.1);color:var(--purple);"><i class="fas fa-vest"></i></div>
+      <div><div class="cat-label">Minecraft</div><div class="cat-title">Cape</div></div>
+    </div>
+    <div class="pgrid-3">
+
+      <div class="ccard">
+        <div class="ccard-top">
+          <div class="ccard-icon" style="background:rgba(251,191,36,0.1);color:var(--gold);"><i class="fas fa-fire"></i></div>
+          <div class="ccard-name">OptiFine Cape</div>
+        </div>
+        <div class="ccard-desc">Cape donation OptiFine. Tampil di semua server yang pakai OptiFine.</div>
+        <div class="ccard-bottom">
+          <div class="ccard-price" style="color:var(--gold);"><span class="curr">Rp</span>15.000</div>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20OptiFine%20Cape" target="_blank" class="btn-buy btn-y" style="padding:9px 16px;font-size:.78rem;"><i class="fab fa-whatsapp"></i> Beli</a>
+        </div>
+      </div>
+
+      <div class="ccard">
+        <div class="ccard-top">
+          <div class="ccard-icon" style="background:rgba(34,197,94,0.1);color:#4ade80;"><i class="fas fa-house"></i></div>
+          <div class="ccard-name">Home Cape</div>
+        </div>
+        <div class="ccard-desc">Cape Home eksklusif untuk Minecraft Java Edition.</div>
+        <div class="ccard-bottom">
+          <div class="ccard-price" style="color:#4ade80;"><span class="curr">Rp</span>20.000</div>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Home%20Cape" target="_blank" class="btn-buy btn-g" style="padding:9px 16px;font-size:.78rem;"><i class="fab fa-whatsapp"></i> Beli</a>
+        </div>
+      </div>
+
+      <div class="ccard">
+        <div class="ccard-top">
+          <div class="ccard-icon" style="background:rgba(248,113,113,0.1);color:var(--red);"><i class="fas fa-skull"></i></div>
+          <div class="ccard-name">Menace Cape</div>
+        </div>
+        <div class="ccard-desc">Cape Menace langka dan eksklusif untuk Minecraft.</div>
+        <div class="ccard-bottom">
+          <div class="ccard-price" style="color:var(--red);"><span class="curr">Rp</span>20.000</div>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Menace%20Cape" target="_blank" class="btn-buy btn-r" style="padding:9px 16px;font-size:.78rem;"><i class="fab fa-whatsapp"></i> Beli</a>
+        </div>
+      </div>
+
+      <div class="ccard">
+        <div class="ccard-top">
+          <div class="ccard-icon" style="background:rgba(167,139,250,0.1);color:var(--purple);"><i class="fas fa-heart"></i></div>
+          <div class="ccard-name">Purple Heart Cape</div>
+        </div>
+        <div class="ccard-desc">Cape Purple Heart eksklusif. Langka dan limited.</div>
+        <div class="ccard-bottom">
+          <div class="ccard-price" style="color:var(--purple);"><span class="curr">Rp</span>55.000</div>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Purple%20Heart%20Cape" target="_blank" class="btn-buy btn-v" style="padding:9px 16px;font-size:.78rem;"><i class="fab fa-whatsapp"></i> Beli</a>
+        </div>
+      </div>
+
+      <div class="ccard" style="grid-column:span 2;">
+        <div class="ccard-top">
+          <div class="ccard-icon" style="background:linear-gradient(135deg,rgba(0,196,255,0.1),rgba(167,139,250,0.1));color:var(--cyan);"><i class="fas fa-star"></i></div>
+          <div class="ccard-name">Minecraft Experience Cape</div>
+        </div>
+        <div class="ccard-desc">Cape Minecraft Experience — langka dan sangat eksklusif. Harga bervariasi tergantung tipe dan rarity cape.</div>
+        <div class="ccard-bottom">
+          <div class="ccard-price" style="color:var(--cyan);"><span class="curr">Rp</span>110.000 <span class="range">- 510.000</span></div>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20tanya%20harga%20MC%20Experience%20Cape" target="_blank" class="btn-buy btn-b" style="padding:9px 16px;font-size:.78rem;"><i class="fab fa-whatsapp"></i> Chat</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== GTA 5 ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="cat-icon" style="background:rgba(248,113,113,0.1);color:var(--red);"><i class="fas fa-car"></i></div>
+      <div><div class="cat-label">Game</div><div class="cat-title">GTA 5 Enhanced</div></div>
+    </div>
+    <div class="pcard cr">
+      <div class="pcard-top">
+        <div class="pcard-icon" style="background:rgba(248,113,113,0.1);color:var(--red);"><i class="fas fa-car"></i></div>
+        <div class="pcard-badge" style="background:rgba(248,113,113,0.1);color:var(--red);">Enhanced</div>
+      </div>
+      <div class="pcard-body">
+        <h3 class="pcard-name">Grand Theft Auto V Enhanced</h3>
+        <p class="pcard-desc">GTA 5 Enhanced Edition dengan grafis improved. Tersedia dalam dua platform.</p>
+        <div class="variant-row">
+          <div class="variant-chip">
+            <div style="flex:1;">
+              <div class="variant-label"><i class="fab fa-steam" style="margin-right:4px;"></i> Steam</div>
+              <div class="variant-price"><span class="curr">Rp</span>185.000 <span class="range">- 220.000</span></div>
+            </div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20GTA%205%20Enhanced%20Steam" target="_blank" class="btn-buy btn-r" style="padding:8px 14px;font-size:.76rem;"><i class="fab fa-whatsapp"></i></a>
+          </div>
+          <div class="variant-chip">
+            <div style="flex:1;">
+              <div class="variant-label"><i class="fas fa-circle-user" style="margin-right:4px;"></i> Social Club</div>
+              <div class="variant-price"><span class="curr">Rp</span>150.000</div>
+            </div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20GTA%205%20Enhanced%20Social%20Club" target="_blank" class="btn-buy btn-r" style="padding:8px 14px;font-size:.76rem;"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <div class="pcard-specs" style="margin-bottom:0;">
+          <div class="spec-r"><i class="fas fa-check" style="color:var(--red);"></i> <span>GTA 5 Enhanced Edition</span></div>
+          <div class="spec-r"><i class="fas fa-check" style="color:var(--red);"></i> <span>Grafis improved + content tambahan</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== XBOX GAME PASS ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="pcard-icon" style="background:rgba(34,211,238,0.1);color:#22d3ee;"><i class="fab fa-xbox"></i></div>
+      <div><div class="cat-label">Microsoft</div><div class="cat-title">Xbox Game Pass</div></div>
+    </div>
+    <div class="pgrid-2">
+
+      <div class="pcard cu">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(34,211,238,0.1);color:#22d3ee;"><i class="fab fa-xbox"></i></div>
+          <div class="pcard-badge" style="background:rgba(34,211,238,0.1);color:#22d3ee;">Ultimate</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">Xbox Game Pass Ultimate</h3>
+          <p class="pcard-desc">1 bulan akses penuh ke ratusan game PC + Console + Cloud. Sudah termasuk jasa redeem via CC/PayPal.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:#22d3ee;"></i> <span>1 bulan Ultimate</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#22d3ee;"></i> <span>PC + Console + Cloud</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#22d3ee;"></i> <span>Include jasa redeem CC/PayPal</span></div>
+            <div class="spec-r"><i class="fas fa-credit-card" style="color:var(--muted);"></i> <span>Tinggal login, kami yang redeem</span></div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:#22d3ee;"><span class="curr">Rp</span>65.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Xbox%20GamePass%20Ultimate%201%20Bulan" target="_blank" class="btn-buy btn-c"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard cu">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(34,211,238,0.1);color:#22d3ee;"><i class="fab fa-xbox"></i></div>
+          <div class="pcard-badge" style="background:rgba(0,232,157,0.1);color:var(--green);">3 Bulan</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">Xbox PC Game Pass</h3>
+          <p class="pcard-desc">3 bulan akses ratusan game di PC. Sudah termasuk jasa redeem via CC/PayPal.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:#22d3ee;"></i> <span>3 bulan PC Game Pass</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#22d3ee;"></i> <span>Ratusan game PC</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:#22d3ee;"></i> <span>Include jasa redeem CC/PayPal</span></div>
+            <div class="spec-r"><i class="fas fa-tag" style="color:var(--green);"></i> <span>Hemat: ~Rp 27k/bulan</span></div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:#22d3ee;"><span class="curr">Rp</span>80.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Xbox%20PC%20GamePass%203%20Bulan" target="_blank" class="btn-buy btn-c"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== MCAFEE ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="pcard-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-shield-virus"></i></div>
+      <div><div class="cat-label">Antivirus</div><div class="cat-title">McAfee Total Protection</div></div>
+    </div>
+    <p style="font-size:.88rem;color:#7a8a9e;margin:-12px 0 20px;line-height:1.6;">Lisensi resmi 10 tahun untuk perlindungan lengkap. Semua device terlindungi dari virus, malware, dan ancaman online.</p>
+
+    <div style="overflow-x:auto;border-radius:16px;">
+      <table class="mcafee-table">
+        <thead>
+          <tr>
+            <th>Paket</th>
+            <th>Durasi</th>
+            <th>Harga</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="plan"><i class="fas fa-desktop" style="color:var(--cyan);margin-right:8px;font-size:.8rem;"></i>1 PC</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">10 Tahun</td>
+            <td class="price-cell">Rp 75.000</td>
+            <td><a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20McAfee%201%20PC%2010%20Tahun" target="_blank" class="btn-buy btn-b" style="padding:8px 14px;font-size:.76rem;"><i class="fab fa-whatsapp"></i> Beli</a></td>
+          </tr>
+          <tr>
+            <td class="plan"><i class="fas fa-desktop" style="color:var(--cyan);margin-right:8px;font-size:.8rem;"></i>2 PC</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">10 Tahun</td>
+            <td class="price-cell">Rp 95.000</td>
+            <td><a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20McAfee%202%20PC%2010%20Tahun" target="_blank" class="btn-buy btn-b" style="padding:8px 14px;font-size:.76rem;"><i class="fab fa-whatsapp"></i> Beli</a></td>
+          </tr>
+          <tr>
+            <td class="plan"><i class="fas fa-desktop" style="color:var(--cyan);margin-right:8px;font-size:.8rem;"></i>3 PC</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">10 Tahun</td>
+            <td class="price-cell">Rp 115.000</td>
+            <td><a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20McAfee%203%20PC%2010%20Tahun" target="_blank" class="btn-buy btn-b" style="padding:8px 14px;font-size:.76rem;"><i class="fab fa-whatsapp"></i> Beli</a></td>
+          </tr>
+          <tr>
+            <td class="plan"><i class="fas fa-desktop" style="color:var(--cyan);margin-right:8px;font-size:.8rem;"></i>4 PC</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">10 Tahun</td>
+            <td class="price-cell">Rp 185.000</td>
+            <td><a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20McAfee%204%20PC%2010%20Tahun" target="_blank" class="btn-buy btn-b" style="padding:8px 14px;font-size:.76rem;"><i class="fab fa-whatsapp"></i> Beli</a></td>
+          </tr>
+          <tr>
+            <td class="plan"><i class="fas fa-desktop" style="color:var(--cyan);margin-right:8px;font-size:.8rem;"></i>5 PC</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:.82rem;">10 Tahun</td>
+            <td class="price-cell">Rp 210.000</td>
+            <td><a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20McAfee%205%20PC%2010%20Tahun" target="_blank" class="btn-buy btn-b" style="padding:8px 14px;font-size:.76rem;"><i class="fab fa-whatsapp"></i> Beli</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== CLOUD & STORAGE ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="pcard-icon" style="background:rgba(251,191,36,0.1);color:var(--gold);"><i class="fas fa-cloud"></i></div>
+      <div><div class="cat-label">Cloud</div><div class="cat-title">Cloud & Storage</div></div>
+    </div>
+    <div class="pgrid-2">
+
+      <div class="pcard ca">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(251,191,36,0.1);color:var(--gold);"><i class="fab fa-google-drive"></i></div>
+          <div class="pcard-badge" style="background:rgba(251,191,36,0.1);color:var(--gold);">Storage</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">Akun Google Drive</h3>
+          <p class="pcard-desc">Akun Google dengan Google Drive siap pakai untuk penyimpanan file dan cloud storage.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--gold);"></i> <span>Google Drive aktif</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--gold);"></i> <span>Full akses akun Google</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--gold);"></i> <span>Bisa ganti password</span></div>
+            <div class="spec-r"><i class="fas fa-envelope" style="color:var(--muted);"></i> Email dari penjual</div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:var(--gold);"><span class="curr">Rp</span>60.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Akun%20Google%20Drive" target="_blank" class="btn-buy btn-y"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard cy">
+        <div class="pcard-top">
+          <div class="pcard-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-server"></i></div>
+          <div class="pcard-badge" style="background:rgba(0,196,255,0.1);color:var(--cyan);">Cloud VPS</div>
+        </div>
+        <div class="pcard-body">
+          <h3 class="pcard-name">Akun Civo Cloud</h3>
+          <p class="pcard-desc">Akun Civo Cloud dengan limit tinggi. Bisa create instance VPS sesuai kebutuhan.</p>
+          <div class="pcard-specs">
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Limit 16 CPU</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Bisa create 16GB / 8 Core</span></div>
+            <div class="spec-r"><i class="fas fa-check" style="color:var(--cyan);"></i> <span>Full akses dashboard</span></div>
+            <div class="spec-r"><i class="fas fa-server" style="color:var(--muted);"></i> <span>Instance-ready</span></div>
+          </div>
+          <div class="pcard-bottom">
+            <div class="pcard-price" style="color:var(--cyan);"><span class="curr">Rp</span>100.000</div>
+            <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Akun%20Civo%20Cloud" target="_blank" class="btn-buy btn-b"><i class="fab fa-whatsapp"></i> Beli</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== APLIKASI ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="pcard-icon" style="background:rgba(244,114,182,0.1);color:var(--pink);"><i class="fas fa-wand-magic-sparkles"></i></div>
+      <div><div class="cat-label">Aplikasi</div><div class="cat-title">Aplikasi Premium</div></div>
+    </div>
+    <div class="pcard cp" style="max-width:480px;">
+      <div class="pcard-top">
+        <div class="pcard-icon" style="background:rgba(244,114,182,0.1);color:var(--pink);"><i class="fas fa-wand-magic-sparkles"></i></div>
+        <div class="pcard-badge" style="background:rgba(244,114,182,0.1);color:var(--pink);">Best Deal</div>
+      </div>
+      <div class="pcard-body">
+        <h3 class="pcard-name">Alight Motion Premium</h3>
+        <p class="pcard-desc">Premium aktif 1 tahun penuh. Semua fitur terbuka tanpa watermark dan tanpa iklan.</p>
+        <div class="pcard-specs">
+          <div class="spec-r"><i class="fas fa-check" style="color:var(--pink);"></i> <span>Premium 1 tahun</span></div>
+          <div class="spec-r"><i class="fas fa-check" style="color:var(--pink);"></i> <span>Tanpa watermark</span></div>
+          <div class="spec-r"><i class="fas fa-check" style="color:var(--pink);"></i> <span>Semua efek & preset</span></div>
+          <div class="spec-r"><i class="fas fa-star" style="color:var(--amber);"></i> <span>Hanya Rp 1.000/tahun</span></div>
+        </div>
+        <div class="pcard-bottom">
+          <div class="pcard-price" style="color:var(--pink);"><span class="curr">Rp</span>1.000</div>
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20beli%20Alight%20Motion%20Premium" target="_blank" class="btn-buy btn-p"><i class="fab fa-whatsapp"></i> Beli</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== OTHER APPS ==================== -->
+  <section class="cat-section reveal">
+    <div class="cat-header">
+      <div class="pcard-icon" style="background:rgba(167,139,250,0.1);color:var(--purple);"><i class="fas fa-ellipsis"></i></div>
+      <div><div class="cat-label">Lainnya</div><div class="cat-title">Akun Aplikasi Lain</div></div>
+    </div>
+    <div class="other-card">
+      <div style="position:relative;">
+        <div style="width:60px;height:60px;border-radius:18px;background:rgba(167,139,250,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:var(--purple);"><i class="fas fa-ellipsis"></i></div>
+        <h3 style="font-size:1.15rem;font-weight:700;margin-bottom:5px;">Butuh Akun Lain?</h3>
+        <p style="font-size:.85rem;color:#7a8a9e;max-width:400px;margin:0 auto 20px;line-height:1.6;">Kami juga menyediakan akun berbagai aplikasi lainnya. Langsung chat kami untuk menanyakan ketersediaan dan harga.</p>
+        <div class="other-apps-grid">
+          <div class="other-app-chip"><i class="fab fa-spotify"></i> Spotify</div>
+          <div class="other-app-chip"><i class="fab fa-youtube"></i> YouTube</div>
+          <div class="other-app-chip"><i class="fab fa-canva"></i> Canva</div>
+          <div class="other-app-chip"><i class="fas fa-pen-nib"></i> ChatGPT</div>
+          <div class="other-app-chip"><i class="fab fa-figma"></i> Figma</div>
+          <div class="other-app-chip"><i class="fas fa-gamepad"></i> Steam</div>
+          <div class="other-app-chip"><i class="fas fa-ellipsis"></i> Dan lainnya...</div>
+        </div>
+        <div style="margin-top:22px;">
+          <a href="https://wa.me/6282189822272?text=Halo%2C%20saya%20mau%20tanya%20akun%20aplikasi%20lain" target="_blank" class="btn-buy btn-v"><i class="fab fa-whatsapp"></i> Chat Kami</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TERMS ==================== -->
+  <section class="cat-section reveal">
+    <div style="margin-bottom:24px;">
+      <div class="section-tag">Ketentuan</div>
+      <h2 style="font-size:1.35rem;font-weight:700;margin-top:8px;">Syarat & Garansi</h2>
+    </div>
+    <div class="terms-grid">
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(0,232,157,0.1);color:var(--green);"><i class="fas fa-shield-halved"></i></div>
+        <div class="term-title">Garansi 6 Bulan</div>
+        <div class="term-desc">Berlaku untuk pembelian satuan (1 akun). Jika akun bermasalah dalam 6 bulan, akan diganti akun baru tanpa biaya tambahan.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(251,191,36,0.1);color:var(--amber);"><i class="fas fa-triangle-exclamation"></i></div>
+        <div class="term-title">Bulk = Tanpa Garansi</div>
+        <div class="term-desc">Pembelian jumlah banyak (bulk) tidak mendapat garansi. Akun sudah dicek sebelum dikirim, tapi tidak ada penggantian setelahnya.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(0,196,255,0.1);color:var(--cyan);"><i class="fas fa-bolt"></i></div>
+        <div class="term-title">Instant Delivery</div>
+        <div class="term-desc">Akun dikirim langsung setelah pembayaran dikonfirmasi. Proses cepat, biasanya dalam hitungan menit melalui WhatsApp.</div>
+      </div>
+      <div class="term-card">
+        <div class="term-icon" style="background:rgba(248,113,113,0.1);color:var(--red);"><i class="fas fa-ban"></i></div>
+        <div class="term-title">Klaim Garansi</div>
+        <div class="term-desc">Garansi tidak berlaku jika akun di-ban karena pelanggaran ToS oleh pembeli, password diganti pihak lain, atau akun dijual kembali.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FAQ ==================== -->
+  <section style="max-width:700px;margin:0 auto;padding:0 24px 80px;">
+    <div class="reveal" style="margin-bottom:24px;">
+      <div class="section-tag">FAQ</div>
+      <h2 style="font-size:1.35rem;font-weight:700;margin-top:8px;">Pertanyaan Umum</h2>
+    </div>
+    <div class="reveal" style="display:flex;flex-direction:column;gap:12px;" id="faqContainer">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Akunnya aman dan legal?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a"><p>Semua akun didapatkan dari penjual resmi dan sudah diverifikasi sebelum dikirim. Kami tidak menjual akun crack, hasil hack, atau generate ilegal.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Bisa ganti email dan password?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a"><p>Untuk Minecraft dan beberapa akun lain, ya — kamu bisa ganti email dan password sehingga akun menjadi sepenuhnya milik kamu. Detail spesifik diberikan saat pengiriman.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Kenapa bulk tidak ada garansi?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a"><p>Pembelian bulk dengan harga diskon khusus memiliki margin sangat tipis sehingga tidak memungkinkan garansi penggantian. Semua akun tetap dicek sebelum dikirim.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Bedanya Redeem Code biasa vs VPN apa?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a"><p>Sama-sama kode resmi dari Mojang. Versi VPN cuma butuh VPN aktif saat proses redeem saja, setelah itu bisa langsung main normal tanpa VPN. Harganya lebih murah Rp 10.000.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Xbox Game Pass jasa redeem itu gimana?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a"><p>Kamu cukup berikan akun Xbox/Microsoft kamu, lalu kami yang melakukan redeem menggunakan CC/PayPal kami. Setelah aktif, kamu tinggal langsung main. Tidak perlu punya CC sendiri.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Metode pembayaran apa saja?</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="faq-a"><p>Transfer bank, E-wallet (GoPay, OVO, DANA, ShopeePay), dan QRIS. Detail pembayaran diberikan melalui WhatsApp setelah kamu konfirmasi order.</p></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer style="position:relative;z-index:2;border-top:1px solid var(--border);background:rgba(6,10,16,0.92);">
+  <div style="max-width:1200px;margin:0 auto;padding:48px 24px 32px;">
+    <div class="footer-grid" style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#060a10;font-size:.75rem;">H</div>
+          <span style="font-weight:700;">HyunkkCloud</span>
+        </div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;max-width:300px;">Hosting modern dan toko akun premium terpercaya. Support aktif 24/7.</p>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Menu</h4>
+        <a href="store.html" class="footer-link">Store</a>
+        <a href="premium.html" class="footer-link">Premium</a>
+        <a href="support.html" class="footer-link">Support</a>
+        <a href="contact.html" class="footer-link">Contact</a>
+      </div>
+      <div>
+        <h4 style="font-weight:600;margin-bottom:14px;font-size:.9rem;">Kontak</h4>
+        <p style="font-size:.85rem;color:var(--muted);line-height:2;">
+          <i class="fas fa-envelope" style="width:16px;color:var(--accent);font-size:.75rem;"></i> cahyobagaskoro03@gmail.com<br>
+          <i class="fab fa-whatsapp" style="width:16px;color:var(--accent);font-size:.75rem;"></i> 082189822272<br>
+          <i class="fas fa-map-marker-alt" style="width:16px;color:var(--accent);font-size:.75rem;"></i> Indonesia
+        </p>
+      </div>
+    </div>
+    <div style="margin-top:36px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:.78rem;color:var(--muted);">&copy; 2026 HyunkkCloud. All rights reserved.</span>
+      <span class="font-mono" style="font-size:.68rem;color:rgba(90,106,128,0.5);">v2.0.0</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  var canvas=document.getElementById('particles'),ctx=canvas.getContext('2d'),pArr=[];
+  function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  resizeCanvas();window.addEventListener('resize',resizeCanvas);
+  for(var i=0;i<50;i++){pArr.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()*1.2+0.3,speedX:(Math.random()-0.5)*0.15,speedY:(Math.random()-0.5)*0.15,opacity:Math.random()*0.2+0.04,color:Math.random()>0.6?'251,191,36':'0,196,255'});}
+  function animP(){ctx.clearRect(0,0,canvas.width,canvas.height);for(var i=0;i<pArr.length;i++){var p=pArr[i];p.x+=p.speedX;p.y+=p.speedY;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(0.1,p.size),0,Math.PI*2);ctx.fillStyle='rgba('+p.color+','+p.opacity+')';ctx.fill();}requestAnimationFrame(animP);}
+  animP();
+
+  var mg=document.getElementById('mouseGlow');
+  document.addEventListener('mousemove',function(e){mg.style.left=e.clientX+'px';mg.style.top=e.clientY+'px';});
+
+  var navbar=document.getElementById('navbar');
+  window.addEventListener('scroll',function(){navbar.classList.toggle('scrolled',window.scrollY>50);});
+
+  var menuBtn=document.getElementById('menuBtn'),mobileMenu=document.getElementById('mobileMenu'),mOpen=document.getElementById('menuIconOpen'),mClose=document.getElementById('menuIconClose');
+  menuBtn.addEventListener('click',function(){var o=mobileMenu.classList.toggle('open');mOpen.style.display=o?'none':'inline';mClose.style.display=o?'inline':'none';});
+
+  var reveals=document.querySelectorAll('.reveal');
+  var rObs=new IntersectionObserver(function(entries){for(var i=0;i<entries.length;i++){if(entries[i].isIntersecting)entries[i].target.classList.add('vis');}},{threshold:0.08});
+  for(var i=0;i<reveals.length;i++){rObs.observe(reveals[i]);}
+
+  function toggleFaq(btn){
+    var item=btn.parentElement,answer=item.querySelector('.faq-a'),icon=btn.querySelector('i');
+    var isOpen=answer.style.maxHeight&&answer.style.maxHeight!=='0px';
+    var allItems=document.querySelectorAll('.faq-item');
+    for(var i=0;i<allItems.length;i++){allItems[i].querySelector('.faq-a').style.maxHeight='0px';allItems[i].querySelector('.faq-q i').style.transform='rotate(0deg)';allItems[i].style.borderColor='var(--border)';}
+    if(!isOpen){answer.style.maxHeight=answer.scrollHeight+'px';icon.style.transform='rotate(180deg)';item.style.borderColor='rgba(251,191,36,0.2)';}
+  }
+</script>
+
+<script type="module">
+  import{initializeApp}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+  const firebaseConfig={apiKey:"AIzaSyB2YKgC5EdKYFPaU-4uavFABtYEupvang4",authDomain:"loginpage-2e5aa.firebaseapp.com",projectId:"loginpage-2e5aa",appId:"1:676993662276:web:d8e12ca898fb4c0364eb11"};
+  const app=initializeApp(firebaseConfig),auth=getAuth(app);
+  onAuthStateChanged(auth,function(user){if(!user)window.location.href="login.html";});
+  document.getElementById('logoutBtn').addEventListener('click',function(){signOut(auth).then(function(){window.location.href="login.html";}).catch(function(){});});
+</script>
+
+</body>
+</html>
